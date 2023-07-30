@@ -1,0 +1,79 @@
+.login-page form {
+    width: 90%;
+    max-width: 400px;
+    padding: 20px;
+    border-radius: 5px;
+}
+
+
+.login-page input[type="text"],
+.login-page input[type="password"], 
+.login-page input[type="date"],
+.login-page select {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    font-size: 16px;
+    border-radius: 5px;
+    border: 1px solid rgb(214, 146, 197);
+}
+
+.login-page input[type="submit"] {
+    width: 100%;
+    padding: 10px;
+    background-color: rgb(235, 169, 212);
+    color: rgb(234, 177, 201);
+    border-radius: 5px;
+    border: none;
+}
+
+.login-page .resetPassword {
+    margin-top: -20px;
+}
+
+.login-page .resetPassword button {
+    background-color: white;
+    color: #170101;
+    border: none;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.login-page .login button {
+    background-color: rgb(219, 150, 173);
+    font-size: larger;
+
+}
+
+.login-page .singIn button {
+    background-color: rgb(245, 241, 242);
+    font-size: larger;
+}
+
+.login-page .login,
+.login-page .singIn {
+    margin-top: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+}
+
+.login-page .resetPassword button:hover,
+.login-page .login button:hover,
+.login-page .singIn button:hover {
+    background-color: #cf3dbe;
+
+}
+
+.login-page .logo-container {
+    margin: left -60px;
+    margin-top: -60px;
+}
+
+@media (min-width: 768px) {
+    .login-page form {
+        width: 50%;
+    }
+}

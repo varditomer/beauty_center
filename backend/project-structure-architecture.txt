@@ -1,0 +1,36 @@
+project/
+|--public/
+|   |-- main.html
+|   |-- login.html
+|   |-- assets/
+|   |   |-- css/
+|   |   |   |-- styles.css
+|   |   |   |-- settings/
+|   |   |   |   |-- base.css
+|   |   |   |   |-- variables.css
+|   |   |   |   |-- typography.css
+|   |   |   |-- views/
+|   |   |   |   |-- home.css
+|   |   |   |   |-- login.css
+|   |   |   |   |-- employee.css
+|   |   |   |   |-- treatments.css
+|   |   |-- images/
+|   |   |   |-- logo.png
+|   |-- js/
+|   |   |-- main.js
+|   |   |-- views/
+|   |   |   |-- login/
+|   |   |   |   |-- loginController.js
+|   |   |   |-- home/
+|   |   |   |   |-- homeController.js
+|   |   |   |-- employees/
+|   |   |   |   |-- employeesController.js
+|   |   |   |-- treatments/
+|   |   |   |   |-- treatmentsController.js
+|   |   |-- services/
+|   |   |   |-- user.service.js/
+|--services/
+|   |   |-- database.service.js/
+|--package-lock.json
+|--package.json
+|--app.js

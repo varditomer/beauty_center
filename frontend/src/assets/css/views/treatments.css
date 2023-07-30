@@ -1,0 +1,117 @@
+.wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.links {
+    display: flex;
+    margin-left: 20px;
+    /* Adjust the margin as needed */
+}
+
+.icons {
+    display: flex;
+    margin-right: 20px;
+    margin-left: 200px;
+    font-size: larger;
+
+    /* Adjust the margin as needed */
+}
+
+.links a,
+.icons a {
+    margin-left: 10px;
+
+    /* Adjust the margin between individual links */
+}
+
+.fa-solid.fa-house,
+.fa-regular.fa-address-card {
+    color: black;
+}
+
+
+nav ul {
+    list-style-type: none;
+    padding: 2;
+    display: flex;
+}
+
+nav a {
+    font-size: larger;
+    margin-right: 1%;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding: 0.5em 2em;
+    color: rgb(177, 102, 149);
+    margin-right: -50px;
+}
+html {
+    height: 100%;
+}
+
+.links {
+    display: flex;
+    margin-left: 20px;
+    /* Adjust the margin as needed */
+}
+
+.icons {
+    display: flex;
+    margin-right: 20px;
+    margin-left: 200px;
+    font-size: larger;
+
+    /* Adjust the margin as needed */
+}
+
+.links a,
+.icons a {
+    margin-left: 10px;
+
+    /* Adjust the margin between individual links */
+}
+
+img {
+    width: 30%;
+    height: 90%;
+}
+
+input [type="confirmPassword"] {
+    width: 30%;
+    left: 20%;
+    width: 20px;
+    height: 20px;
+
+}
+
+input[type="submit"] {
+    padding: 2px 20px;
+    background-color: rgb(226, 162, 205);
+    color: #000000;
+    font-size: 16px;
+    border: none;
+    border-radius: px;
+    width: 100px;
+    height: px;
+    cursor: pointer;
+
+    position: relative;
+    top: 15px;
+    left: 20px;
+}
+
+body {
+    font-size: larger;
+    width: 100%;
+    height: 75%;
+    margin: 0;
+    font-family: Helvetica;
+    display: grid;
+    justify-items: center;
+    align-items: center;
+    background-color: #ffffff;
+
+}

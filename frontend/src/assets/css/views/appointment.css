@@ -1,0 +1,13 @@
+.appointment-page{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+.appointment-page .add-appointment-btn{
+    cursor: pointer;
+    background-color: rgb(226, 162, 205);
+    border: unset;
+    border-radius: 50vw;
+    padding: 6px 12px;
+    max-width: 150px;
+}

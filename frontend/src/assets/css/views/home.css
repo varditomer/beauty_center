@@ -1,0 +1,147 @@
+.links {
+    display: flex;
+    margin-left: 20px;
+    /* Adjust the margin as needed */
+}
+
+.icons {
+    display: flex;
+    margin-right: 20px;
+    margin-left: 200px;
+    font-size: larger;
+
+    /* Adjust the margin as needed */
+}
+
+.links a,
+.icons a {
+    margin-left: 10px;
+
+    /* Adjust the margin between individual links */
+}
+
+.fa-solid.fa-house,
+.fa-regular.fa-address-card {
+    color: black;
+}
+
+
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+}
+
+nav a {
+    font-size: larger;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    color: rgb(177, 102, 149);
+}
+
+header.wrapper nav ul {
+    text-align: right;
+    font-size: larger;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+p {
+    font-family: Arial, sans-serif;
+    font-size: 16px;
+    color: #333;
+    line-height: 1.2;
+    text-align: justify;
+    margin: 0;
+    white-space: pre-wrap;
+
+}
+
+figcaption {
+    color: rgb(177, 102, 149);
+    font-size: large;
+}
+
+.home-page .image-container {
+    display: flex;
+    justify-content: center;
+}
+
+.image-container figure {
+    text-align: center;
+}
+
+@media screen and (max-width: 1000px) {
+    header.wrapper img {
+        margin-right: 0;
+    }
+
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav a {
+        margin-right: 0;
+        margin-bottom: 1%;
+    }
+
+    nav.icons {
+        flex-direction: column;
+        align-items: center;
+        margin-left: 10%;
+    }
+
+    nav.links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image-container {
+        padding: 0.5em 2em;
+        flex-direction: column;
+        width: 100%;
+        align-items: center;
+    }
+
+    .icon-text {
+        display: block;
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .icon {
+        font-size: 24px;
+        margin-bottom: 5px;
+        /* מרווח מתחת לסמל */
+        /* ניתן להוסיף עוד כללי CSS לעיצוב נוסף */
+    }
+}
+
+footer {
+    background-color: #f2f2f2;
+    padding: 20px;
+    text-align: center;
+}
+
+.footer-icons {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.icon {
+    margin: 0 10px;
+    text-align: center;
+}
+
+.icon i {
+    font-size: 24px;
+    color: #333;
+}
+
+.caption {
+    font-size: 14px;
+    color: #666;
+}
