@@ -10,25 +10,28 @@ import Appointments from './pages/Appointments';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const BASE_URL = '//localhost:3001' // Define base url for sending requests to backend in app
   return (
     <div className="App">
       {isLoggedIn && <Header />}
       <Routes>
-        <Route path="/login"
-          element={isLoggedIn ? <Navigate to="/" replace /> : <Login setIsLoggedIn={setIsLoggedIn} />}>
-        </Route>
-        <Route path="/employees"
-          element={isLoggedIn ? <Employees /> : <Navigate to="/login" />}>
-        </Route>
-        <Route path="/treatments"
-          element={isLoggedIn ? <Treatments /> : <Navigate to="/login" />}>
-        </Route>
-        <Route path="/appointments"
-          element={isLoggedIn ? <Appointments /> : <Navigate to="/login" />}>
-        </Route>
-        <Route path='/'
-          element={isLoggedIn ? <Home /> : <Navigate to="/login" />}>
-        </Route>
+        <main className='main-content'>
+          <Route path="/login"
+            element={isLoggedIn ? <Navigate to="/" replace /> : <Login setIsLoggedIn={setIsLoggedIn} BASE_URL={BASE_URL} />}>
+          </Route>
+          <Route path="/employees"
+            element={isLoggedIn ? <Employees BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+          </Route>
+          <Route path="/treatments"
+            element={isLoggedIn ? <Treatments BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+          </Route>
+          <Route path="/appointments"
+            element={isLoggedIn ? <Appointments BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+          </Route>
+          <Route path='/'
+            element={isLoggedIn ? <Home BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+          </Route>
+        </main>
       </Routes>
       {isLoggedIn && <Footer />}
     </div>
