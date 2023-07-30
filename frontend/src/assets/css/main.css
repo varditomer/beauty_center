@@ -12,17 +12,5 @@
 @import './views/appointment.css';
 @import './views/login.css';
 
-.header-container{
-    margin-bottom: 30px;
-}
-
-.header-container img{
-    width: 20%;
-}
-
-.header-container nav{
-    display: flex;
-    align-items: center;
-    gap: 15px;
-    padding-right: 20px;
-}
+/* |--Components */
+@import './components/header.css';
