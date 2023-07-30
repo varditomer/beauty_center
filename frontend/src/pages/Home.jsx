@@ -2,12 +2,12 @@ import React from 'react'
 import employeeImg from '../assets/images/employee.png';
 import treatmentImg from '../assets/images/treatment.png';
 import appointmentImg from '../assets/images/appointment.png';
+import { Link } from 'react-router-dom';
 export default function Home() {
     return (
         <section className="home-page">
+            <h1>Welcome to our beauty center!</h1>
             <p>
-                Welcome to our beauty center!
-
                 We offer a wide range of beauty and skincare services, including skincare, makeup, hair styling and coloring,
 
                 nail care, hair removal, massage, body care, and more.
@@ -22,16 +22,18 @@ export default function Home() {
             </p>
             <div className="image-container">
                 <figure>
-                    <a href="/employees"><img src={employeeImg} alt="employee" /></a>
-                    <figcaption>Employees</figcaption>
-                </figure>
-                <figure>
-                    <a href="/treatments"><img src={treatmentImg} alt="treatment" /></a>
-                    <figcaption>Treatments</figcaption>
-                </figure>
-                <figure>
-                    <a href="/appointment"><img src={appointmentImg} alt="appointment" /></a>
-                    <figcaption> appointment</figcaption>
+                    <Link to='/employees'>
+                        <img src={employeeImg} alt="employee" />
+                        <span>Employees</span>
+                    </Link>
+                    <Link to='/treatments'>
+                        <img src={treatmentImg} alt="treatments" />
+                        <span>Treatment</span>
+                    </Link>
+                    <Link to='/appointments'>
+                        <img src={appointmentImg} alt="appointments" />
+                        <span>appointments</span>
+                    </Link>
                 </figure>
             </div>
         </section>
