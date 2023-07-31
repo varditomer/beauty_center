@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react'
+import Table from '../components/Table';
 
 export default function Appointments({ BASE_URL, loggedInUser }) {
     const [appointments, setAppointments] = useState(null)
@@ -38,14 +39,19 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
         <section className="appointment-page">
             <button className="add-appointment-btn">Add appointment</button>
             <div className="appointment-section">
-                <div>
-                    <div>Date</div>
-                    <div>Employee</div>
-                    <div>Treatment</div>
-                    <div>Start Time</div>
-                    <div>End Time</div>
-                    <div>&nbsp;</div>
-                </div>
+                {appointments &&
+                    <Table data={appointments} />
+                }
+                {appointments &&
+                    <Table titles={[
+                        'appointmentDateTime',
+                        'employeeName',
+                        'id',
+                        'treatmentDuration',
+                        'treatmentPrice',
+                        'treatmentType'
+                    ]} data={appointments} />
+                }
             </div>
             {/* {appointments && appointments.map(appointment => {
                 return (
