@@ -1,41 +1,34 @@
 const express = require('express');
 const session = require("express-session");
-const path = require('path');
-const isAuthenticated = require('./middlewares/isAuthenticated.js')
+const cors = require('cors');
 
 const app = express();
-const port = 3000; // You can change this to any port you prefer
+const port = 3001; // You can change this to any port you prefer
 
 // parse json
 app.use(express.json())
-
 app.use(session({ resave: false, secret: '123456', saveUninitialized: true }));
-// Middleware to serve static files
-app.use(express.static(path.join(__dirname, 'public')));
+
+// managing cross origin requests and accepting only frontend port request
+const corsOptions = {
+  origin: ['http://127.0.0.1:3000', 'http://localhost:3000'],
+  credentials: true
+}
+
+app.use(cors(corsOptions))
 
 // Routes
-const userRoute = require("./api/user/user");
-const employeeRoute = require("./api/employee/employee");
-const treatmentRoute = require("./api/treatment/treatment");
-const appointmentRoute = require("./api/appointment/appointment");
+const userRoute = require("./api/user/user.routes");
+// const employeeRoute = require("./api/employee/employee");
+// const treatmentRoute = require("./api/treatment/treatment");
+const appointmentRoute = require("./api/appointment/appointment.routes");
 
-app.use("/user", userRoute);
-app.use("/employee", employeeRoute)
-app.use("/treatment", treatmentRoute)
-app.use("/appointment", appointmentRoute)
-
-// Route for the home page
-app.get('/', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'login.html'));
-});
-
-
-// Route for the home page
-app.get('/*', (req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'main.html'));
-});
+app.use("/api/user", userRoute);
+// app.use("/api/employee", employeeRoute)
+// app.use("/api/treatment", treatmentRoute)
+app.use("/api/appointment", appointmentRoute)
 
 // Start the server
 app.listen(port, () => {
-  console.log(`Server is running on http://localhost:${port}`);
+  console.log(`Server is listening on http://localhost:${port}`);
 });

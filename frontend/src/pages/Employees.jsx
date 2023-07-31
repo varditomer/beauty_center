@@ -6,13 +6,13 @@ export default function Employees() {
         <section className="employees-page">
             <div className="image-section">
                 <div className="image-container">
-                    <img src={employeeImg} alt="Image 1" />
+                    <img src={employeeImg} alt="employee" />
                     <p className="caption">adel Jon... She works in manicure,
                         <span className="text-highlight">pedicure</span> ,<span className="text-highlight">massage</span>, and <span className="text-highlight">makeup</span>.
                     </p>
                 </div>
                 <div className="image-container">
-                    <img src={employeeImg} alt="Image 2" />
+                    <img src={employeeImg} alt="employee" />
                     <p>Teeny skyshe works in
                         <span className="text-highlight">
                             facial treatment </span>,
@@ -25,7 +25,7 @@ export default function Employees() {
                     </p>
                 </div>
                 <div className="image-container">
-                    <img src={employeeImg} alt="Image 3" />
+                    <img src={employeeImg} alt="employee" />
                     <p>Paragraph 3</p>
                 </div>
             </div>

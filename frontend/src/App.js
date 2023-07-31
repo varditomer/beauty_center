@@ -10,12 +10,12 @@ import Appointments from './pages/Appointments';
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
-  const BASE_URL = '//localhost:3001' // Define base url for sending requests to backend in app
+  const BASE_URL = '//localhost:3001/api' // Define base url for sending requests to backend in app
   return (
     <div className="App">
       {isLoggedIn && <Header />}
-      <Routes>
-        <main className='main-content'>
+      <main className='main-content'>
+        <Routes>
           <Route path="/login"
             element={isLoggedIn ? <Navigate to="/" replace /> : <Login setIsLoggedIn={setIsLoggedIn} BASE_URL={BASE_URL} />}>
           </Route>
@@ -31,8 +31,8 @@ function App() {
           <Route path='/'
             element={isLoggedIn ? <Home BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
           </Route>
-        </main>
-      </Routes>
+        </Routes>
+      </main>
       {isLoggedIn && <Footer />}
     </div>
   )
