@@ -3,7 +3,7 @@ const router = express.Router()
 
 const { getAppointments, addAppointment, removeAppointment} = require('./appointmentController')
 
-router.get('/', getAppointments)
+router.get('/:id', getAppointments)
 router.post('/addAppointment', addAppointment)
 router.delete('/removeAppointment', removeAppointment)
 

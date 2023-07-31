@@ -23,72 +23,6 @@ SET time_zone = "+00:00";
 
 -- --------------------------------------------------------
 
---
--- Table structure for table `appointments`
---
-
-DROP TABLE IF EXISTS `appointments`;
-CREATE TABLE IF NOT EXISTS `appointments` (
-  `appointmentId` int(11) NOT NULL AUTO_INCREMENT,
-  `date` datetime NOT NULL,
-  `employeeId` varchar(9) NOT NULL,
-  `customerId` varchar(9) NOT NULL,
-  `treatmentId` int(11) DEFAULT NULL,
-  `startTime` time NOT NULL,
-  `endTime` time NOT NULL,
-  PRIMARY KEY (`appointmentId`)
-) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `appointment`
---
-
-INSERT INTO `appointments` (`appointmentId`, `date`, `employeeId`, `customerId`, `treatmentId`, `startTime`, `endTime`) VALUES
-(17, '2023-06-17 00:00:00', '12177894', '11', 4, '21:21:00', '21:21:00');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `customers`
---
-
-DROP TABLE IF EXISTS `customers`;
-CREATE TABLE IF NOT EXISTS `customers` (
-  `id` varchar(9) NOT NULL,
-  `customerType` varchar(50) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `customers`
---
-
-INSERT INTO `customers` (`id`, `customerType`) VALUES
-('12177894', 'new');
-
--- --------------------------------------------------------
-
---
--- Table structure for table `employees`
---
-
-DROP TABLE IF EXISTS `employees`;
-CREATE TABLE IF NOT EXISTS `employees` (
-  `id` varchar(9) NOT NULL,
-  `treatmentId` int(20) NOT NULL,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8;
-
---
--- Dumping data for table `employees`
---
-
-INSERT INTO `employees` (`id`, `treatmentId`) VALUES
-('12177894', 4),
-('212003156', 5),
-('322965765', 3);
-
--- --------------------------------------------------------
 
 --
 -- Table structure for table `treatments`
@@ -96,18 +30,18 @@ INSERT INTO `employees` (`id`, `treatmentId`) VALUES
 
 DROP TABLE IF EXISTS `treatments`;
 CREATE TABLE IF NOT EXISTS `treatments` (
-  `treatmentId` varchar(9) NOT NULL,
-  `time` int(3) NOT NULL,
+  `id` varchar(9) NOT NULL,
+  `duration` int(3) NOT NULL,
   `price` double NOT NULL,
   `treatmentType` varchar(20) NOT NULL,
-  PRIMARY KEY (`treatmentId`)
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
 -- Dumping data for table `treatment`
 --
 
-INSERT INTO `treatments` (`treatmentId`, `time`, `price`, `treatmentType`) VALUES
+INSERT INTO `treatments` (`id`, `duration`, `price`, `treatmentType`) VALUES
 ('1', 90, 200, 'makeup'),
 ('2', 120, 500, 'laser'),
 ('3', 30, 60, 'hair cut'),
@@ -138,17 +72,74 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Dumping data for table `users`
 --
 INSERT INTO `users` (`id`, `name`, `mail`, `phoneNumber`, `address`, `password`, `isEmployee`) VALUES
-('11', 'ss', 'yossi1316@gmail.com', '0542222222', 'Petach Tikva', '12345678', 0),
-('111', 'dd', 'bbb@mailinator.com', 'tt', '0523333333', '12345678', 0),
-('12177894', 'rame', 'rame123@gmail.com', '0507777777', 'hefa', 'ra124524', 1),
-('123456789', 'ss', 'bengold789@gmail.com', '0501111111', 'petach tikva', '12345678', 0),
-('212003156', 'noor', 'nourgbareen2001@gmail.com', '0502222222', 'om alfahem', 'Noor1234', 1),
-('322965765', 'eman', 'ghanome427@gmail.com', '0548167256', 'nazreth', '234567eman', 1),
-('345556', 'ss', 'yossi1316@gmail.com', '0531234567', 'Petach Tikva', '12345678', 0),
-('65343', 'a', 'bengold789@gmail.com', '0521234567', 'petach tikva', '87654321', 0),
-('653435', 'a', 'bbb@gmail.com', '0501234567', '4', '87654321', 0);
+('1', 'ss', 'yossi1316@gmail.com', '0542222222', 'Petach Tikva', '12345678', 0),
+('2', 'dd', 'bbb@mailinator.com', '0523333333', 'Tel Aviv', '12345678', 0),
+('3', 'rame', 'rame123@gmail.com', '0507777777', 'hefa', 'ra124524', 1),
+('4', 'noor', 'nourgbareen2001@gmail.com', '0502222222', 'om alfahem', 'Noor1234', 1),
+('5', 'eman', 'ghanome427@gmail.com', '0548167256', 'Nazreth', '234567eman', 1),
+('6', 'ss', 'bengold789@gmail.com', '0501111111', 'Petach Tikva', '12345678', 0),
+('7', 'ss', 'yossi1316@gmail.com', '0531234567', 'Petach Tikva', '12345678', 0),
+('8', 'a', 'bengold789@gmail.com', '0521234567', 'Petach Tikva', '87654321', 0),
+('9', 'a', 'bbb@gmail.com', '0501234567', 'Nazreth', '87654321', 0);
 COMMIT;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `employees`
+--
+
+DROP TABLE IF EXISTS `employees`;
+CREATE TABLE IF NOT EXISTS `employees` (
+  `id` varchar(9) NOT NULL,
+  `treatmentId` int(20) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`id`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `employees`
+--
+
+INSERT INTO `employees` (`id`, `treatmentId`) VALUES
+('3', 4),
+('4', 5),
+('5', 3);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `appointments`
+--
+
+DROP TABLE IF EXISTS `appointments`;
+CREATE TABLE IF NOT EXISTS `appointments` (
+  `appointmentId` int(11) NOT NULL AUTO_INCREMENT,
+  `appointmentDateTime` datetime NOT NULL,
+  `employeeId` varchar(9) NOT NULL,
+  `customerId` varchar(9) NOT NULL,
+  `treatmentId` varchar(9) DEFAULT NULL,
+  PRIMARY KEY (`appointmentId`),
+  FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`customerId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+
+
+--
+-- Dumping data for table `appointment`
+--
+
+INSERT INTO `appointments` (`appointmentId`, `appointmentDateTime`, `employeeId`, `customerId`, `treatmentId`) VALUES
+(1, '2023-08-17 10:00:00', '3', '1', 1),
+(2, '2023-08-17 11:00:00', '3', '2', 2),
+(3, '2023-08-17 12:00:00', '4', '6', 3),
+(4, '2023-08-18 11:00:00', '4', '7', 4),
+(5, '2023-08-18 12:00:00', '3', '1', 4),
+(6, '2023-08-18 13:00:00', '5', '8', 4);
+
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+

@@ -1,5 +1,5 @@
 const console = require("console");
-const doQuery = require('../../services/database.service')
+const { doQuery } = require('../../services/database.service')
 
 // Appointments:
 
@@ -13,16 +13,17 @@ module.exports = {
 function getAppointments(req, res) {
   try {
     const userId = req.params.id
+    console.log(`userId:`, userId)
     // SQL query to get appointments for a specific customer (customerId)
     const sql = `
-      SELECT appointment.appointmentId, appointment.date, user.name as employee, startTime, endTime, treatment.treatmentType 
+      SELECT appointments.appointmentId, appointments.date, users.name as employee, startTime, endTime, treatments.treatmentType 
       FROM appointments, users, treatments 
-      WHERE appointment.employeeId = user.id and appointment.treatmentId = treatment.treatmentId and appointment.customerId = ?;
+      WHERE appointments.employeeId = users.id and appointments.treatmentId = treatments.treatmentId and appointments.customerId = ?;
     `
-    // todo: replace hard-coded customerId with id from req or session
     const params = [userId];
     const cb = (error, results) => {
       if (error) {
+        console.log(`error:`, error)
         // If there's an error during the database query, return a server error status
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(error.message);
