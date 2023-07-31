@@ -48,6 +48,7 @@ html,
 body {
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   color: var(--text);
+  height: 100%;
 }
 
 /* Set core body defaults */
@@ -56,22 +57,34 @@ body {
   overflow-y: overlay;
   text-rendering: optimizeSpeed;
   line-height: 1.5;
-  height: 100%;
+  letter-spacing: 0.025em;
+  margin: 0;
+}
+
+.app-container {
   display: flex;
   flex-direction: column;
-  letter-spacing: -0.035em;
+  height: 100%;
 }
 
-.main-app {
+.main-container {
   background-color: var(--background);
   flex: 1;
-  padding: 20px 40px;
+  padding: 10px;
 }
 
+@media screen and (min-width:650px) {
+  .main-container {
+    padding: 20px 40px;
+
+  }
+}
 
 a {
-  color: var(--accent); /* blue colors for links too */
-  text-decoration: inherit; /* no underline */
+  color: var(--accent);
+  /* blue colors for links too */
+  text-decoration: inherit;
+  /* no underline */
 }
 
 /* Make images easier to work with */
@@ -79,6 +92,9 @@ img,
 picture,
 svg {
   max-width: 100%;
-  display: block;
   object-fit: fill;
+}
+
+button {
+  cursor: pointer;
 }

@@ -9,29 +9,33 @@ import Treatments from './pages/Treatments';
 import Appointments from './pages/Appointments';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
-  return (
-    <div className="App">
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  return (<>
+    <section className="app-container">
       {isLoggedIn && <Header />}
-      <Routes>
-        <Route path="/login"
-          element={isLoggedIn ? <Navigate to="/" replace /> : <Login setIsLoggedIn={setIsLoggedIn} />}>
-        </Route>
-        <Route path="/employees"
-          element={isLoggedIn ? <Employees /> : <Navigate to="/login" />}>
-        </Route>
-        <Route path="/treatments"
-          element={isLoggedIn ? <Treatments /> : <Navigate to="/login" />}>
-        </Route>
-        <Route path="/appointments"
-          element={isLoggedIn ? <Appointments /> : <Navigate to="/login" />}>
-        </Route>
-        <Route path='/'
-          element={isLoggedIn ? <Home /> : <Navigate to="/login" />}>
-        </Route>
-      </Routes>
+      <main className='main-container'>
+        <Routes>
+          <Route path="/login"
+            element={isLoggedIn ? <Navigate to="/" replace /> : <Login setIsLoggedIn={setIsLoggedIn} />}>
+          </Route>
+          <Route path="/employees"
+            element={isLoggedIn ? <Employees /> : <Navigate to="/login" />}>
+          </Route>
+          <Route path="/treatments"
+            element={isLoggedIn ? <Treatments /> : <Navigate to="/login" />}>
+          </Route>
+          <Route path="/appointments"
+            element={isLoggedIn ? <Appointments /> : <Navigate to="/login" />}>
+          </Route>
+          <Route path='/'
+            element={isLoggedIn ? <Home /> : <Navigate to="/login" />}>
+          </Route>
+        </Routes>
+      </main>
       {isLoggedIn && <Footer />}
-    </div>
+    </section>
+  </>
+
   )
 }
 
