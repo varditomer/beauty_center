@@ -16,9 +16,21 @@ function getAppointments(req, res) {
     console.log(`userId:`, userId)
     // SQL query to get appointments for a specific customer (customerId)
     const sql = `
-      SELECT appointments.appointmentId, appointments.date, users.name as employee, startTime, endTime, treatments.treatmentType 
-      FROM appointments, users, treatments 
-      WHERE appointments.employeeId = users.id and appointments.treatmentId = treatments.treatmentId and appointments.customerId = ?;
+      SELECT 
+      appointments.id,
+      appointments.appointmentDateTime,
+      treatments.treatmentType,
+      treatments.duration AS treatmentDuration,
+      treatments.price AS treatmentPrice,
+      users.name AS employeeName
+      FROM 
+      appointments
+      INNER JOIN 
+      treatments ON appointments.treatmentId = treatments.id
+      INNER JOIN 
+      users ON appointments.employeeId = users.id
+      WHERE 
+      appointments.customerId = ?;
     `
     const params = [userId];
     const cb = (error, results) => {

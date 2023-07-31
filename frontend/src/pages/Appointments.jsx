@@ -27,7 +27,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                 },
             });
             const appointments = await response.json();
-            console.log(`appointments:`, appointments)
             return appointments;
         } catch (error) {
             console.error(error);

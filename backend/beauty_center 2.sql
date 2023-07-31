@@ -114,12 +114,12 @@ INSERT INTO `employees` (`id`, `treatmentId`) VALUES
 
 DROP TABLE IF EXISTS `appointments`;
 CREATE TABLE IF NOT EXISTS `appointments` (
-  `appointmentId` int(11) NOT NULL AUTO_INCREMENT,
+  `id` int(11) NOT NULL AUTO_INCREMENT,
   `appointmentDateTime` datetime NOT NULL,
   `employeeId` varchar(9) NOT NULL,
   `customerId` varchar(9) NOT NULL,
   `treatmentId` varchar(9) DEFAULT NULL,
-  PRIMARY KEY (`appointmentId`),
+  PRIMARY KEY (`id`),
   FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`customerId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
@@ -130,7 +130,7 @@ CREATE TABLE IF NOT EXISTS `appointments` (
 -- Dumping data for table `appointment`
 --
 
-INSERT INTO `appointments` (`appointmentId`, `appointmentDateTime`, `employeeId`, `customerId`, `treatmentId`) VALUES
+INSERT INTO `appointments` (`id`, `appointmentDateTime`, `employeeId`, `customerId`, `treatmentId`) VALUES
 (1, '2023-08-17 10:00:00', '3', '1', 1),
 (2, '2023-08-17 11:00:00', '3', '2', 2),
 (3, '2023-08-17 12:00:00', '4', '6', 3),
