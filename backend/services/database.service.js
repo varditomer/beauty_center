@@ -1,6 +1,5 @@
 const mysql = require("mysql");
 
-
 // Create a reusable database connection
 const sqlConnection = mysql.createConnection({
   host: "localhost",
@@ -16,11 +15,25 @@ sqlConnection.connect((err) => {
 });
 
 // Function to execute a query
-async function doQuery(sql, params = [], cb) {
-  const result = await sqlConnection.query(sql, params, cb);
-  return result[0];
+function doQuery(sql, params = [], cb) {
+  sqlConnection.query(sql, params, cb);
+}
+
+// Function to execute a query and return a Promise with results
+function doQueryAndReturnResults(sql, params = []) {
+  return new Promise((resolve, reject) => {
+    sqlConnection.query(sql, params, (error, results) => {
+      if (error) {
+        reject(error);
+      } else {
+        resolve(results);
+      }
+    });
+  });
 }
 
 // Export the doQuery function
-module.exports = doQuery;
-
+module.exports = {
+  doQuery,
+  doQueryAndReturnResults
+}

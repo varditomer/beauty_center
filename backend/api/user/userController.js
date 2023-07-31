@@ -1,5 +1,6 @@
 const console = require("console");
-const doQuery = require('../../services/database.service')
+const makeId = require('../../services/util.service');
+const { doQuery, doQueryAndReturnResults } = require("../../services/database.service");
 
 module.exports = {
   login,
@@ -8,13 +9,16 @@ module.exports = {
 
 // Function to handle user login
 function login(req, res) {
-  const { mail, password } = req.body;
+  const {
+    mail,
+    password
+  } = req.body;
 
   // Check if both username (email) and password are provided in the request
   if (mail && password) {
     // SQL query to fetch user data based on email and password
     const sql = `
-      SELECT id, isEmployee 
+      SELECT *
       FROM users 
       WHERE mail = ? AND password = ?
     `;
@@ -24,19 +28,13 @@ function login(req, res) {
     const cb = (error, results) => {
       if (error) throw error;
 
-      // If the query returns results and the user is not an employee
-      if (results.length > 0 && results[0].isEmployee === 0) {
-        req.session.userId = results[0].Id;
-        console.log("Welcome user: ", results[0].Id);
+      // If the query returns results
+      if (results.length > 0) {
+        console.log(`Welcome ${results[0].isEmployee === 0 ? 'user' : 'employee'} :`, results[0].id);
         res.writeHead(200, { "Content-Type": "application/json" });
-        res.end("valid");
-      }
-      // If the query returns results and the user is an employee
-      else if (results.length > 0 && results[0].isEmployee === 1) {
-        req.session.userId = results[0].Id;
-        console.log("Welcome employee: ", results[0].Id);
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end("valid_employee");
+        const user = results[0]
+        delete user.password
+        res.end(JSON.stringify(user));
       }
       // If the query returns no results, the credentials are invalid
       else {
@@ -56,40 +54,46 @@ function login(req, res) {
 }
 
 // Function to handle user signup
-function signup(req, res) {
+async function signup(req, res) {
   try {
     const {
-      id,
-      name,
       mail,
-      city,
+      password,
+      name,
+      address,
       phoneNumber,
-      password
     } = req.body;
 
+    const isUserExist = await _isUserExist(mail)
+
+    if (isUserExist) {
+      // If the user already exists, return a conflict status (409) with the error message
+      return res.status(409).json({ error: 'Email already exists' });
+    }
+
+    const id = makeId()
     // Check if all required signup fields are provided in the request
-    if (id && name && mail && city && phoneNumber && password) {
+    if (!!id && !!name && !!mail && !!address && !!phoneNumber && !!password) {
       // SQL query to insert user data into the 'user' table
       const sql = `
-        INSERT INTO users (id, name, mail , phoneNumber, address, password) 
-        values (?,?,?,?,?,?)
+        INSERT INTO users (id, name, mail , phoneNumber, address, password, isEmployee) 
+        values (?,?,?,?,?,?,?)
       `;
-      const params = [id, name, mail, phoneNumber, city, password];
+      const isEmployee = '0' // assign new user to be customer
+      const params = [id, name, mail, phoneNumber, address, password, isEmployee];
 
       // Callback function to handle the database query results
-      const cb = (error, results) => {
+      const cb = (error) => {
         if (error) {
           // If there's an error during database insertion, return a server error status
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(error.message);
         } else {
-          req.session.userId = id;
-          console.log("Welcome");
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.end("valid");
+          const user = { id, name, mail, phoneNumber, address, isEmployee }
+          res.end(JSON.stringify(user));
         }
       }
-
       // Execute the SQL query using the 'doQuery' function
       doQuery(sql, params, cb);
     } else {
@@ -100,5 +104,28 @@ function signup(req, res) {
     // If an exception occurs during signup processing, return a server error status
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(exp.message);
+  }
+}
+
+
+// Function to check if the user exists by email
+async function _isUserExist(mail) {
+  const sql = 'SELECT * FROM users WHERE mail = ?';
+  const params = [mail];
+
+  try {
+    const results = await doQueryAndReturnResults(sql, params);
+
+    // Check if the user exists
+    if (results.length > 0) {
+      console.log(`User exists:`, results[0].mail);
+      return true;
+    } else {
+      console.log('User does not exist.');
+      return false;
+    }
+  } catch (error) {
+    console.error('Error while querying the database:', error);
+    throw error;
   }
 }

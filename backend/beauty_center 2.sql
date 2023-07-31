@@ -137,17 +137,16 @@ CREATE TABLE IF NOT EXISTS `users` (
 --
 -- Dumping data for table `users`
 --
-
 INSERT INTO `users` (`id`, `name`, `mail`, `phoneNumber`, `address`, `password`, `isEmployee`) VALUES
-('11', 'ss', 'yossi1316@gmail.com', '922222222', 'Petach Tikva', '12345678', 0),
-('111', 'dd', 'bbb@mailinator.com', 'tt', '333', '12345678', 0),
-('12177894', 'rame', 'rame123@gmail.com', '0507782435', 'hefa', 'ra124524', 1),
-('123456789', 'ss', 'bengold789@gmail.com', '922222222', 'petach tikva', '12345678', 0),
-('212003156', 'noor', 'nourgbareen2001@gmail.com', '0507782341', 'om alfahem', 'Noor1234', 1),
+('11', 'ss', 'yossi1316@gmail.com', '0542222222', 'Petach Tikva', '12345678', 0),
+('111', 'dd', 'bbb@mailinator.com', 'tt', '0523333333', '12345678', 0),
+('12177894', 'rame', 'rame123@gmail.com', '0507777777', 'hefa', 'ra124524', 1),
+('123456789', 'ss', 'bengold789@gmail.com', '0501111111', 'petach tikva', '12345678', 0),
+('212003156', 'noor', 'nourgbareen2001@gmail.com', '0502222222', 'om alfahem', 'Noor1234', 1),
 ('322965765', 'eman', 'ghanome427@gmail.com', '0548167256', 'nazreth', '234567eman', 1),
-('345556', 'ss', 'yossi1316@gmail.com', '922222222', 'Petach Tikva', '12345678', 0),
-('65343', 'a', 'bengold789@gmail.com', '922222222', 'petach tikva', '87654321', 0),
-('653435', 'a', 'bbb@gmail.com', '987654321', '4', '87654321', 0);
+('345556', 'ss', 'yossi1316@gmail.com', '0531234567', 'Petach Tikva', '12345678', 0),
+('65343', 'a', 'bengold789@gmail.com', '0521234567', 'petach tikva', '87654321', 0),
+('653435', 'a', 'bbb@gmail.com', '0501234567', '4', '87654321', 0);
 COMMIT;
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

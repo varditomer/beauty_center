@@ -1,0 +1,126 @@
+.login-signup-page {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+.login-signup-page .form-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.login-signup-page h1 {
+    font-size: 2rem;
+}
+
+@media screen and (min-width:650px) {
+    .login-signup-page {
+        max-width: 1000px;
+    }
+
+    .login-signup-page form {
+        flex: 1;
+    }
+
+    .login-signup-page .logo-container {
+        flex: 2;
+        display: flex;
+        align-items: center;
+    }
+
+    .login-signup-page .form-container {
+        flex-direction: row;
+    }
+
+}
+
+.login-signup-page img {
+    width: 100%;
+}
+
+.login-signup-page form {
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+}
+
+
+.login-signup-page input,
+.login-signup-page select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid rgb(214, 146, 197);
+}
+
+.login-signup-page .login-signup {
+    background-color: var(--btn-color);
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+}
+
+.login-signup-page .login-signup,
+.login-signup-page .reset-password {
+    border: none;
+}
+
+.login-signup-page .reset-password {
+    background-color: unset;
+    color: rgba(123, 121, 121, 0.75);
+    font-size: 14px;
+    cursor: default;
+    transition: 0.3s ease-in-out;
+}
+
+.login-signup-page .reset-password:hover {
+    color: black;
+}
+
+.login-signup-page .login-signup:hover {
+    background-color: var(--btn-hover);
+}
+
+.signup {
+    font-size: 16px;
+}
+
+.text-btn {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.text-btn:hover {
+    color: var(--accent);
+}
+
+.login-signup-page .login-signup,
+.login-signup-page .singup {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+}
+
+
+.login-signup-page .login-signup button:hover,
+.login-signup-page .singIn button:hover {
+    background-color: #cf3dbe;
+
+}
+
+@media (min-width: 768px) {
+    .login-signup-page form {
+        width: 50%;
+    }
+}

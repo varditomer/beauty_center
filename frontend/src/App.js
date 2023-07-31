@@ -9,7 +9,7 @@ import Treatments from './pages/Treatments';
 import Appointments from './pages/Appointments';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(true);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
   const BASE_URL = '//localhost:3001/api' // Define base url for sending requests to backend in app
   return (
     <section className="app-container">
