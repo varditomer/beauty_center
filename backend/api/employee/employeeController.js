@@ -1,11 +1,12 @@
-const express = require("express");
-const router = express.Router();
-const doQuery = require('../../services/database.service');
+const { doQuery } = require('../../services/database.service')
 
-// Handle POST request to '/register'
-router.get("/", (req, res) => {
+module.exports = {
+  getEmployees,
+}
+
+function getEmployees(req, res) {
   try {
-    const sql = "select user.name, treatment.treatmentType from user, employee, treatment where user.Id = employee.Id and employee.treatmentID = treatment.treatmentID";
+    const sql = `SELECT * FROM employees`;
     const cb = (error, results) => {
       if (error) {
         res.writeHead(500, { "Content-Type": "application/json" });
@@ -16,14 +17,15 @@ router.get("/", (req, res) => {
         res.end(JSON.stringify(results));
       }
     }
-    doQuery(sql, null, cb)
+    doQuery(sql, [], cb)
   }
   catch (exp) {
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(exp.message);
   }
-});
 
-module.exports = router;
+}
+
+
 
 

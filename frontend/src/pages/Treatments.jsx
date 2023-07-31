@@ -19,7 +19,6 @@ export default function Treatments({ BASE_URL }) {
 
     const getTreatments = async () => {
         try {
-            console.log(`${BASE_URL}/treatment:`, `${BASE_URL}/treatment`)
             const response = await fetch(`${BASE_URL}/treatment`, {
                 method: 'GET',
                 headers: {

@@ -1,9 +1,42 @@
-import React from 'react'
 import employeeImg from '../assets/images/employee1.png';
+import { useEffect, useState } from 'react';
 
-export default function Employees() {
+export default function Employees({BASE_URL}) {
 
-    
+    const [employees, setEmployees] = useState(null)
+
+    useEffect(() => {
+        const fetchTreatments = async () => {
+            try {
+                const employees = await getEmployees();
+                console.log(`employees:`, employees)
+                setEmployees(employees);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+
+        fetchTreatments();
+    }, []);
+
+    const getEmployees = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/employee`, {
+                method: 'GET',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                },
+            });
+            const employees = await response.json();
+            return employees;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+
     return (
         <section className="employees-page">
             <div className="image-section">
