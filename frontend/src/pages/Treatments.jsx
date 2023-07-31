@@ -1,6 +1,5 @@
-import React from 'react'
-
 export default function Treatments() {
+    
     return (
         <section className="treatments-page">
             <div className="treat-section">

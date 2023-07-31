@@ -1,39 +1,46 @@
 import { Route, Navigate, Routes } from 'react-router-dom';
-import Login from './pages/Login';
-import { useState } from 'react';
+import LoginSignup from './pages/LoginSignup';
+import { useEffect, useState } from 'react';
 import Home from './pages/Home';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import Employees from './pages/Employees';
 import Treatments from './pages/Treatments';
 import Appointments from './pages/Appointments';
+import { storageService } from './services/storage.service';
 
 function App() {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [loggedInUser, setLoggedInUser] = useState(null)
   const BASE_URL = '//localhost:3001/api' // Define base url for sending requests to backend in app
+
+  useEffect(() => {
+    const user = storageService.load('loggedInUser')
+    if (user) setLoggedInUser(user)
+  }, [])
+  
   return (
     <section className="app-container">
-      {isLoggedIn && <Header />}
+      {loggedInUser && <Header />}
       <main className='main-container'>
         <Routes>
           <Route path="/login"
-            element={isLoggedIn ? <Navigate to="/" replace /> : <Login setIsLoggedIn={setIsLoggedIn} BASE_URL={BASE_URL} />}>
+            element={loggedInUser ? <Navigate to="/" replace /> : <LoginSignup setLoggedInUser={setLoggedInUser} BASE_URL={BASE_URL} />}>
           </Route>
           <Route path="/employees"
-            element={isLoggedIn ? <Employees BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+            element={loggedInUser ? <Employees BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
           </Route>
           <Route path="/treatments"
-            element={isLoggedIn ? <Treatments BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+            element={loggedInUser ? <Treatments BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
           </Route>
           <Route path="/appointments"
-            element={isLoggedIn ? <Appointments BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+            element={loggedInUser ? <Appointments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
           <Route path='/'
-            element={isLoggedIn ? <Home BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+            element={loggedInUser ? <Home BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
           </Route>
         </Routes>
       </main>
-      {isLoggedIn && <Footer />}
+      {loggedInUser && <Footer />}
     </section>
 
   )

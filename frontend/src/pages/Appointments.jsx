@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 
-export default function Appointments({ BASE_URL }) {
+export default function Appointments({ BASE_URL, loggedInUser }) {
     const [appointments, setAppointments] = useState(null)
 
     useEffect(() => {
@@ -19,15 +19,16 @@ export default function Appointments({ BASE_URL }) {
 
     const getUserAppointments = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/appointment`, {
+            const response = await fetch(`${BASE_URL}/appointment/${loggedInUser.id}`, {
                 method: 'GET',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
                 },
             });
-            const data = await response.json();
-            return data;
+            const appointments = await response.json();
+            console.log(`appointments:`, appointments)
+            return appointments;
         } catch (error) {
             console.error(error);
             return [];
@@ -47,13 +48,13 @@ export default function Appointments({ BASE_URL }) {
                     <div>&nbsp;</div>
                 </div>
             </div>
-            {appointments && appointments.map(appointment => {
+            {/* {appointments && appointments.map(appointment => {
                 return (
                     <article key={appointment.appointmentID} className="appointment">
                           <pre>{JSON.stringify(appointment, null, 2)}</pre>
                     </article>
                 )
-            })}
+            })} */}
         </section>
     )
 }

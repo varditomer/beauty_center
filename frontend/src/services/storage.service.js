@@ -1,6 +1,6 @@
 function load(key) {
     var val = localStorage.getItem(key)
-    return val ? JSON.parse(val) : []
+    return val ? JSON.parse(val) : null
 }
 
 function save(key, val) {
