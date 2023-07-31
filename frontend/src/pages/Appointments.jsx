@@ -39,7 +39,7 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
         <section className="appointment-page">
             <button className="add-appointment-btn">Add appointment</button>
             <div className="appointment-section">
-                {appointments &&
+                {/* {appointments &&
                     <Table data={appointments} />
                 }
                 {appointments &&
@@ -51,7 +51,7 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                         'treatmentPrice',
                         'treatmentType'
                     ]} data={appointments} />
-                }
+                } */}
             </div>
             {/* {appointments && appointments.map(appointment => {
                 return (

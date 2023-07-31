@@ -1,4 +1,4 @@
-export function table({ titles, data }) {
+export default function Table({ titles, data }) {
   return (
     <div className="custom-table">
       {/* Table Header */}
@@ -24,4 +24,3 @@ export function table({ titles, data }) {
   );
 };
 
-export default CustomTable;
