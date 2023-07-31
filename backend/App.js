@@ -20,12 +20,12 @@ app.use(cors(corsOptions))
 // Routes
 const userRoute = require("./api/user/user.routes");
 // const employeeRoute = require("./api/employee/employee");
-// const treatmentRoute = require("./api/treatment/treatment");
+const treatmentRoute = require("./api/treatment/treatment.routes");
 const appointmentRoute = require("./api/appointment/appointment.routes");
 
 app.use("/api/user", userRoute);
 // app.use("/api/employee", employeeRoute)
-// app.use("/api/treatment", treatmentRoute)
+app.use("/api/treatment", treatmentRoute)
 app.use("/api/appointment", appointmentRoute)
 
 // Start the server

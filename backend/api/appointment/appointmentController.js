@@ -1,8 +1,6 @@
 const console = require("console");
 const { doQuery } = require('../../services/database.service')
 
-// Appointments:
-
 module.exports = {
   getAppointments,
   addAppointment,
@@ -13,7 +11,6 @@ module.exports = {
 function getAppointments(req, res) {
   try {
     const userId = req.params.id
-    console.log(`userId:`, userId)
     // SQL query to get appointments for a specific customer (customerId)
     const sql = `
       SELECT 

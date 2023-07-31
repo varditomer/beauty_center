@@ -1,10 +1,8 @@
 const express = require('express')
 const router = express.Router()
 
-const { getAppointments, addAppointment, removeAppointment} = require('./appointmentController')
+const { getTreatments } = require('./treatmentController.js')
 
-router.get('/', getAppointments)
-router.post('/addAppointment', addAppointment)
-router.delete('/removeAppointment', removeAppointment)
+router.get('/', getTreatments)
 
 module.exports = router
