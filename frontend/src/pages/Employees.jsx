@@ -2,6 +2,8 @@ import React from 'react'
 import employeeImg from '../assets/images/employee1.png';
 
 export default function Employees() {
+
+    
     return (
         <section className="employees-page">
             <div className="image-section">

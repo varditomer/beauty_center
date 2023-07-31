@@ -7,9 +7,7 @@ export default function Treatments({ BASE_URL }) {
         const fetchTreatments = async () => {
             try {
                 const treatments = await getTreatments();
-                const treatmentsArr = objectsToArrayOfArrays(treatments)
-                console.log(`treatmentsArr:`, treatmentsArr)
-
+                console.log(`treatments:`, treatments)
                 setTreatments(treatments);
             } catch (error) {
                 console.error(error);
@@ -18,10 +16,6 @@ export default function Treatments({ BASE_URL }) {
 
         fetchTreatments();
     }, []);
-
-    function objectsToArrayOfArrays(objectsArray) {
-        return objectsArray.map((obj) => Object.values(obj));
-    }
 
     const getTreatments = async () => {
         try {
