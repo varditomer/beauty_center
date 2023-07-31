@@ -12,9 +12,9 @@ function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(true);
   const BASE_URL = '//localhost:3001/api' // Define base url for sending requests to backend in app
   return (
-    <div className="App">
+    <section className="app-container">
       {isLoggedIn && <Header />}
-      <main className='main-content'>
+      <main className='main-container'>
         <Routes>
           <Route path="/login"
             element={isLoggedIn ? <Navigate to="/" replace /> : <Login setIsLoggedIn={setIsLoggedIn} BASE_URL={BASE_URL} />}>
@@ -34,7 +34,8 @@ function App() {
         </Routes>
       </main>
       {isLoggedIn && <Footer />}
-    </div>
+    </section>
+
   )
 }
 
