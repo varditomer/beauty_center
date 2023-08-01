@@ -3,7 +3,7 @@ import logoImg from '../assets/images/logo.png'
 export default function Header() {
     return (
         <header className="header-container wrapper">
-            <img id="logo" src={logoImg} />
+            <Link to='/'><img id="logo" src={logoImg} /></Link>
             <nav>
                 <Link to='/employees'>Employees</Link>
                 <Link to='/treatments'>Treatments</Link>

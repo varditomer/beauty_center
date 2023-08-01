@@ -1,5 +1,6 @@
 .header-container{
     margin-bottom: 30px;
+    box-shadow: rgba(0, 0, 0, 0.1) 0px 0px 5px 0px, rgba(0, 0, 0, 0.1) 0px 0px 1px 0px;
 }
 
 .header-container img{
@@ -11,4 +12,8 @@
     align-items: center;
     gap: 15px;
     padding-right: 20px;
+}
+
+.header-container nav a:hover {
+    color: rgb(108, 61, 91)
 }

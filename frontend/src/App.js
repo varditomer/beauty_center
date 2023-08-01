@@ -8,6 +8,7 @@ import Employees from './pages/Employees';
 import Treatments from './pages/Treatments';
 import Appointments from './pages/Appointments';
 import { storageService } from './services/storage.service';
+import AddAppointment from './pages/AddAppointment';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null)
@@ -34,6 +35,9 @@ function App() {
           </Route>
           <Route path="/appointments"
             element={loggedInUser ? <Appointments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
+          </Route>
+          <Route path="/add"
+            element={loggedInUser ? <AddAppointment BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
           </Route>
           <Route path='/'
             element={loggedInUser ? <Home BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>

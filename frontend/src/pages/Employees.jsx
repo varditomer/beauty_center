@@ -1,7 +1,7 @@
-import employeeImg from '../assets/images/employee1.png';
+import employeeImg from '../assets/images/woman.png';
 import { useEffect, useState } from 'react';
 
-export default function Employees({BASE_URL}) {
+export default function Employees({ BASE_URL }) {
 
     const [employees, setEmployees] = useState(null)
 
@@ -39,31 +39,22 @@ export default function Employees({BASE_URL}) {
 
     return (
         <section className="employees-page">
-            <div className="image-section">
-                <div className="image-container">
-                    <img src={employeeImg} alt="employee" />
-                    <p className="caption">adel Jon... She works in manicure,
-                        <span className="text-highlight">pedicure</span> ,<span className="text-highlight">massage</span>, and <span className="text-highlight">makeup</span>.
-                    </p>
-                </div>
-                <div className="image-container">
-                    <img src={employeeImg} alt="employee" />
-                    <p>Teeny skyshe works in
-                        <span className="text-highlight">
-                            facial treatment </span>,
-                        <span className="text-highlight">makeup</span>
-                        ,and in
-                        <span className="text-highlight">eyebrows
-                        </span>
-                        ,<span className="text-highlight">laser treatment
-                        </span>
-                    </p>
-                </div>
-                <div className="image-container">
-                    <img src={employeeImg} alt="employee" />
-                    <p>Paragraph 3</p>
-                </div>
-            </div>
+            {employees &&
+                employees.map(employee => {
+                    return <article key={employee.id} className='employee-card'>
+                        <div className="img-container">
+                            <img src={employeeImg} alt="employee" className="img" />
+                        </div>
+                        <div className="details">
+                            <div className="name detail"><span className="title">Name:</span> {employee.name.toUpperCase()}</div>
+                            {/* <span className="email detail">Email: {employee.mail}</span> */}
+                            <div className="address detail"><span className="title">Address:</span> {employee.address}</div>
+                            <div className="treatment detail"><span className="title">Treatment:</span> {employee.treatmentType}</div>
+                        </div>
+                    </article>
+                })
+            }
+
         </section>
     )
 }
