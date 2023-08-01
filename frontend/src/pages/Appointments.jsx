@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import Table from '../components/Table';
+import { Link } from 'react-router-dom';
 
 export default function Appointments({ BASE_URL, loggedInUser }) {
     const [appointments, setAppointments] = useState(null)
@@ -48,7 +49,9 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
     return (
         <section className="appointment-page">
-            <button className="add-appointment-btn">Add appointment</button>
+            <Link to='/addAppointment'>
+                <button className="add-appointment-btn">Add appointment</button>
+            </Link>
             <div className="appointment-section">
                 {tableData &&
                     <Table data={tableData} titles={titles} />
