@@ -3,12 +3,21 @@ import Table from '../components/Table';
 
 export default function Appointments({ BASE_URL, loggedInUser }) {
     const [appointments, setAppointments] = useState(null)
+    const [tableData, setTableData] = useState(null)
+
+
+    const titles = ['Date', 'Type', 'Duration', 'Price', 'Therapist']
 
     useEffect(() => {
         const fetchUserAppointments = async () => {
             try {
                 const appointments = await getUserAppointments();
                 setAppointments(appointments);
+                const tableData = appointments.map(appointment => {
+                    const appointmentDateTime = appointment.appointmentDateTime.substring(0, 10)
+                    return { ...appointment, appointmentDateTime: appointmentDateTime }
+                })
+                setTableData(tableData)
                 console.log('userAppointments:', appointments);
             } catch (error) {
                 console.error(error);
@@ -17,6 +26,8 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
         fetchUserAppointments();
     }, []);
+
+
 
     const getUserAppointments = async () => {
         try {
@@ -39,27 +50,10 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
         <section className="appointment-page">
             <button className="add-appointment-btn">Add appointment</button>
             <div className="appointment-section">
-                {/* {appointments &&
-                    <Table data={appointments} />
+                {tableData &&
+                    <Table data={tableData} titles={titles} />
                 }
-                {appointments &&
-                    <Table titles={[
-                        'appointmentDateTime',
-                        'employeeName',
-                        'id',
-                        'treatmentDuration',
-                        'treatmentPrice',
-                        'treatmentType'
-                    ]} data={appointments} />
-                } */}
             </div>
-            {/* {appointments && appointments.map(appointment => {
-                return (
-                    <article key={appointment.appointmentID} className="appointment">
-                          <pre>{JSON.stringify(appointment, null, 2)}</pre>
-                    </article>
-                )
-            })} */}
         </section>
     )
 }
