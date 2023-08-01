@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import TreatmentTable from "../components/TreatmentTable";
 
 export default function Treatments({ BASE_URL }) {
     const [treatments, setTreatments] = useState(null)
@@ -37,6 +38,9 @@ export default function Treatments({ BASE_URL }) {
 
     return (
         <section className="treatments-page">
+              {treatments &&
+                    <TreatmentTable treatments={treatments} />
+                }
         </section>
     )
 }
