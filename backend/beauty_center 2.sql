@@ -83,30 +83,80 @@ INSERT INTO `users` (`id`, `name`, `mail`, `phoneNumber`, `address`, `password`,
 ('9', 'a', 'bbb@gmail.com', '0501234567', 'Nazreth', '87654321', 0);
 COMMIT;
 
--- --------------------------------------------------------
-
 --
--- Table structure for table `employees`
+-- Table structure for table `employees_treatments`
 --
 
-DROP TABLE IF EXISTS `employees`;
-CREATE TABLE IF NOT EXISTS `employees` (
-  `id` varchar(9) NOT NULL,
-  `treatmentId` int(20) NOT NULL,
-  PRIMARY KEY (`id`),
-  FOREIGN KEY (`id`) REFERENCES `users` (`id`)
+DROP TABLE IF EXISTS `employee_treatments`;
+CREATE TABLE IF NOT EXISTS `employee_treatments` (
+  `employeeId` varchar(9) NOT NULL,
+  `treatmentId` varchar(9) NOT NULL,
+  PRIMARY KEY (`employeeId`, `treatmentId`),
+  FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Dumping data for table `employees`
+-- Dumping data for table `employee_treatments`
 --
 
-INSERT INTO `employees` (`id`, `treatmentId`) VALUES
-('3', 4),
-('4', 5),
-('5', 3);
+INSERT INTO `employee_treatments` (`employeeId`, `treatmentId`) VALUES
+-- Employee with ID 3 offers treatments 1, 4, 5, and 6
+('3', '3'),
+('3', '4'),
+('3', '5'),
+('3', '6'),
+('3', '7'),
+
+-- Employee with ID 4 offers treatments 2, 5, and 7
+('4', '1'),
+('4', '2'),
+
+-- Employee with ID 5 offers treatments 3 and 7
+('5', '3'),
+('5', '5'),
+('5', '6'),
+('5', '7'),
 
 -- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_available_hours`
+--
+
+DROP TABLE IF EXISTS `employee_available_hours`;
+CREATE TABLE IF NOT EXISTS `employee_available_hours` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `employeeId` varchar(9) NOT NULL,
+  `treatmentId` varchar(9) NOT NULL,
+  `patientAcceptStart` varchar(5) NOT NULL,
+  `patientAcceptEnd` varchar(5) NOT NULL,
+  PRIMARY KEY (`id`),
+  FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+
+
+
+--
+-- Dumping data for table `employee_treatments`
+--
+INSERT INTO `employee_available_hours` (`employeeId`, `treatmentId`, `patientAcceptStart`, `patientAcceptEnd`) VALUES
+('3', '3', '09:00', '18:00'),
+('3', '4', '14:00', '17:00'),
+('3', '5', '11:00', '18:00'),
+('3', '6', '12:00', '18:00'),
+('3', '7', '10:00', '18:00'),
+('4', '1', '10:00', '19:00'),
+('4', '2', '14:00', '19:00'),
+('5', '3', '10:00', '17:00'),
+('5', '5', '12:00', '17:00'),
+('5', '6', '10:00', '14:00'),
+('5', '7', '10:00', '16:00'),
+
+-- --------------------------------------------------------
+
 
 --
 -- Table structure for table `appointments`

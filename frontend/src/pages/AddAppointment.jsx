@@ -1,7 +1,10 @@
-import React from 'react'
+import { useState } from 'react';
 
-// export default function AddAppointment({ userAppointments, treatmentsTypes, BASE_URL, }) {
 export default function AddAppointment({ BASE_URL }) {
+
+    const [selectedTreatment, setSelectedTreatment] = useState(null)
+
+
     const treatments = [
         { id: '1', duration: 90, price: 200, treatmentType: 'makeup' },
         { id: '2', duration: 120, price: 500, treatmentType: 'laser' },
@@ -13,7 +16,7 @@ export default function AddAppointment({ BASE_URL }) {
     ];
 
     function onSelectTreatment(selectedTreatment) {
-        console.log(`selectedTreatment:`, selectedTreatment)
+        setSelectedTreatment()
     }
 
     return (
