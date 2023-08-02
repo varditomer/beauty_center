@@ -51,7 +51,6 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         setSelectedTreatment(selectedTreatment)
         const daysOptions = generateDaysOptions()
         setDaysOptions(daysOptions)
-
     }
 
     // Generating 7 Days options from current day
@@ -110,9 +109,42 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
 
         // Get selected employee available hours
         const availableHours = await fetchEmployeeAvailableHoursByTreatment(selectedEmployee, selectedTreatment)
+        // 09:00-18:00
+        // 2023-08-06T09:00:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // ..................
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // .............
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 2023-08-06T09:30:00.000Z
+        // 09:00
+        // 09:30
+        // 10:00
+        // 10:30
 
         // Extract start and end time from available hours
         const { patientAcceptStart, patientAcceptEnd } = availableHours[0]
+        // 09:00
+        // 18:00
 
         // Extract treatment duration
         const treatmentDuration = treatments[selectedTreatment - 1].duration

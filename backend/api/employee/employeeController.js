@@ -8,7 +8,6 @@ module.exports = {
 }
 
 function getEmployees(req, res) {
-  console.log(`111111111111111111111111111111111:`, )
   try {
     const sql = `
       SELECT
