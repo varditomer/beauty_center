@@ -209,7 +209,6 @@ function removeAppointment(req, res) {
       const params = [appointmentId];
       const cb = (error, results) => {
         if (error) {
-          console.log('sdsdsdsd',error);
           // If there's an error during database deletion, return a server error status
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(error.message);
@@ -218,7 +217,7 @@ function removeAppointment(req, res) {
           console.log("Deleted");
           // If the appointment is deleted successfully, return a success status
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(appointmentId);
+          res.end({appointmentId});
         }
       }
       // Execute the SQL query using the 'doQuery' function
