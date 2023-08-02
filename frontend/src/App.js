@@ -38,7 +38,7 @@ function App() {
             element={loggedInUser ? <Appointments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
           <Route path="/addAppointment"
-            element={loggedInUser ? <AddAppointment BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+            element={loggedInUser ? <AddAppointment loggedInUser={loggedInUser} BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
           </Route>
           <Route path="/profile"
             element={loggedInUser ? <Profile BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
