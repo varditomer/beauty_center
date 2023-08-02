@@ -111,19 +111,13 @@ function addAppointment(req, res) {
     const { customerId, employeeId, treatmentId, appointmentDateTime } = req.body.newAppointment;
     const id = makeId()
     if (id && appointmentDateTime && customerId && employeeId && treatmentId) {
-      console.log(`XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:`, )
       // SQL query to add a new appointment
       const sql = `
         INSERT INTO appointments (id, appointmentDateTime, customerId, employeeId, treatmentId) 
         values (?,?,?,?,?)
       `;
-      // Set customerId to the user's session userId
-      // '2023-08-17 10:00:00'
-      console.log(`OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:`, )
-      console.log(`appointmentDateTime:`, appointmentDateTime)
 
       const formattedDateTime = appointmentDateTime.substring(0,10) + '' + appointmentDateTime.substring(10,18)
-      console.log(`formattedDateTime:`, formattedDateTime)
       const params = [id, formattedDateTime, customerId, employeeId, treatmentId];
       const cb = (error, results) => {
         if (error) {
@@ -132,9 +126,7 @@ function addAppointment(req, res) {
           res.end(error.message);
         }
         else {
-          console.log("Added");
-          console.log(`results:`, results)
-          // If the appointment is added successfully, return a success status
+          // If the appointment is added successfully, return a the added appointment
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(req.body.newAppointment));
         }
