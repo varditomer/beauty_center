@@ -1,14 +1,22 @@
 import { Link } from 'react-router-dom'
 import logoImg from '../assets/images/logo.png'
-export default function Header() {
+import { storageService } from '../services/storage.service'
+export default function Header({ loggedInUser, setLoggedInUser }) {
+    function disconnect() {
+        storageService.remove('loggedInUser')
+        setLoggedInUser(null)
+    }
     return (
         <header className="header-container wrapper">
             <Link to='/'><img id="logo" src={logoImg} /></Link>
             <nav>
-                <Link to='/employees'>Employees</Link>
+                {!(loggedInUser.isEmployee) &&
+                    <Link to='/employees'>Employees</Link>
+                }
                 <Link to='/treatments'>Treatments</Link>
                 <Link to='/appointments'>Appointments</Link>
-                <Link to='/profile'><i className="fa-solid fa-user"></i></Link>
+                {/* <Link to='/profile'><i className="fa-solid fa-user"></i></Link> */}
+                <i className="fa-solid fa-sign-out signout" onClick={disconnect}></i>
             </nav>
         </header>
     )

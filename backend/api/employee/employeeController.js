@@ -8,19 +8,33 @@ module.exports = {
 }
 
 function getEmployees(req, res) {
+  console.log(`111111111111111111111111111111111:`, )
   try {
     const sql = `
-      SELECT users.id, users.name, users.mail, users.address, treatments.treatmentType
-      FROM users
-      JOIN employee_treatments ON users.id = employee_treatments.id
-      JOIN treatments ON employee_treatments.treatmentId = treatments.id;
+      SELECT
+      users.id,
+      users.name,
+      users.address,
+      GROUP_CONCAT(DISTINCT treatments.treatmentType ORDER BY treatments.treatmentType ASC) AS treatmentTypes
+      FROM
+      users
+      JOIN
+      employee_treatments ON users.id = employee_treatments.employeeId
+      JOIN
+      treatments ON employee_treatments.treatmentId = treatments.id
+      WHERE
+      users.isEmployee = 1
+      GROUP BY
+      users.id, users.name, users.address;
     `;
     const cb = (error, results) => {
       if (error) {
+        console.log(`000000000000000000000000000:`, )
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(error.message);
       }
       else {
+        console.log(`results:`, results)
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(results));
       }

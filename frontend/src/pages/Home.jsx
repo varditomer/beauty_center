@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 export default function Home({ loggedInUser, BASE_URL }) {
 
 
-    const [nextAppoitment, setNextAppointment] = useState(null)
+    const [nextAppointment, setNextAppointment] = useState(null)
 
 
     useEffect(() => {
@@ -14,16 +14,12 @@ export default function Home({ loggedInUser, BASE_URL }) {
             try {
                 const appointments = await getUserNextAppointment();
 
-                // nextAppoitment(appointments);
                 if (appointments.length) {
                     const utcDateTime = new Date(appointments[0].appointmentDateTime);
                     const localDateTimeString = utcDateTime.toISOString();
                     appointments[0].appointmentDateTime = localDateTimeString
                     setNextAppointment(appointments[0])
                 }
-
-                // Convert to local time zone
-                console.log('userAppointments:', appointments);
             } catch (error) {
                 console.error(error);
             }
@@ -35,8 +31,9 @@ export default function Home({ loggedInUser, BASE_URL }) {
 
 
     const getUserNextAppointment = async () => {
+        const endpoint = loggedInUser.isEmployee ? "nextTreatment" : "nextAppointment"
         try {
-            const response = await fetch(`${BASE_URL}/appointment/nextAppointment/${loggedInUser.id}`, {
+            const response = await fetch(`${BASE_URL}/appointment/${endpoint}/${loggedInUser.id}`, {
                 method: 'GET',
                 headers: {
                     accept: 'application/json',
@@ -44,7 +41,6 @@ export default function Home({ loggedInUser, BASE_URL }) {
                 },
             });
             const nextAppointment = await response.json();
-            console.log(nextAppointment);
             return nextAppointment;
         } catch (error) {
             console.error(error);
@@ -54,7 +50,7 @@ export default function Home({ loggedInUser, BASE_URL }) {
 
     return (
         <section className="home-page">
-            <h1>Welcome to our beauty center!</h1>
+            <h1>Welcome {loggedInUser.isEmployee ? "Employee " : "Patient "} {loggedInUser.name} to our beauty center!</h1>
             <p>
                 We offer a wide range of beauty and skincare services, including skincare, <span style={{ color: "#cf3dbe" }}>makeup, hair styling and coloring,
                     nail care, hair removal, massage, body care</span> , and more.
@@ -63,16 +59,16 @@ export default function Home({ loggedInUser, BASE_URL }) {
                 beauty services. Thank you for choosing our beauty center,
                 and we are ready to meet your beauty care needs and desires!
             </p>
-            {nextAppoitment &&
+            {nextAppointment &&
                 <div className="next-appointment-container">
-                    <h3>Your next appointment</h3>
+                    <h3>{loggedInUser.isEmployee ? "Your next treatment" : "Your next appointment"}</h3>
                     <ul className='next-appointment-info'>
-                        <li className='info-item'>Date: <span className="item-content">{nextAppoitment.appointmentDateTime.substring(0, 10)}</span></li>
-                        <li className='info-item'>Time: <span className="item-content">{nextAppoitment.appointmentDateTime.substring(11, 16)}</span></li>
-                        <li className='info-item'>Teraphist: <span className="item-content">{nextAppoitment.employeeName}</span></li>
-                        <li className='info-item'>Price: <span className="item-content">{nextAppoitment.treatmentPrice}₪</span></li>
-                        <li className='info-item'>Type: <span className="item-content">{nextAppoitment.treatmentType}</span></li>
-                        <li className='info-item'>Duration: <span className="item-content">{nextAppoitment.treatmentDuration} min</span></li>
+                        <li className='info-item'>Date: <span className="item-content">{nextAppointment.appointmentDateTime.substring(0, 10)}</span></li>
+                        <li className='info-item'>Time: <span className="item-content">{nextAppointment.appointmentDateTime.substring(11, 16)}</span></li>
+                        <li className='info-item'>{loggedInUser.isEmployee ? "Patient" : "Therapist"}: <span className="item-content">{loggedInUser.isEmployee ? nextAppointment.customerName : nextAppointment.employeeName}</span></li>
+                        <li className='info-item'>Price: <span className="item-content">{nextAppointment.treatmentPrice}₪</span></li>
+                        <li className='info-item'>Type: <span className="item-content">{nextAppointment.treatmentType}</span></li>
+                        <li className='info-item'>Duration: <span className="item-content">{nextAppointment.treatmentDuration} min</span></li>
                     </ul>
                 </div>
             }

@@ -23,7 +23,7 @@ function App() {
   
   return (
     <section className="app-container">
-      {loggedInUser && <Header />}
+      {loggedInUser && <Header setLoggedInUser={setLoggedInUser} loggedInUser={loggedInUser}/>}
       <main className='main-container'>
         <Routes>
           <Route path="/login"

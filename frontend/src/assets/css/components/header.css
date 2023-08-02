@@ -17,3 +17,7 @@
 .header-container nav a:hover {
     color: rgb(108, 61, 91)
 }
+
+.signout {
+    cursor: pointer;
+}
