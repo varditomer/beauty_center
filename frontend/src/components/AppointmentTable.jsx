@@ -30,10 +30,10 @@ export default function AppointmentTable({ appointments }) {
                 {appointment.treatmentType}
               </div>
               <div className="cell" data-title={titles[3]}>
-                {appointment.treatmentDuration}
+                {appointment.treatmentDuration} min
               </div>
               <div className="cell" data-title={titles[4]}>
-                {appointment.treatmentPrice}
+                {appointment.treatmentPrice}₪
               </div>
               <div className="cell" data-title={titles[5]}>
                 {appointment.employeeName}

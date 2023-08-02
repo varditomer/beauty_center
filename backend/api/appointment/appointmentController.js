@@ -4,7 +4,58 @@ const { doQuery } = require('../../services/database.service')
 module.exports = {
   getAppointments,
   addAppointment,
-  removeAppointment
+  removeAppointment,
+  getNextAppointments
+}
+
+function getNextAppointments(req, res) {
+  try {
+    const userId = req.params.id
+    // SQL query to get appointments for a specific customer (customerId)
+    const sql = `
+    SELECT 
+    appointments.id,
+    CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
+    treatments.treatmentType,
+    treatments.duration AS treatmentDuration,
+    treatments.price AS treatmentPrice,
+    users.name AS employeeName
+    FROM 
+    appointments
+    INNER JOIN 
+    treatments ON appointments.treatmentId = treatments.id
+    INNER JOIN 
+    users ON appointments.employeeId = users.id
+    WHERE 
+    appointments.customerId = ? AND
+    appointments.appointmentDateTime >= DATE(NOW()) -- Filter appointments with date greater than or equal to today
+    ORDER BY 
+    appointments.appointmentDateTime ASC
+    LIMIT 1;
+    `
+    const params = [userId];
+    const cb = (error, results) => {
+      if (error) {
+        console.log(`error:`, error)
+        // If there's an error during the database query, return a server error status
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+      }
+      else {
+        // If the query is successful, return the appointments data as JSON
+        res.writeHead(200, { "Content-Type": "application/json" });
+        console.log(JSON.stringify(results[0]));
+        res.end(JSON.stringify(results));
+      }
+    }
+    // Execute the SQL query using the 'doQuery' function
+    doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    // If an exception occurs during the process, return a server error status
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
 }
 
 // Get appointments by user Id
@@ -15,7 +66,7 @@ function getAppointments(req, res) {
     const sql = `
       SELECT 
       appointments.id,
-      appointments.appointmentDateTime,
+      CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
       treatments.treatmentType,
       treatments.duration AS treatmentDuration,
       treatments.price AS treatmentPrice,

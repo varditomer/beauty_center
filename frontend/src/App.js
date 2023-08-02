@@ -44,7 +44,7 @@ function App() {
             element={loggedInUser ? <Profile BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
           <Route path='/'
-            element={loggedInUser ? <Home BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+            element={loggedInUser ? <Home BASE_URL={BASE_URL}  loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
         </Routes>
       </main>

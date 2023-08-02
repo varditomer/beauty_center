@@ -21,7 +21,7 @@ export default function TreatmentTable({ treatments }) {
                                 {treatment.duration} min
                             </div>
                             <div className="cell" data-title={titles[1]}>
-                                {treatment.price}
+                                {treatment.price}₪
                             </div>
                             <div className="cell" data-title={titles[2]}>
                                 {treatment.treatmentType}
