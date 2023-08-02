@@ -12,6 +12,7 @@
 @import './views/appointment.css';
 @import './views/login-signup.css';
 @import './views/profile.css';
+@import './views/add-appointment.css';
 
 /* |--Components */
 @import './components/header.css';
