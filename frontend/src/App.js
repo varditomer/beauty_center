@@ -16,6 +16,7 @@ function App() {
 
   useEffect(() => {
     const user = storageService.load('loggedInUser')
+    console.log(`user:`, user)
     if (user) setLoggedInUser(user)
   }, [])
   
@@ -37,7 +38,7 @@ function App() {
             element={loggedInUser ? <Appointments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
           <Route path="/addAppointment"
-            element={loggedInUser ? <AddAppointment BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+            element={loggedInUser ? <AddAppointment BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
           <Route path='/'
             element={loggedInUser ? <Home BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>

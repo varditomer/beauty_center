@@ -1,5 +1,6 @@
 const console = require("console");
-const { doQuery } = require('../../services/database.service')
+const { doQuery } = require('../../services/database.service');
+const makeId = require("../../services/util.service");
 
 module.exports = {
   getAppointments,
@@ -56,15 +57,23 @@ function getAppointments(req, res) {
 // Add appointment
 function addAppointment(req, res) {
   try {
-    const { date, employeeId, treatmentId, startTime } = req.body;
-    if (date && employeeId && treatmentId && startTime) {
+    const { customerId, employeeId, treatmentId, appointmentDateTime } = req.body.newAppointment;
+    const id = makeId()
+    if (id && appointmentDateTime && customerId && employeeId && treatmentId) {
+      console.log(`XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX:`, )
       // SQL query to add a new appointment
       const sql = `
-        INSERT INTO appointments (date, employeeId, customerId , treatmentId, startTime, endTime) 
-        values (?,?,?,?,?,?)
+        INSERT INTO appointments (id, appointmentDateTime, customerId, employeeId, treatmentId) 
+        values (?,?,?,?,?)
       `;
       // Set customerId to the user's session userId
-      const params = [date, employeeId, req.session.userId, treatmentId, startTime, startTime];
+      // '2023-08-17 10:00:00'
+      console.log(`OOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO:`, )
+      console.log(`appointmentDateTime:`, appointmentDateTime)
+
+      const formattedDateTime = appointmentDateTime.substring(0,10) + '' + appointmentDateTime.substring(10,18)
+      console.log(`formattedDateTime:`, formattedDateTime)
+      const params = [id, formattedDateTime, customerId, employeeId, treatmentId];
       const cb = (error, results) => {
         if (error) {
           // If there's an error during database insertion, return a server error status
@@ -73,9 +82,10 @@ function addAppointment(req, res) {
         }
         else {
           console.log("Added");
+          console.log(`results:`, results)
           // If the appointment is added successfully, return a success status
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.end("valid");
+          res.end(JSON.stringify(req.body.newAppointment));
         }
       }
       // Execute the SQL query using the 'doQuery' function

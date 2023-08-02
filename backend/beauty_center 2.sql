@@ -58,7 +58,7 @@ INSERT INTO `treatments` (`id`, `duration`, `price`, `treatmentType`) VALUES
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` varchar(9) NOT NULL,
+  `id` varchar(5) NOT NULL,
   `name` varchar(50) NOT NULL,
   `mail` varchar(50) NOT NULL,
   `phoneNumber` varchar(10) NOT NULL,
@@ -164,7 +164,7 @@ INSERT INTO `employee_available_hours` (`employeeId`, `treatmentId`, `patientAcc
 
 DROP TABLE IF EXISTS `appointments`;
 CREATE TABLE IF NOT EXISTS `appointments` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `id` varchar(5) NOT NULL AUTO_INCREMENT,
   `appointmentDateTime` datetime NOT NULL,
   `employeeId` varchar(9) NOT NULL,
   `customerId` varchar(9) NOT NULL,
@@ -181,12 +181,14 @@ CREATE TABLE IF NOT EXISTS `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `appointmentDateTime`, `employeeId`, `customerId`, `treatmentId`) VALUES
-(1, '2023-08-17 10:00:00', '3', '1', 1),
-(2, '2023-08-17 11:00:00', '3', '2', 2),
-(3, '2023-08-17 12:00:00', '4', '6', 3),
-(4, '2023-08-18 11:00:00', '4', '7', 4),
-(5, '2023-08-18 12:00:00', '3', '1', 4),
-(6, '2023-08-18 13:00:00', '5', '8', 4);
+("1", '2023-08-17 10:00:00', '3', '1', 1),
+("2", '2023-08-17 11:00:00', '3', '2', 2),
+("3", '2023-08-17 12:00:00', '4', '6', 3),
+("4", '2023-08-18 11:00:00', '4', '7', 4),
+("5", '2023-08-18 12:00:00', '3', '1', 4),
+("6", '2023-08-18 13:00:00', '5', '8', 4),
+("7", '2023-08-06 10:00:00', '3', '1', 3),
+("8", '2023-08-06 11:00:00', '3', '2', 3);
 
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
