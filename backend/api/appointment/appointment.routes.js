@@ -6,6 +6,6 @@ const { getAppointments, addAppointment, removeAppointment,getNextAppointments} 
 router.get('/:id', getAppointments)
 router.get('/nextAppointment/:id', getNextAppointments)
 router.post('/addAppointment', addAppointment)
-router.delete('/removeAppointment', removeAppointment)
+router.delete('/removeAppointment/:id', removeAppointment)
 
 module.exports = router
