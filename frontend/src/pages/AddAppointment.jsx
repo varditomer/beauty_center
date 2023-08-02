@@ -119,8 +119,8 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         // Generating treatments slots according to start-end time
         const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration)
 
-        // Getting employee's appointments for the selected date and treatment
-        const employeeAppointments = await fetchEmployeesAppointments(selectedEmployee, selectedTreatment, selectedDay)
+        // Getting employee's appointments for the selected date
+        const employeeAppointments = await fetchEmployeesAppointments(selectedEmployee, selectedDay)
 
         // Filtering the available slots by already assigned employee's appointments
         const filteredSlots = filterSlotsByAppointments(treatmentsSlots, employeeAppointments);
@@ -159,15 +159,16 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
             return [];
         }
     };
-    const fetchEmployeesAppointments = async (selectedEmployee, treatmentId, date) => {
+
+    const fetchEmployeesAppointments = async (selectedEmployee, date) => {
         try {
-            const response = await fetch(`${BASE_URL}/employee/employeeAppointmentsByTreatmentIdAndDay`, {
+            const response = await fetch(`${BASE_URL}/employee/employeeAppointmentsByDay`, {
                 method: 'POST',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify({ employeeId: selectedEmployee, treatmentId, date })
+                body: JSON.stringify({ employeeId: selectedEmployee, date })
             });
             const employeeAppointments = await response.json();
             return employeeAppointments

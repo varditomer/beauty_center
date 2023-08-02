@@ -4,7 +4,7 @@ module.exports = {
   getEmployees,
   getEmployeesByTreatmentId,
   getEmployeeAvailableHoursByTreatmentId,
-  getEmployeeAppointmentsByTreatmentIdAndDay
+  getEmployeeAppointmentsByDay
 }
 
 function getEmployees(req, res) {
@@ -106,18 +106,17 @@ function getEmployeeAvailableHoursByTreatmentId(req, res) {
 
 }
 
-function getEmployeeAppointmentsByTreatmentIdAndDay(req, res) {
+function getEmployeeAppointmentsByDay(req, res) {
   try {
-    const { employeeId, treatmentId, date } = req.body
+    const { employeeId, date } = req.body
     const sql = `
       SELECT *
       FROM appointments
       WHERE employeeId = ?
-      AND treatmentId = ?
       AND DATE(appointmentDateTime) = DATE(?);
 
     `;
-    const params = [employeeId, treatmentId, date]
+    const params = [employeeId, date]
     const cb = (error, results) => {
       if (error) {
         res.writeHead(500, { "Content-Type": "application/json" });
