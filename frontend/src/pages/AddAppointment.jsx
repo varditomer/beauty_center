@@ -237,81 +237,82 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
 
     return (
         <section className="add-appointment-page">
-            <h1>Add new appointment</h1>
-
-            {/* Select treatment */}
-            <>
-                <label htmlFor="weekday">Select Treatment:</label>
-                <select id='treatmentType' className="select-treatment" onChange={(event) => onSelectTreatment(event.target.value)}>
-                    <option value="">Select Treatment Type</option>
-                    {treatments &&
-                        treatments.map((treatment) => (
-                            <option key={treatment.id} value={treatment.id}>
-                                {treatment.treatmentType}
-                            </option>
-                        ))
-                    }
-                </select>
-            </>
-            {/* -------------------- */}
-
-            {/* Select appointment day */}
-            {daysOptions &&
+            <div className="add-appointment-container">
+                <h1>Add new appointment</h1>
+                {/* Select treatment */}
                 <>
-                    <label htmlFor="weekday">Select a Day:</label>
-                    <select id="weekday" onChange={onSelectDay}>
-                        <option value="">Select a day</option>
-                        {daysOptions.map((option, index) => {
-                            return (
-                                <option key={index} value={option.date}>
-                                    {option.dayName} ({option.date.toLocaleDateString()})
+                    <label htmlFor="weekday">Select Treatment:</label>
+                    <select id='treatmentType' className="select-treatment" onChange={(event) => onSelectTreatment(event.target.value)}>
+                        <option value="">Select Treatment Type</option>
+                        {treatments &&
+                            treatments.map((treatment) => (
+                                <option key={treatment.id} value={treatment.id}>
+                                    {treatment.treatmentType}
                                 </option>
-                            )
-                        })
+                            ))
                         }
                     </select>
                 </>
-            }
-            {/* -------------------- */}
+                {/* -------------------- */}
 
-            {/* Select employee */}
-            {employees &&
-                <>
-                    <label htmlFor="employee">Select employee:</label>
-                    <select id="employee" onChange={onSelectEmployee}>
-                        <option value="">Select an employee</option>
-                        {employees.map((employee, index) => {
-                            return (
-                                <option key={index} value={employee.id}>
-                                    {employee.name}
-                                </option>
-                            )
-                        })
-                        }
-                    </select>
-                </>
-            }
-            {/* -------------------- */}
+                {/* Select appointment day */}
+                {daysOptions &&
+                    <>
+                        <label htmlFor="weekday">Select a Day:</label>
+                        <select id="weekday" onChange={onSelectDay}>
+                            <option value="">Select a day</option>
+                            {daysOptions.map((option, index) => {
+                                return (
+                                    <option key={index} value={option.date}>
+                                        {option.dayName} ({option.date.toLocaleDateString()})
+                                    </option>
+                                )
+                            })
+                            }
+                        </select>
+                    </>
+                }
+                {/* -------------------- */}
 
-            {/* Select appointment */}
-            {slots &&
-                <>
-                    <label htmlFor="slot">Select Appointment from Available:</label>
-                    <select id="slot" onChange={onSelectAppointment}>
-                        <option value="">Select appointment</option>
-                        {slots.map((appointment, index) => {
-                            return (
-                                <option key={index} value={appointment.start}>
-                                    {appointment.start.substring(11, 16)}
-                                </option>
-                            )
-                        })
-                        }
-                    </select>
-                </>
-            }
-            {/* -------------------- */}
+                {/* Select employee */}
+                {employees &&
+                    <>
+                        <label htmlFor="employee">Select employee:</label>
+                        <select id="employee" onChange={onSelectEmployee}>
+                            <option value="">Select an employee</option>
+                            {employees.map((employee, index) => {
+                                return (
+                                    <option key={index} value={employee.id}>
+                                        {employee.name}
+                                    </option>
+                                )
+                            })
+                            }
+                        </select>
+                    </>
+                }
+                {/* -------------------- */}
 
+                {/* Select appointment */}
+                {slots &&
+                    <>
+                        <label htmlFor="slot">Select Appointment from Available:</label>
+                        <select id="slot" onChange={onSelectAppointment}>
+                            <option value="">Select appointment</option>
+                            {slots.map((appointment, index) => {
+                                return (
+                                    <option key={index} value={appointment.start}>
+                                        {appointment.start.substring(11, 16)}
+                                    </option>
+                                )
+                            })
+                            }
+                        </select>
+                    </>
+                }
+                {/* -------------------- */}
+
+            </div>
         </section>
     )
 }
