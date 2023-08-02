@@ -28,12 +28,10 @@ function getEmployees(req, res) {
     `;
     const cb = (error, results) => {
       if (error) {
-        console.log(`000000000000000000000000000:`, )
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(error.message);
       }
       else {
-        console.log(`results:`, results)
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(results));
       }

@@ -32,7 +32,7 @@ function App() {
             element={loggedInUser ? <Employees BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
           </Route>
           <Route path="/treatments"
-            element={loggedInUser ? <Treatments BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
+            element={loggedInUser ? <Treatments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
           <Route path="/appointments"
             element={loggedInUser ? <Appointments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>

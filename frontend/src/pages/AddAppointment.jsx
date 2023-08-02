@@ -200,7 +200,6 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
                 body: JSON.stringify({ newAppointment })
             });
             const employees = await response.json();
-            console.log(`employees:`, employees)
             return employees
         } catch (error) {
             console.error(error);

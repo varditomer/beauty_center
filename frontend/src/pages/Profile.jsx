@@ -6,9 +6,7 @@ export default function Profile({ loggedInUser }) {
     const [userMessage, setUserMessage] = useState('');
     const [isSuccess, setIsSuccess] = useState(false);
     const handleSubmit = () => {
-        console.log('kaki');
     }
-    console.log(loggedInUser);
     return (
         <section className="profile-page">
             <form onSubmit={handleSubmit}>

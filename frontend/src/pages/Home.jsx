@@ -73,12 +73,14 @@ export default function Home({ loggedInUser, BASE_URL }) {
                 </div>
             }
             <div className="image-container">
-                <Link className="img-link" to='/employees'>
-                    {/* <div className="link-container"> */}
-                    <img src={employeeImg} alt="employee" />
-                    <span>Employees</span>
-                    {/* </div> */}
-                </Link>
+                {!loggedInUser.isEmployee &&
+                    <Link className="img-link" to='/employees'>
+                        {/* <div className="link-container"> */}
+                        <img src={employeeImg} alt="employee" />
+                        <span>Employees</span>
+                        {/* </div> */}
+                    </Link>
+                }
                 <Link className="img-link" to='/treatments'>
                     <img src={treatmentImg} alt="treatments" />
                     <span>Treatment</span>

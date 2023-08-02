@@ -8,6 +8,7 @@
 
 /* |--Views */
 @import './views/employees.css';
+@import './views/treatments.css';
 @import './views/home.css';
 @import './views/appointment.css';
 @import './views/login-signup.css';

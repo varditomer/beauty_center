@@ -104,3 +104,11 @@ svg {
 button {
   cursor: pointer;
 }
+
+.page-title {
+  font-size: 24px;
+  margin-bottom: 14px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-decoration: underline 2px solid rgb(177, 102, 149);
+  text-underline-offset: 4px;
+}

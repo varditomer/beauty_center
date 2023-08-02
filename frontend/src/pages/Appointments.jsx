@@ -7,20 +7,13 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
     const [tableData, setTableData] = useState(null)
 
 
-    
+
 
     useEffect(() => {
         const fetchUserAppointments = async () => {
             try {
                 const appointments = await getUserAppointments();
                 setAppointments(appointments);
-                // const tableData = appointments.map(appointment => {
-                //     const appointmentDateTime = appointment.appointmentDateTime.substring(0, 10)
-                    
-                //     return { ...appointment, appointmentDateTime: appointmentDateTime }
-                // })
-                // setTableData(tableData)
-                console.log('userAppointments:', appointments);
             } catch (error) {
                 console.error(error);
             }
@@ -50,12 +43,14 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
     return (
         <section className="appointment-page">
+            <h1 className="page-title">{loggedInUser.isEmployee ? `Employee's ` : `Customer's `}Appointments</h1>
+
             <Link to='/addAppointment'>
-                <button className="add-appointment-btn">Add appointment</button>
+                <button className="add-appointment-btn">Add Appointment</button>
             </Link>
             <div className="appointment-section">
                 {appointments &&
-                    <AppointmentTable setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={appointments} />
+                    <AppointmentTable setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={appointments} loggedInUser={loggedInUser} />
                 }
             </div>
         </section>

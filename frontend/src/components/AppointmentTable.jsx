@@ -1,7 +1,7 @@
-export default function AppointmentTable({ appointments, BASE_URL ,setAppointments}) {
+export default function AppointmentTable({ appointments, BASE_URL ,setAppointments, loggedInUser}) {
 
 
-  const titles = ['Date', 'Time', 'Type', 'Duration', 'Price', 'Therapist', '']
+  const titles = ['Date', 'Time', 'Type', 'Duration', 'Price', `${loggedInUser.isEmployee? 'Customer':'Therapist'}`, '']
 
   const onRemoveAppointment = async (appointmentToRemove) => {
     try {

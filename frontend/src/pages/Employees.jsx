@@ -9,7 +9,6 @@ export default function Employees({ BASE_URL }) {
         const fetchTreatments = async () => {
             try {
                 const employees = await getEmployees();
-                console.log(`employees:`, employees)
                 setEmployees(employees);
             } catch (error) {
                 console.error(error);
