@@ -1,9 +1,26 @@
-import { useEffect, useState } from "react";
-
-export default function AppointmentTable({ appointments }) {
+export default function AppointmentTable({ appointments, BASE_URL ,setAppointments}) {
 
 
-  const titles = ['Date','Time', 'Type', 'Duration', 'Price', 'Therapist']
+  const titles = ['Date', 'Time', 'Type', 'Duration', 'Price', 'Therapist', '']
+
+  const onRemoveAppointment = async (appointmentToRemove) => {
+    try {
+      const response = await fetch(`${BASE_URL}/appointment/removeAppointment/${appointmentToRemove.id}`, {
+        method: 'Delete',
+        headers: {
+          accept: 'application/json',
+          'content-type': 'application/json',
+        },
+      });
+      const res = await response.json();
+      const newAppointments = appointments.filter(appointment => appointment.id !== res)
+      setAppointments(newAppointments)
+      return res;
+    } catch (error) {
+      console.error(error);
+      return [];
+    }
+  }
 
   return (
     <>
@@ -19,12 +36,12 @@ export default function AppointmentTable({ appointments }) {
           </div>
           {/* Table Rows */}
           {appointments.map((appointment, idx) => {
-          return  <div key={idx} className="row">
+            return <div key={idx} className="row">
               <div className="cell" data-title={titles[0]}>
-                {appointment.appointmentDateTime.substring(0,10)}
+                {appointment.appointmentDateTime.substring(0, 10)}
               </div>
               <div className="cell" data-title={titles[1]}>
-                {appointment.appointmentDateTime.substring(11,16)}
+                {appointment.appointmentDateTime.substring(11, 16)}
               </div>
               <div className="cell" data-title={titles[2]}>
                 {appointment.treatmentType}
@@ -37,6 +54,9 @@ export default function AppointmentTable({ appointments }) {
               </div>
               <div className="cell" data-title={titles[5]}>
                 {appointment.employeeName}
+              </div>
+              <div className="cell" style={{ justifyContent: "center", alignItems: "center" }}>
+                <div onClick={() => onRemoveAppointment(appointment)} title="Remove-appointment" className="remove-btn">X</div>
               </div>
             </div>
           })}

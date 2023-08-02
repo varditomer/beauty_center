@@ -198,16 +198,18 @@ function addAppointment(req, res) {
 // Remove appointment
 function removeAppointment(req, res) {
   try {
-    const appointmentId = req.params;
+    const appointmentId = req.params.id;
+    console.log( 'l;l;l;l;',appointmentId);
     if (appointmentId) {
       // SQL query to remove an appointment by its ID
       const sql = `
-        DELETE FROM appointments where appointmentId=?
+      DELETE FROM appointments where id=?
       `;
       // Set the appointmentId to the value from the request parameters
       const params = [appointmentId];
       const cb = (error, results) => {
         if (error) {
+          console.log('sdsdsdsd',error);
           // If there's an error during database deletion, return a server error status
           res.writeHead(500, { "Content-Type": "application/json" });
           res.end(error.message);
@@ -216,7 +218,7 @@ function removeAppointment(req, res) {
           console.log("Deleted");
           // If the appointment is deleted successfully, return a success status
           res.writeHead(200, { "Content-Type": "application/json" });
-          res.end("valid");
+          res.end(appointmentId);
         }
       }
       // Execute the SQL query using the 'doQuery' function

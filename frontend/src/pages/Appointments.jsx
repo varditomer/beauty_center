@@ -55,7 +55,7 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
             </Link>
             <div className="appointment-section">
                 {appointments &&
-                    <AppointmentTable appointments={appointments} />
+                    <AppointmentTable setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={appointments} />
                 }
             </div>
         </section>

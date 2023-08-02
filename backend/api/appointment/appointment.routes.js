@@ -7,6 +7,6 @@ router.get('/:id', getAppointments)
 router.get('/nextAppointment/:id', getNextAppointment)
 router.get('/nextTreatment/:id', getNextTreatment)
 router.post('/addAppointment', addAppointment)
-router.delete('/removeAppointment', removeAppointment)
+router.delete('/removeAppointment/:id', removeAppointment)
 
 module.exports = router
