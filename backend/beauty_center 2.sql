@@ -101,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `employee_treatments` (
 --
 
 INSERT INTO `employee_treatments` (`employeeId`, `treatmentId`) VALUES
--- Employee with ID 3 offers treatments 1, 4, 5, and 6
+-- Employee with ID 3 offers treatments 3, 4, 5, 6 and 7
 ('3', '3'),
 ('3', '4'),
 ('3', '5'),
@@ -116,7 +116,7 @@ INSERT INTO `employee_treatments` (`employeeId`, `treatmentId`) VALUES
 ('5', '3'),
 ('5', '5'),
 ('5', '6'),
-('5', '7'),
+('5', '7');
 
 -- --------------------------------------------------------
 
@@ -153,7 +153,7 @@ INSERT INTO `employee_available_hours` (`employeeId`, `treatmentId`, `patientAcc
 ('5', '3', '10:00', '17:00'),
 ('5', '5', '12:00', '17:00'),
 ('5', '6', '10:00', '14:00'),
-('5', '7', '10:00', '16:00'),
+('5', '7', '10:00', '16:00');
 
 -- --------------------------------------------------------
 

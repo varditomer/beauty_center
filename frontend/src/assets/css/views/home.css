@@ -1,3 +1,46 @@
+.home-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+    padding-bottom: 40px;
+}
+
+.home-page .img-link {
+    display: flex;
+    flex-direction: column;
+}
+
+.home-page .next-appointment-container {
+    align-self: center;
+    padding: 20px;
+    border: 1px solid black;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+}
+
+.next-appointment-container h3 {
+    font-size: 18px;
+    color: var(--accent);
+}
+
+.next-appointment-info {
+    font-size: 14px;
+}
+
+.info-item .item-content {
+    color:  rgba(123, 121, 121, 0.75);
+}
+
+.home-page h1 {
+    font-size: 32px;
+    letter-spacing: 0.3rem;
+    margin-bottom: 10px;
+}
+
 .links {
     display: flex;
     margin-left: 20px;
@@ -47,14 +90,22 @@ header.wrapper nav ul {
 }
 
 
-p {
+.home-page p {
     font-family: Arial, sans-serif;
-    font-size: 16px;
+    font-size: 18px;
     color: #333;
-    line-height: 1.2;
+    line-height: 2.2;
     text-align: justify;
     margin: 0;
     white-space: pre-wrap;
+    flex: 1;
+
+}
+
+@media screen and (min-width:650px) {
+    .home-page p {
+        padding-right: 30px;
+    }
 
 }
 
@@ -65,7 +116,16 @@ figcaption {
 
 .home-page .image-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-around;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media screen and (min-width:650px) {
+    .home-page .image-container {
+        align-items: baseline;
+        flex-direction: row;
+    }
 }
 
 .image-container figure {
@@ -100,7 +160,6 @@ figcaption {
 
     .image-container {
         padding: 0.5em 2em;
-        flex-direction: column;
         width: 100%;
         align-items: center;
     }
@@ -118,4 +177,3 @@ figcaption {
         /* ניתן להוסיף עוד כללי CSS לעיצוב נוסף */
     }
 }
-
