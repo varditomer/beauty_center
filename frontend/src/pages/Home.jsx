@@ -21,10 +21,11 @@ export default function Home() {
                 and we are ready to meet your beauty care needs and desires!
             </p>
             <div className="image-container">
-                <figure>
                     <Link to='/employees'>
+                        <div className="link-container">
                         <img src={employeeImg} alt="employee" />
                         <span>Employees</span>
+                        </div>
                     </Link>
                     <Link to='/treatments'>
                         <img src={treatmentImg} alt="treatments" />
@@ -34,7 +35,6 @@ export default function Home() {
                         <img src={appointmentImg} alt="appointments" />
                         <span>appointments</span>
                     </Link>
-                </figure>
             </div>
         </section>
     )
