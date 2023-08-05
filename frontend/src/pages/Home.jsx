@@ -50,10 +50,13 @@ export default function Home({ loggedInUser, BASE_URL }) {
 
     return (
         <section className="home-page">
-            <h1>Welcome {loggedInUser.isEmployee ? "Employee " : "Patient "} {loggedInUser.name} to our beauty center!</h1>
+            <h1>Welcome {loggedInUser.isEmployee ? "Employee " : "Patient "} <span className='capitalized emphasized'>{loggedInUser.name}</span> to our beauty center!</h1>
             <p>
-                We offer a wide range of beauty and skincare services, including skincare, <span style={{ color: "#cf3dbe" }}>makeup, hair styling and coloring,
-                    nail care, hair removal, massage, body care</span> , and more.
+                We offer a wide range of beauty and skincare services, including skincare,
+                <span className='capitalized emphasized'> makeup, hair styling and coloring,
+                    nail care, hair removal, massage, body care
+                </span>
+                , and more.
                 You can easily book an appointment through our reliable website.
                 We look forward to welcoming you and providing you with exceptional
                 beauty services. Thank you for choosing our beauty center,
@@ -75,19 +78,17 @@ export default function Home({ loggedInUser, BASE_URL }) {
             <div className="image-container">
                 {!loggedInUser.isEmployee &&
                     <Link className="img-link" to='/employees'>
-                        {/* <div className="link-container"> */}
                         <img src={employeeImg} alt="employee" />
-                        <span>Employees</span>
-                        {/* </div> */}
+                        <span className='capitalized emphasized'>Employees</span>
                     </Link>
                 }
                 <Link className="img-link" to='/treatments'>
                     <img src={treatmentImg} alt="treatments" />
-                    <span>Treatment</span>
+                    <span className='capitalized emphasized'>Treatment</span>
                 </Link>
                 <Link className="img-link" to='/appointments'>
                     <img src={appointmentImg} alt="appointments" />
-                    <span>appointments</span>
+                    <span className='capitalized emphasized'>appointments</span>
                 </Link>
             </div>
         </section>

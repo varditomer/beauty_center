@@ -72,16 +72,14 @@ CREATE TABLE IF NOT EXISTS `users` (
 -- Dumping data for table `users`
 --
 INSERT INTO `users` (`id`, `name`, `mail`, `phoneNumber`, `address`, `password`, `isEmployee`) VALUES
-('1', 'ss', 'yossi1316@gmail.com', '0542222222', 'Petach Tikva', '12345678', 0),
-('2', 'dd', 'bbb@mailinator.com', '0523333333', 'Tel Aviv', '12345678', 0),
-('3', 'rame', 'rame123@gmail.com', '0507777777', 'hefa', 'ra124524', 1),
+('1', 'yossi', 'yossi1316@gmail.com', '0542222222', 'Petach Tikva', '12345678', 0),
+('2', 'baruch', 'bbaruch@mailinator.com', '0523333333', 'Tel Aviv', '12345678', 0),
+('3', 'rame', 'rame123@gmail.com', '0507777777', 'Haifa', 'ra124524', 1),
 ('4', 'noor', 'nourgbareen2001@gmail.com', '0502222222', 'om alfahem', 'Noor1234', 1),
 ('5', 'eman', 'ghanome427@gmail.com', '0548167256', 'Nazreth', '234567eman', 1),
-('6', 'ss', 'bengold789@gmail.com', '0501111111', 'Petach Tikva', '12345678', 0),
-('7', 'ss', 'yossi1316@gmail.com', '0531234567', 'Petach Tikva', '12345678', 0),
-('8', 'a', 'bengold789@gmail.com', '0521234567', 'Petach Tikva', '87654321', 0),
-('9', 'a', 'bbb@gmail.com', '0501234567', 'Nazreth', '87654321', 0);
-COMMIT;
+('6', 'ben', 'bengold789@gmail.com', '0541234567', 'Petach Tikva', '12345678', 0),
+('7', 'dan', 'dansilver@gmail.com', '0531234567', 'Petach Tikva', '12345678', 0),
+('8', 'nissim', 'nissimb@gmail.com', '0521234567', 'Eilat', '12345678', 0);
 
 --
 -- Table structure for table `employees_treatments`
@@ -126,12 +124,11 @@ INSERT INTO `employee_treatments` (`employeeId`, `treatmentId`) VALUES
 
 DROP TABLE IF EXISTS `employee_available_hours`;
 CREATE TABLE IF NOT EXISTS `employee_available_hours` (
-  `id` int(11) NOT NULL AUTO_INCREMENT,
   `employeeId` varchar(9) NOT NULL,
   `treatmentId` varchar(9) NOT NULL,
   `patientAcceptStart` varchar(5) NOT NULL,
   `patientAcceptEnd` varchar(5) NOT NULL,
-  PRIMARY KEY (`id`),
+  PRIMARY KEY (`employeeId`, `treatmentId`),
   FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -164,12 +161,11 @@ INSERT INTO `employee_available_hours` (`employeeId`, `treatmentId`, `patientAcc
 
 DROP TABLE IF EXISTS `appointments`;
 CREATE TABLE IF NOT EXISTS `appointments` (
-  `id` varchar(5) NOT NULL AUTO_INCREMENT,
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `appointmentDateTime` datetime NOT NULL,
   `employeeId` varchar(9) NOT NULL,
   `customerId` varchar(9) NOT NULL,
   `treatmentId` varchar(9) DEFAULT NULL,
-  PRIMARY KEY (`id`),
   FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`customerId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
@@ -181,14 +177,14 @@ CREATE TABLE IF NOT EXISTS `appointments` (
 --
 
 INSERT INTO `appointments` (`id`, `appointmentDateTime`, `employeeId`, `customerId`, `treatmentId`) VALUES
-("1", '2023-08-17 10:00:00', '3', '1', 1),
-("2", '2023-08-17 11:00:00', '3', '2', 2),
-("3", '2023-08-17 12:00:00', '4', '6', 3),
-("4", '2023-08-18 11:00:00', '4', '7', 4),
-("5", '2023-08-18 12:00:00', '3', '1', 4),
-("6", '2023-08-18 13:00:00', '5', '8', 4),
-("7", '2023-08-06 10:00:00', '3', '1', 3),
-("8", '2023-08-06 11:00:00', '3', '2', 3);
+(1, '2023-08-17 10:00:00', '3', '1', 1),
+(2, '2023-08-17 11:00:00', '3', '2', 2),
+(3, '2023-08-17 12:00:00', '4', '6', 3),
+(4, '2023-08-18 11:00:00', '4', '7', 4),
+(5, '2023-08-18 12:00:00', '3', '1', 4),
+(6, '2023-08-18 13:00:00', '5', '8', 4),
+(7, '2023-08-06 10:00:00', '3', '1', 3),
+(8, '2023-08-06 11:00:00', '3', '2', 3);
 
 
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;

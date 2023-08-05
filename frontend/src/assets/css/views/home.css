@@ -32,7 +32,7 @@
 }
 
 .info-item .item-content {
-    color:  rgba(123, 121, 121, 0.75);
+    color: rgba(123, 121, 121, 0.75);
 }
 
 .home-page h1 {
@@ -176,4 +176,13 @@ figcaption {
         /* מרווח מתחת לסמל */
         /* ניתן להוסיף עוד כללי CSS לעיצוב נוסף */
     }
+}
+
+.emphasized {
+    font-weight: 600;
+    color: #cf3dbe;
+}
+
+.capitalized {
+    text-transform: capitalize;
 }

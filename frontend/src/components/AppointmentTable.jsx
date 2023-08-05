@@ -43,7 +43,7 @@ export default function AppointmentTable({ appointments, BASE_URL ,setAppointmen
               <div className="cell" data-title={titles[1]}>
                 {appointment.appointmentDateTime.substring(11, 16)}
               </div>
-              <div className="cell" data-title={titles[2]}>
+              <div className="cell capitalize" data-title={titles[2]}>
                 {appointment.treatmentType}
               </div>
               <div className="cell" data-title={titles[3]}>
@@ -52,8 +52,8 @@ export default function AppointmentTable({ appointments, BASE_URL ,setAppointmen
               <div className="cell" data-title={titles[4]}>
                 {appointment.treatmentPrice}₪
               </div>
-              <div className="cell" data-title={titles[5]}>
-                {appointment.employeeName}
+              <div className="cell capitalize" data-title={titles[5]}>
+                {loggedInUser.isEmployee? appointment.customerName: appointment.employeeName}
               </div>
               <div className="cell" style={{ justifyContent: "center", alignItems: "center" }}>
                 <div onClick={() => onRemoveAppointment(appointment)} title="Remove-appointment" className="remove-btn">X</div>

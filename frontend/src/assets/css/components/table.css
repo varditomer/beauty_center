@@ -68,6 +68,10 @@
     padding: 6px 4px;
 }
 
+.cell.capitalize {
+    text-transform: capitalize;
+}
+
 @media screen and (max-width: 580px) {
     .cell {
         padding: 2px 16px;

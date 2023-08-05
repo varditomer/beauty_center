@@ -23,7 +23,7 @@ export default function TreatmentTable({ treatments }) {
                             <div className="cell" data-title={titles[1]}>
                                 {treatment.price}₪
                             </div>
-                            <div className="cell" data-title={titles[2]}>
+                            <div className="cell capitalize" data-title={titles[2]}>
                                 {treatment.treatmentType}
                             </div>
                         </div>
