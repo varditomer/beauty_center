@@ -3,6 +3,7 @@ import logoImg from '../assets/images/logo.png';
 import UserMessage from '../components/UserMessage';
 import { userService } from '../services/user.service';
 import { storageService } from '../services/storage.service';
+import { Link } from 'react-router-dom';
 
 // Functional component for Login/Signup page
 export default function LoginSignup({ setLoggedInUser }) {
@@ -10,6 +11,8 @@ export default function LoginSignup({ setLoggedInUser }) {
     const [isLoginMode, setIsLoginMode] = useState(true);
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
+    const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false)
+    const [resetPasswordEmail, setResetPasswordEmail] = useState('')
 
     // Function to handle the login/signup form submission
     const handleLoginSignup = async (event) => {
@@ -49,7 +52,13 @@ export default function LoginSignup({ setLoggedInUser }) {
         // If in login mode, call the userService.login() to authenticate the user
         if (isLoginMode) {
             const userCredentials = { mail, password };
-            user = await userService.login(userCredentials);
+            const res = await userService.login(userCredentials);
+            if (res.error) { // Check for the "error" property instead of "status" to handle user already exists case
+                return setUserMessage('Invalid Password or Email!');
+            } else {
+                user = res
+            }
+
         } else { // If in signup mode, create a new user object and call the userService.signup()
             const confirmPassword = event.target[2].value;
             const name = event.target[3].value;
@@ -103,6 +112,18 @@ export default function LoginSignup({ setLoggedInUser }) {
         return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1;
     }
 
+    async function onResetPassword() {
+        const res = await userService.initiateResetPassword(resetPasswordEmail)
+        const elResetPasswordEmail = document.querySelector('.reset-password-email')
+        if (res.error) { // Check for the "error" property instead of "status" to handle user already exists case
+            elResetPasswordEmail.focus();
+            return setUserMessage(`Email doesn't exists!`);
+        } else {
+            setIsSuccess(true)
+            setUserMessage(`Reset Password Emailed!`);
+        }
+    }
+
     // JSX content for the Login/Signup page
     return (
         <section className="login-signup-page">
@@ -117,10 +138,19 @@ export default function LoginSignup({ setLoggedInUser }) {
                         Email:
                         <input type="email" name="mail" />
                     </label>
-                    <label>
-                        Password:
-                        <input type="password" name="password" />
-                    </label>
+                    {isForgotPasswordMode &&
+                        <>
+                            <span onClick={() => setIsForgotPasswordMode(false)} className='text-btn'>Close</span>
+                            <button disabled={!isValidMail(resetPasswordEmail)} type='button' onClick={onResetPassword}>Send</button>
+                        </>
+                    }
+                    {!isForgotPasswordMode &&
+                        <label>
+                            Password:
+                            <input type="password" name="password" />
+                        </label>
+                    }
+
                     {!isLoginMode &&
                         <>
                             <label>
@@ -143,10 +173,19 @@ export default function LoginSignup({ setLoggedInUser }) {
                     }
 
                     {isLoginMode &&
-                        <div className="reset-password">Forgot Password? <span onClick={() => console.log('reset password')} className='text-btn'>Reset by mail</span></div>
+                        <>
+                            {!isForgotPasswordMode &&
+                                <div className="reset-password">Forgot Password? <span onClick={() => setIsForgotPasswordMode(true)} className='text-btn'>Reset by mail</span></div>
+                            }
+                        </>
+
                     }
-                    <button className="login-signup" type="submit">{isLoginMode ? "Login" : "Signup"}</button>
-                    <div className="signup">{isLoginMode ? "Don't have an account?" : "Already sign up?"} <span onClick={() => setIsLoginMode(prev => !prev)} className="text-btn">{isLoginMode ? "Sign up" : "Login"}</span></div>
+                    {!isForgotPasswordMode &&
+                        <>
+                            <button className="login-signup" type="submit">{isLoginMode ? "Login" : "Signup"}</button>
+                            <div className="signup">{isLoginMode ? "Don't have an account?" : "Already sign up?"} <span onClick={() => setIsLoginMode(prev => !prev)} className="text-btn">{isLoginMode ? "Sign up" : "Login"}</span></div>
+                        </>
+                    }
                     {userMessage.length > 0 &&
                         <UserMessage
                             userMessage={userMessage}

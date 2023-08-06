@@ -8,14 +8,11 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
     useEffect(() => {
         // Fetch and sort user appointments when component mounts
-        const fetchAppointments = async () => {
+        const getAppointments = async () => {
             try {
                 // Fetch user appointments
-                console.log(`loggedInUser:`, loggedInUser)
                 const isEmployee = loggedInUser.isEmployee
-                console.log(`isEmployee:`, isEmployee)
-                const appointments = isEmployee ? await getEmployeeAppointments() : await getUserAppointments();
-                console.log(`appointments:`, appointments)
+                const appointments = isEmployee ? await fetchEmployeeAppointments() : await fetchCustomerAppointments();
                 // Sort appointments by appointmentDateTime
                 appointments.sort((a, b) => {
                     const dateA = new Date(a.appointmentDateTime);
@@ -29,11 +26,11 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
             }
         };
 
-        fetchAppointments();
+        getAppointments();
     }, []);
 
-    // Function to fetch user appointments
-    const getUserAppointments = async () => {
+    // Function to fetch customer's appointments
+    const fetchCustomerAppointments = async () => {
         try {
             const response = await fetch(`${BASE_URL}/appointment/${loggedInUser.id}`, {
                 method: 'GET',
@@ -50,8 +47,8 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
         }
     };
 
-    // Function to fetch user appointments
-    const getEmployeeAppointments = async () => {
+    // Function to fetch employee's appointments
+    const fetchEmployeeAppointments = async () => {
         try {
             const response = await fetch(`${BASE_URL}/appointment/employee/${loggedInUser.id}`, {
                 method: 'GET',

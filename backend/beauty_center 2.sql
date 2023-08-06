@@ -65,6 +65,7 @@ CREATE TABLE IF NOT EXISTS `users` (
   `address` varchar(50) NOT NULL,
   `password` varchar(20) NOT NULL,
   `isEmployee` tinyint(1) NOT NULL DEFAULT '0',
+  `resetPasswordCode` varchar(5)
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 

@@ -1,10 +1,13 @@
 const console = require("console");
 const makeId = require('../../services/util.service');
 const { doQuery, doQueryAndReturnResults } = require("../../services/database.service");
+const transporter = require("../../services/mail.service");
 
 module.exports = {
   login,
-  signup
+  signup,
+  initiateResetPassword,
+  resetPassword
 }
 
 // Function to handle user login
@@ -13,6 +16,8 @@ function login(req, res) {
     mail,
     password
   } = req.body;
+
+  console.log(`req.body:`, req.body)
 
   // Check if both username (email) and password are provided in the request
   if (mail && password) {
@@ -30,17 +35,17 @@ function login(req, res) {
 
       // If the query returns results
       if (results.length > 0) {
-        console.log(`Welcome ${results[0].isEmployee === 0 ? 'user' : 'employee'} :`, results[0].id);
+        console.log(`results:`, results)
         res.writeHead(200, { "Content-Type": "application/json" });
         const user = results[0]
         delete user.password
+        delete user.resetPasswordCode
         res.end(JSON.stringify(user));
       }
       // If the query returns no results, the credentials are invalid
       else {
         console.log("Invalid credentials");
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end("not valid");
+        return res.status(409).json({ error: `Invalid Password or Email!` });
       }
     }
 
@@ -49,7 +54,7 @@ function login(req, res) {
 
   } else {
     // If either username or password is missing, return a bad request status
-    res.sendStatus(400);
+    return res.status(409).json({ error: `Invalid Password or Email!` });
   }
 }
 
@@ -107,6 +112,77 @@ async function signup(req, res) {
   }
 }
 
+// Function to initiate reset password
+async function initiateResetPassword(req, res) {
+  const mail = req.params.mail;
+  const isUserExist = await _isUserExist(mail)
+
+  if (!isUserExist) {
+    // If the user isn't already exists, return a conflict status (409) with the error message
+    return res.status(409).json({ error: `Email doesn't exists!` });
+  } else {
+    const resetPasswordCode = makeId()
+
+    const sql = `
+    UPDATE users
+    SET resetPasswordCode = ?
+    WHERE mail = ?;
+    `
+      ;
+    const params = [resetPasswordCode, mail];
+
+    try {
+      await doQueryAndReturnResults(sql, params);
+    } catch (error) {
+      console.error('Error while querying the database:', error);
+      throw error;
+    }
+
+    const resetPasswordLink = 'http://localhost:3000/resetPassword'; // Update with the actual reset password link
+
+
+    const mailOptions = {
+      from: 'varditom@post.bgu.ac.il',
+      to: mail,
+      subject: 'Password Reset',
+      html: `
+      <p>This is a reset email sent from Beauty Center.</p>
+      <p>Your reset password code is: <span style="color: blue; user-select: all; cursor: pointer;">${resetPasswordCode}</span></p>
+      <p>Click <a href="${resetPasswordLink}">here</a> to reset your password.</p>
+      `
+    };
+
+
+    transporter.sendMail(mailOptions, (error, info) => {
+      if (error) {
+        console.error('Error sending email:', error);
+      } else {
+        console.log('Email sent:', info.response);
+      }
+    });
+
+
+
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify('reset password mail sent'));
+  }
+
+}
+
+// Function to initiate reset password
+async function resetPassword(req, res) {
+  const resetPasswordDetails = req.body;
+  const isResetCodesMatches = await _isResetPasswordCodeMatchToCodeInDB(resetPasswordDetails.mail, resetPasswordDetails.resetPasswordCode)
+  if (isResetCodesMatches) {
+    await _updateUserPassword(resetPasswordDetails.password, resetPasswordDetails.mail)
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify('Password was changed'));
+  } else {
+    return res.status(409).json({ error: `Invalid Reset Password Code!` })
+  }
+
+}
+
 
 // Function to check if the user exists by email
 async function _isUserExist(mail) {
@@ -124,6 +200,39 @@ async function _isUserExist(mail) {
       console.log('User does not exist.');
       return false;
     }
+  } catch (error) {
+    console.error('Error while querying the database:', error);
+    throw error;
+  }
+}
+
+// Function to get user's reset password code by mail
+async function _isResetPasswordCodeMatchToCodeInDB(mail, providedResetPasswordCode) {
+  const sql = 'SELECT resetPasswordCode FROM users WHERE mail = ?';
+  const params = [mail];
+  try {
+    const results = await doQueryAndReturnResults(sql, params);
+    const row = results[0]; // Your result: RowDataPacket { resetPasswordCode: '3i3ci' }
+    // Extract the resetPasswordCode from the RowDataPacket
+    const resetPasswordCodeFromDB = row.resetPasswordCode;
+    return resetPasswordCodeFromDB === providedResetPasswordCode
+  } catch (error) {
+    console.error('Error while querying the database:', error);
+    throw error;
+  }
+}
+
+// Function to get user's reset password code by mail
+async function _updateUserPassword(password, mail) {
+  const sql = `
+  UPDATE users
+  SET password = ?
+  WHERE mail = ?;
+  `
+    ;
+  const params = [password, mail];
+  try {
+    return await doQueryAndReturnResults(sql, params);
   } catch (error) {
     console.error('Error while querying the database:', error);
     throw error;

@@ -10,6 +10,7 @@ import Appointments from './pages/Appointments';
 import { storageService } from './services/storage.service';
 import AddAppointment from './pages/AddAppointment';
 import Profile from './pages/Profile';
+import ResetPassword from './pages/ResetPassword';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null)
@@ -27,6 +28,9 @@ function App() {
         <Routes>
           <Route path="/login"
             element={loggedInUser ? <Navigate to="/" replace /> : <LoginSignup setLoggedInUser={setLoggedInUser} BASE_URL={BASE_URL} />}>
+          </Route>
+          <Route path="/resetPassword"
+            element={loggedInUser ? <Navigate to="/" replace /> : <ResetPassword BASE_URL={BASE_URL} />}>
           </Route>
           <Route path="/employees"
             element={loggedInUser ? <Employees BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>
