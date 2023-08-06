@@ -58,7 +58,7 @@ INSERT INTO `treatments` (`id`, `duration`, `price`, `treatmentType`) VALUES
 
 DROP TABLE IF EXISTS `users`;
 CREATE TABLE IF NOT EXISTS `users` (
-  `id` varchar(5) NOT NULL,
+  `id` varchar(5) NOT NULL PRIMARY KEY,
   `name` varchar(50) NOT NULL,
   `mail` varchar(50) NOT NULL,
   `phoneNumber` varchar(10) NOT NULL,
@@ -66,7 +66,6 @@ CREATE TABLE IF NOT EXISTS `users` (
   `password` varchar(20) NOT NULL,
   `isEmployee` tinyint(1) NOT NULL DEFAULT '0',
   `resetPasswordCode` varchar(5)
-  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
