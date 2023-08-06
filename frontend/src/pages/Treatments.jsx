@@ -51,8 +51,10 @@ export default function Treatments({ BASE_URL, loggedInUser }) {
             });
             const employeeTreatments = await response.json();
             // Extract the treatmentTypeIds from the first element in the array
-            const treatmentTypeIdsArray = employeeTreatments[0].treatmentTypeIds.split(',');
-            return treatmentTypeIdsArray;
+            if (employeeTreatments.length) {
+                return employeeTreatments[0].treatmentTypeIds.split(',');
+            }
+            return employeeTreatments;
         } catch (error) {
             console.error(error);
             return [];

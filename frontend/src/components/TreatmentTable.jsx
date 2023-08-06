@@ -4,18 +4,17 @@ export default function TreatmentTable({ treatments }) {
 
     return (
         <>
-            {treatments &&
-                <div className="custom-table">
-                    {/* Table Header */}
-                    <div className="row header">
-                        {titles.map((title) => (
-                            <div key={title} className="cell">
-                                {title}
-                            </div>
-                        ))}
-                    </div>
-                    {/* Table Rows */}
-                    {treatments.map(treatment => {
+            <div className="custom-table">
+                {/* Table Header */}
+                <div className="row header">
+                    {titles.map((title) => (
+                        <div key={title} className="cell">
+                            {title}
+                        </div>
+                    ))}
+                </div>
+                {!!treatments.length &&
+                    treatments.map(treatment => {
                         return <div key={treatment.id} className="row">
                             <div className="cell" data-title={titles[0]}>
                                 {treatment.duration} min
@@ -28,8 +27,8 @@ export default function TreatmentTable({ treatments }) {
                             </div>
                         </div>
                     })}
-                </div>
-            }
+            </div>
+
         </>
     )
 }

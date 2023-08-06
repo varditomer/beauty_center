@@ -84,7 +84,7 @@ async function signup(req, res) {
         INSERT INTO users (id, name, mail , phoneNumber, address, password, isEmployee) 
         values (?,?,?,?,?,?,?)
       `;
-      const isEmployee = '0' // assign new user to be customer
+      const isEmployee = 0  // assign new user to be customer
       const params = [id, name, mail, phoneNumber, address, password, isEmployee];
 
       // Callback function to handle the database query results
