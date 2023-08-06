@@ -1,9 +1,13 @@
 const express = require('express');
 const session = require("express-session");
 const cors = require('cors');
+const dotenv = require("dotenv");
+
+dotenv.config()
+
 
 const app = express();
-const port = 3001; // You can change this to any port you prefer
+const port = process.env.PORT; // You can change this to any port you prefer
 
 // parse json
 app.use(express.json())

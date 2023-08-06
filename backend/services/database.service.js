@@ -1,11 +1,13 @@
 const mysql = require("mysql");
+const dotenv = require("dotenv");
+dotenv.config()
 
 // Create a reusable database connection
 const sqlConnection = mysql.createConnection({
-  host: "localhost",
-  user: "root",
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
   password: "",
-  database: "beauty_center",
+  database: process.env.DB_NAME,
 });
 
 // Connect to the database

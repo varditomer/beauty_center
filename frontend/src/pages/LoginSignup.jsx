@@ -3,7 +3,6 @@ import logoImg from '../assets/images/logo.png';
 import UserMessage from '../components/UserMessage';
 import { userService } from '../services/user.service';
 import { storageService } from '../services/storage.service';
-import { Link } from 'react-router-dom';
 
 // Functional component for Login/Signup page
 export default function LoginSignup({ setLoggedInUser }) {
@@ -114,9 +113,9 @@ export default function LoginSignup({ setLoggedInUser }) {
 
     async function onResetPassword() {
         const res = await userService.initiateResetPassword(resetPasswordEmail)
-        const elResetPasswordEmail = document.querySelector('.reset-password-email')
+        const elEmail = document.querySelector('.mail')
         if (res.error) { // Check for the "error" property instead of "status" to handle user already exists case
-            elResetPasswordEmail.focus();
+            elEmail.focus();
             return setUserMessage(`Email doesn't exists!`);
         } else {
             setIsSuccess(true)
@@ -136,7 +135,7 @@ export default function LoginSignup({ setLoggedInUser }) {
                 <form onSubmit={handleLoginSignup}>
                     <label>
                         Email:
-                        <input type="email" name="mail" />
+                        <input type="email" name="mail" className='mail' />
                     </label>
                     {isForgotPasswordMode &&
                         <>
