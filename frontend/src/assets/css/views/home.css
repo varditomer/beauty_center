@@ -11,9 +11,8 @@
     flex-direction: column;
 }
 
-.home-page .next-appointment-container {
-    align-self: center;
-    padding: 20px;
+.home-page .appointment-info-container {
+    padding: 40px 20px;
     border: 1px solid black;
     border-radius: 12px;
     display: flex;
@@ -22,9 +21,33 @@
     align-items: center;
 }
 
-.next-appointment-container h3 {
+.revenue-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.revenue-container .revenue{
+    color: var(--accent);
+}
+
+@media screen and (min-width:650px) {
+    .home-page .appointment-info-container {
+      flex-direction: row;  
+    } 
+}
+
+.home-page .next-appointment-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.home-page h3 {
     font-size: 18px;
     color: var(--accent);
+    text-align: center;
 }
 
 .next-appointment-info {

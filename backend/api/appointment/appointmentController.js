@@ -3,12 +3,12 @@ const { doQuery } = require('../../services/database.service');
 const makeId = require("../../services/util.service");
 
 module.exports = {
-  getCustomerAppointments,
-  getEmployeeAppointments,
+  getCustEmployeeRevenu,
   addAppointment,
   removeAppointment,
-  getNextAppointment,
-  getNextTreatment
+  getNextAppointments,
+  getNextTreatments,
+  getEmployeeIncomes
 }
 
 // Get appointments by user Id
@@ -57,28 +57,22 @@ function getCustomerAppointments(req, res) {
   }
 }
 
-// Get appointments by employee Id
-function getEmployeeAppointments(req, res) {
+// Get appointmentzs by emEmployeeRevenu(req, res) {
+function getCustEmployeeRevenu(req,res) {
   try {
     const employeeId = req.params.id
-    // SQL query to get appointments for a specific customer (customerId)
+   // SQL query to get appointments for a specific customer (customerId)
     const sql = `
-      SELECT 
-      appointments.id,
-      CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
-      treatments.treatmentType,
-      treatments.duration AS treatmentDuration,
-      treatments.price AS treatmentPrice,
-      users.name AS customerName
-      FROM 
-      appointments
-      INNER JOIN 
-      treatments ON appointments.treatmentId = treatments.id
-      INNER JOIN 
-      users ON appointments.customerId = users.id
-      WHERE 
-      appointments.employeeId = ?;
-    `
+    SELECT 
+    SUM(treatments.price) AS monthlyTotal
+    FROM 
+    appointments
+    INNER JOIN 
+    treatments ON appointments.treatmentId = treatments.id
+    WHERE 
+    appointments.employeeId = ?
+    AND MONTH(appointments.appointmentDateTime) = MONTH(CURDATE()); -- Filter appointments for the current month
+`
     const params = [employeeId];
     const cb = (error, results) => {
       if (error) {
@@ -88,22 +82,23 @@ function getEmployeeAppointments(req, res) {
         res.end(error.message);
       }
       else {
-        // If the query is successful, return the appointments data as JSON
+        //       // If the query is successful, return the appointments data as JSON
         res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify(results));
+        res.end(JSON.stringify(results[0]));
       }
     }
     // Execute the SQL query using the 'doQuery' function
     doQuery(sql, params, cb)
   }
   catch (exp) {
-    // If an exception occurs during the process, return a server error status
+    //   // If an exception occurs during the process, return a server error status
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(exp.message);
   }
 }
 
-function getNextAppointment(req, res) {
+
+function getNextAppointments(req, res) {
   try {
     const userId = req.params.id
     // SQL query to get appointments for a specific customer (customerId)
@@ -122,11 +117,10 @@ function getNextAppointment(req, res) {
     INNER JOIN 
     users ON appointments.employeeId = users.id
     WHERE 
-    appointments.customerId = ? AND
-    appointments.appointmentDateTime >= DATE(NOW()) -- Filter appointments with date greater than or equal to today
+    appointments.customerId = ? 
+    AND DATE(appointments.appointmentDateTime) = CURDATE() -- Filter appointments for today
     ORDER BY 
-    appointments.appointmentDateTime ASC
-    LIMIT 1;
+    appointments.appointmentDateTime ASC;
     `
     const params = [userId];
     const cb = (error, results) => {
@@ -153,7 +147,7 @@ function getNextAppointment(req, res) {
   }
 }
 
-function getNextTreatment(req, res) {
+function getNextTreatments(req, res) {
   try {
     const employeeId = req.params.id;
     // SQL query to get the next appointment for a specific employee (employeeId)
@@ -172,11 +166,10 @@ function getNextTreatment(req, res) {
     INNER JOIN 
     users ON appointments.customerId = users.id
     WHERE 
-    appointments.employeeId = ? AND
-    appointments.appointmentDateTime >= DATE(NOW()) -- Filter appointments with date greater than or equal to today
+    appointments.employeeId = ?
+    AND DATE(appointments.appointmentDateTime) = CURDATE() -- Filter appointments for today
     ORDER BY 
-    appointments.appointmentDateTime ASC
-    LIMIT 1;
+    appointments.appointmentDateTime ASC;
     `;
     const params = [employeeId];
     const cb = (error, results) => {
@@ -214,7 +207,7 @@ function addAppointment(req, res) {
         values (?,?,?,?)
       `;
 
-      const formattedDateTime = appointmentDateTime.substring(0,10) + '' + appointmentDateTime.substring(10,18)
+      const formattedDateTime = appointmentDateTime.substring(0, 10) + '' + appointmentDateTime.substring(10, 18)
       const params = [formattedDateTime, customerId, employeeId, treatmentId];
       const cb = (error, results) => {
         if (error) {
@@ -279,3 +272,108 @@ function removeAppointment(req, res) {
     res.end(exp.message);
   }
 }
+
+
+function getEmployeeTreatments(req, res) {
+  try {
+    const employeeId = req.params.id
+    const sql = `
+    SELECT 
+    appointments.customerId,
+    users.name AS customerName,
+    treatments.treatmentType,
+    users.name AS employeeName,
+    SUM(treatments.price) AS totalTreatmentPrice
+    FROM 
+    appointments
+    INNER JOIN 
+    treatments ON appointments.treatmentId = treatments.id
+    INNER JOIN 
+    users ON appointments.employeeId = users.id
+    WHERE 
+    MONTH(appointments.appointmentDateTime) = MONTH(NOW()) -- Filter appointments for the current month
+    AND YEAR(appointments.appointmentDateTime) = YEAR(NOW()) -- Filter appointments for the current year
+    GROUP BY 
+    appointments.customerId,
+    treatments.treatmentType,
+    users.name;
+
+    `;
+    const params = [employeeId]
+    const cb = (error, results) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(results));
+      }
+    }
+    doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
+
+
+function getEmployeeIncomes(req, res) {
+  try {
+    const employeeId = req.params.id
+    const sql = `
+    SELECT 
+    appointments.customerId,
+    users.name AS customerName,
+    treatments.treatmentType,
+    users.name AS employeeName,
+    SUM(treatments.price) AS totalTreatmentPrice
+    FROM 
+    appointments
+    INNER JOIN 
+    treatments ON appointments.treatmentId = treatments.id
+    INNER JOIN 
+    users ON appointments.employeeId = users.id
+    WHERE 
+    MONTH(appointments.appointmentDateTime) = MONTH(NOW()) -- Filter appointments for the current month
+    AND YEAR(appointments.appointmentDateTime) = YEAR(NOW()) -- Filter appointments for the current year
+    AND appointments.customerId = :customer_id -- Parameter for customer ID
+    GROUP BY 
+    appointments.customerId,
+    treatments.treatmentType,
+    users.name;
+
+
+    `;
+    const params = [employeeId]
+    const cb = (error, results) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(results));
+      }
+    }
+    doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
+
+
+
+
+
+
+
+
+
+
+

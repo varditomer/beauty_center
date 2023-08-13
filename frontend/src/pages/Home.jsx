@@ -3,22 +3,25 @@ import employeeImg from '../assets/images/employee.png';
 import treatmentImg from '../assets/images/treatment.png';
 import appointmentImg from '../assets/images/appointment.png';
 import { Link } from 'react-router-dom';
+import AppointmentTable from '../components/AppointmentTable';
 export default function Home({ loggedInUser, BASE_URL }) {
 
 
-    const [nextAppointment, setNextAppointment] = useState(null)
-
+    // const [nextAppointment, setNextAppointment] = useState(null)
+    const [appointments, setAppointments] = useState(null);
+    const [revenue, setRevenue] = useState(null);
 
     useEffect(() => {
         const fetchUserAppointments = async () => {
             try {
                 const appointments = await getUserNextAppointment();
-
+                if (loggedInUser.isEmployee) {
+                    const employeeRevenue = await getEmployeeRevenue()
+                    setRevenue(employeeRevenue.monthlyTotal)
+                    console.log(employeeRevenue);
+                }
                 if (appointments.length) {
-                    const utcDateTime = new Date(appointments[0].appointmentDateTime);
-                    const localDateTimeString = utcDateTime.toISOString();
-                    appointments[0].appointmentDateTime = localDateTimeString
-                    setNextAppointment(appointments[0])
+                    setAppointments(appointments)
                 }
             } catch (error) {
                 console.error(error);
@@ -31,7 +34,26 @@ export default function Home({ loggedInUser, BASE_URL }) {
 
 
     const getUserNextAppointment = async () => {
-        const endpoint = loggedInUser.isEmployee ? "nextTreatment" : "nextAppointment"
+        const endpoint = loggedInUser.isEmployee ? "nextTreatments" : "nextAppointments"
+        try {
+            const response = await fetch(`${BASE_URL}/appointment/${endpoint}/${loggedInUser.id}`, {
+                method: 'GET',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                },
+            });
+            const nextAppointment = await response.json();
+            return nextAppointment;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+
+    const getEmployeeRevenue = async () => {
+        const endpoint = "revenue"
         try {
             const response = await fetch(`${BASE_URL}/appointment/${endpoint}/${loggedInUser.id}`, {
                 method: 'GET',
@@ -62,19 +84,20 @@ export default function Home({ loggedInUser, BASE_URL }) {
                 beauty services. Thank you for choosing our beauty center,
                 and we are ready to meet your beauty care needs and desires!
             </p>
-            {nextAppointment &&
-                <div className="next-appointment-container">
-                    <h3>{loggedInUser.isEmployee ? "Your next treatment" : "Your next appointment"}</h3>
-                    <ul className='next-appointment-info'>
-                        <li className='info-item'>Date: <span className="item-content">{nextAppointment.appointmentDateTime.substring(0, 10)}</span></li>
-                        <li className='info-item'>Time: <span className="item-content">{nextAppointment.appointmentDateTime.substring(11, 16)}</span></li>
-                        <li className='info-item'>{loggedInUser.isEmployee ? "Patient" : "Therapist"}: <span className="item-content">{loggedInUser.isEmployee ? nextAppointment.customerName : nextAppointment.employeeName}</span></li>
-                        <li className='info-item'>Price: <span className="item-content">{nextAppointment.treatmentPrice}₪</span></li>
-                        <li className='info-item'>Type: <span className="item-content">{nextAppointment.treatmentType}</span></li>
-                        <li className='info-item'>Duration: <span className="item-content">{nextAppointment.treatmentDuration} min</span></li>
-                    </ul>
-                </div>
-            }
+            <div className="appointment-info-container">
+                {appointments && <>
+                    <div className="next-appointment-container">
+                        <h3>{loggedInUser.isEmployee ? "Your today treatments" : "Your next appointment"}</h3>
+                        <AppointmentTable setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={appointments} loggedInUser={loggedInUser} />
+                    </div>
+                </>
+                }
+                {revenue !== null &&
+                    <div className="revenue-container">
+                        <h3 style={{color:"black"}}>Your expected revenue at this month: <span className="revenue">{revenue}₪</span></h3>
+                    </div>
+                }
+            </div>
             <div className="image-container">
                 {!loggedInUser.isEmployee &&
                     <Link className="img-link" to='/employees'>
