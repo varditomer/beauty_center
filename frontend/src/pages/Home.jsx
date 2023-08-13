@@ -94,7 +94,7 @@ export default function Home({ loggedInUser, BASE_URL }) {
                 }
                 {revenue !== null &&
                     <div className="revenue-container">
-                        <h3 style={{color:"black"}}>Your expected revenue at this month: <span className="revenue">{revenue}₪</span></h3>
+                        <h3 style={{color:"white"}}>Your expected revenue at this month: <span className="revenue">{revenue}₪</span></h3>
                     </div>
                 }
             </div>
