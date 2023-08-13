@@ -107,9 +107,9 @@
 
 @media screen and (min-width:650px) {
     .row .remove-btn {
-        padding: 4px 8px;
-        height: unset;
-        width: unset;
+        /* padding: 4px 8px; */
+        /* height: unset; */
+        /* width: unset; */
     }
 }
 
