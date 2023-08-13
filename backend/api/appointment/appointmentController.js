@@ -3,12 +3,15 @@ const { doQuery } = require('../../services/database.service');
 const makeId = require("../../services/util.service");
 
 module.exports = {
-  getCustEmployeeRevenu,
+  getCustEmployeeRevenue,
   addAppointment,
   removeAppointment,
   getNextAppointments,
   getNextTreatments,
-  getEmployeeIncomes
+  getEmployeeIncomes,
+  getCustomerAppointments,
+  getEmployeeAppointments,
+  getCustomerAppointmentsByDay
 }
 
 // Get appointments by user Id
@@ -58,10 +61,10 @@ function getCustomerAppointments(req, res) {
 }
 
 // Get appointmentzs by emEmployeeRevenu(req, res) {
-function getCustEmployeeRevenu(req,res) {
+function getCustEmployeeRevenue(req, res) {
   try {
     const employeeId = req.params.id
-   // SQL query to get appointments for a specific customer (customerId)
+    // SQL query to get appointments for a specific customer (customerId)
     const sql = `
     SELECT 
     SUM(treatments.price) AS monthlyTotal
@@ -199,6 +202,7 @@ function getNextTreatments(req, res) {
 function addAppointment(req, res) {
   try {
     const { customerId, employeeId, treatmentId, appointmentDateTime } = req.body.newAppointment;
+    console.log(`appointmentDateTime:`, appointmentDateTime)
     // const id = makeId()
     if (appointmentDateTime && customerId && employeeId && treatmentId) {
       // SQL query to add a new appointment
@@ -208,6 +212,7 @@ function addAppointment(req, res) {
       `;
 
       const formattedDateTime = appointmentDateTime.substring(0, 10) + '' + appointmentDateTime.substring(10, 18)
+      console.log(`formattedDateTime:`, formattedDateTime)
       const params = [formattedDateTime, customerId, employeeId, treatmentId];
       const cb = (error, results) => {
         if (error) {
@@ -274,7 +279,7 @@ function removeAppointment(req, res) {
 }
 
 
-function getEmployeeTreatments(req, res) {
+function getEmployeeAppointments(req, res) {
   try {
     const employeeId = req.params.id
     const sql = `
@@ -367,6 +372,41 @@ function getEmployeeIncomes(req, res) {
 
 }
 
+function getCustomerAppointmentsByDay(req, res) {
+  try {
+    const { customerId, date } = req.body
+    const sql = `
+      SELECT
+      appointments.id,
+      CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
+      appointments.employeeId,
+      appointments.customerId,
+      appointments.treatmentId,
+      treatments.duration AS appointmentDuration
+      FROM appointments
+      JOIN treatments ON appointments.treatmentId = treatments.id
+      WHERE customerId = ?
+      AND DATE(appointmentDateTime) = DATE(?);
+    `;
+    const params = [customerId, date]
+    const cb = (error, results) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(results));
+      }
+    }
+    doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
 
 
 

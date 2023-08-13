@@ -11,6 +11,7 @@ import { storageService } from './services/storage.service';
 import AddAppointment from './pages/AddAppointment';
 import Profile from './pages/Profile';
 import ResetPassword from './pages/ResetPassword';
+import CustomHeader from './components/CustomHeader';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null)
@@ -23,7 +24,7 @@ function App() {
   
   return (
     <section className="app-container">
-      {loggedInUser && <Header setLoggedInUser={setLoggedInUser} loggedInUser={loggedInUser}/>}
+      {loggedInUser && <CustomHeader setLoggedInUser={setLoggedInUser} loggedInUser={loggedInUser}/>}
       <main className='main-container'>
         <Routes>
           <Route path="/login"

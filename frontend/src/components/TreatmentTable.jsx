@@ -1,6 +1,6 @@
 export default function TreatmentTable({ treatments, onRemoveTreatmentType, loggedInUser }) {
 
-    const titles = ['Duration', 'Price', 'Type', 'Start', 'End', '']
+    const titles = loggedInUser.isEmployee ?  ['Duration', 'Price', 'Type', 'Start', 'End', ''] : ['Duration', 'Price', 'Type']
     return (
         <>
             <div className="custom-table">
@@ -24,7 +24,7 @@ export default function TreatmentTable({ treatments, onRemoveTreatmentType, logg
                             <div className="cell capitalize" data-title={titles[2]}>
                                 {treatment.treatmentType}
                             </div>
-                            {!!loggedInUser.isEmp &&
+                            {!!loggedInUser.isEmployee &&
                                 <>
                                     <div className="cell capitalize" data-title={titles[2]}>
                                         14:00

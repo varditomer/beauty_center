@@ -98,7 +98,7 @@ export default function Treatments({ BASE_URL, loggedInUser }) {
         <section className="treatments-page">
             <h1 className="page-title">{loggedInUser.isEmployee ? `Employee's ` : 'All '} Treatments</h1>
             {treatments &&
-                <TreatmentTable treatments={treatments} onRemoveTreatmentType={onRemoveTreatmentType} />
+                <TreatmentTable loggedInUser={loggedInUser} treatments={treatments} onRemoveTreatmentType={onRemoveTreatmentType} />
             }
             <UserMessage
                 userMessage={userMessage}

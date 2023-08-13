@@ -47,6 +47,7 @@ function getEmployees(req, res) {
 function getEmployeesByTreatmentId(req, res) {
   try {
     const treatmentId = req.params.id
+    console.log(`treatmentId:`, treatmentId)
     const sql = `
     SELECT users.*
     FROM users
@@ -80,7 +81,11 @@ function getEmployeeAvailableHoursByTreatmentId(req, res) {
   try {
     const { employeeId, treatmentId } = req.body
     const sql = `
-    SELECT *
+    SELECT
+    employee_available_hours.employeeId,
+    employee_available_hours.treatmentId,
+    employee_available_hours.patientAcceptStart,
+    employee_available_hours.patientAcceptEnd
     FROM employee_available_hours
     WHERE employeeId = ? AND treatmentId = ?;    
     `;
@@ -89,9 +94,11 @@ function getEmployeeAvailableHoursByTreatmentId(req, res) {
       if (error) {
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(error.message);
+        console.log(`error.message:`, error.message)
       }
       else {
         res.writeHead(200, { "Content-Type": "application/json" });
+        console.log(`results:`, results)
         res.end(JSON.stringify(results));
       }
     }
@@ -106,33 +113,37 @@ function getEmployeeAvailableHoursByTreatmentId(req, res) {
 
 function getEmployeeAppointmentsByDay(req, res) {
   try {
-    const { employeeId, date } = req.body
+    const { employeeId, date } = req.body;
     const sql = `
-      SELECT *
-      FROM appointments
-      WHERE employeeId = ?
-      AND DATE(appointmentDateTime) = DATE(?);
-
+        SELECT
+        appointments.id,
+        CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
+        appointments.employeeId,
+        appointments.customerId,
+        appointments.treatmentId,
+        treatments.duration AS appointmentDuration
+        FROM appointments
+        JOIN treatments ON appointments.treatmentId = treatments.id
+        WHERE employeeId = ?
+        AND DATE(appointmentDateTime) = DATE(?);
     `;
-    const params = [employeeId, date]
+    const params = [employeeId, date];
     const cb = (error, results) => {
       if (error) {
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(error.message);
-      }
-      else {
+      } else {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(results));
       }
-    }
-    doQuery(sql, params, cb)
-  }
-  catch (exp) {
+    };
+    doQuery(sql, params, cb);
+  } catch (exp) {
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(exp.message);
   }
-
 }
+
 
 
 

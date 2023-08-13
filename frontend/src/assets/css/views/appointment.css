@@ -8,7 +8,7 @@
     margin-bottom: unset;
 }
 
-.appointment-page .add-appointment-btn{
+.add-appointment-btn{
     cursor: pointer;
     border: unset;
     border-radius: 50vw;
@@ -21,6 +21,6 @@
     background-color: var(--accent);
 }
 
-.appointment-page .add-appointment-btn:hover {
+.add-appointment-btn:hover {
     background-color: rgb(216, 68, 167);
 }
