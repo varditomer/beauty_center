@@ -30,19 +30,22 @@
 
 .row.header {
     font-weight: 900;
-    color: #ffffff;
+    color: white;
     background: var(--accent);
+}
+.row.header .cell {
+    display: block;
 }
 
 @media screen and (max-width: 580px) {
+    .row.header .cell {
+        display: none;
+    }
     .row.header {
+        display: block;
         padding: 0;
         height: 6px;
     }
-}
-
-.cell {
-    display: none;
 }
 
 .cell {
@@ -63,7 +66,7 @@
 
 
 .cell {
-    display: flex;
+    /* display: flex; */
     width: 100%;
     padding: 6px 4px;
 }

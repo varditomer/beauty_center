@@ -1,7 +1,7 @@
-export default function AppointmentTable({ appointments, BASE_URL ,setAppointments, loggedInUser}) {
+export default function AppointmentTable({ appointments, BASE_URL, setAppointments, loggedInUser }) {
 
 
-  const titles = ['Date', 'Time', 'Type', 'Duration', 'Price', `${loggedInUser.isEmployee? 'Customer':'Therapist'}`, '']
+  const titles = ['Date', 'Time', 'Type', 'Duration', 'Price', `${loggedInUser.isEmployee ? 'Customer' : 'Therapist'}`, '']
 
   const onRemoveAppointment = async (appointmentToRemove) => {
     try {
@@ -53,7 +53,11 @@ export default function AppointmentTable({ appointments, BASE_URL ,setAppointmen
                 {appointment.treatmentPrice}₪
               </div>
               <div className="cell capitalize" data-title={titles[5]}>
-                {loggedInUser.isEmployee? appointment.customerName: appointment.employeeName}
+                {loggedInUser.isEmployee ?
+                  appointment.customerName
+                  :
+                  appointment.employeeName
+                }
               </div>
               <div className="cell" style={{ justifyContent: "center", alignItems: "center" }}>
                 <div onClick={() => onRemoveAppointment(appointment)} title="Remove-appointment" className="remove-btn">X</div>

@@ -1,8 +1,9 @@
-const { doQuery } = require('../../services/database.service')
+const { doQuery, doQueryAndReturnResults } = require('../../services/database.service')
 
 module.exports = {
   getTreatments,
-  getEmployeeTreatments
+  getEmployeeTreatments,
+  removeTreatmentType
 }
 
 function getTreatments(req, res) {
@@ -48,6 +49,44 @@ function getEmployeeTreatments(req, res) {
       }
     }
     doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
+
+function removeTreatmentType(req, res) {
+  try {
+    const { employeeId, treatmentId } = req.body
+
+    const deleteTreatmentsSql = `
+      DELETE FROM employee_treatments
+      WHERE employeeId = ? AND treatmentId = ?;
+    `;
+
+    const deleteAvailableHoursSql = `
+      DELETE FROM employee_available_hours
+      WHERE employeeId = ? AND treatmentId = ?;
+    `;
+
+    const params = [employeeId, treatmentId];
+
+    const cb = (error, results) => {
+      if (error) {
+        console.log(`results:`, results)
+        console.log(`error.message:`, error.message)
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(req.body));
+      }
+    }
+    doQueryAndReturnResults(deleteTreatmentsSql, params, cb)
+    doQuery(deleteAvailableHoursSql, params, cb)
   }
   catch (exp) {
     res.writeHead(500, { "Content-Type": "application/json" });
