@@ -13,6 +13,7 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                 // Fetch user appointments
                 const isEmployee = loggedInUser.isEmployee
                 const appointments = isEmployee ? await fetchEmployeeAppointments() : await fetchCustomerAppointments();
+                console.log(`appointments:`, appointments)
                 // Sort appointments by appointmentDateTime
                 appointments.sort((a, b) => {
                     const dateA = new Date(a.appointmentDateTime);

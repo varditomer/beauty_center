@@ -284,25 +284,20 @@ function getEmployeeAppointments(req, res) {
     const employeeId = req.params.id
     const sql = `
     SELECT 
-    appointments.customerId,
-    users.name AS customerName,
+    appointments.id,
+    CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
     treatments.treatmentType,
-    users.name AS employeeName,
-    SUM(treatments.price) AS totalTreatmentPrice
+    treatments.duration AS treatmentDuration,
+    treatments.price AS treatmentPrice,
+    users.name AS customerName
     FROM 
     appointments
     INNER JOIN 
     treatments ON appointments.treatmentId = treatments.id
     INNER JOIN 
-    users ON appointments.employeeId = users.id
+    users ON appointments.customerId = users.id
     WHERE 
-    MONTH(appointments.appointmentDateTime) = MONTH(NOW()) -- Filter appointments for the current month
-    AND YEAR(appointments.appointmentDateTime) = YEAR(NOW()) -- Filter appointments for the current year
-    GROUP BY 
-    appointments.customerId,
-    treatments.treatmentType,
-    users.name;
-
+    appointments.employeeId = ?;
     `;
     const params = [employeeId]
     const cb = (error, results) => {
