@@ -1,10 +1,10 @@
 const console = require("console");
 const { doQuery } = require('../../services/database.service');
-const makeId = require("../../services/util.service");
 
 module.exports = {
   getCustEmployeeRevenue,
   addAppointment,
+  updateAppointment,
   removeAppointment,
   getNextAppointments,
   getNextTreatments,
@@ -23,10 +23,12 @@ function getCustomerAppointments(req, res) {
       SELECT 
       appointments.id,
       CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
+      appointments.treatmentId,
+      appointments.customerId,
       treatments.treatmentType,
       treatments.duration AS treatmentDuration,
       treatments.price AS treatmentPrice,
-      users.name AS employeeName
+      users.name AS employeeName,
       FROM 
       appointments
       INNER JOIN 
@@ -47,6 +49,7 @@ function getCustomerAppointments(req, res) {
       else {
         // If the query is successful, return the appointments data as JSON
         res.writeHead(200, { "Content-Type": "application/json" });
+        console.log(`results:`, results)
         res.end(JSON.stringify(results));
       }
     }
@@ -108,6 +111,8 @@ function getNextAppointments(req, res) {
     const sql = `
     SELECT 
     appointments.id,
+    appointments.treatmentId,
+    appointments.customerId,
     CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
     treatments.treatmentType,
     treatments.duration AS treatmentDuration,
@@ -157,6 +162,8 @@ function getNextTreatments(req, res) {
     const sql = `
     SELECT 
     appointments.id,
+    appointments.treatmentId,
+    appointments.customerId,
     CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
     treatments.treatmentType,
     treatments.duration AS treatmentDuration,
@@ -240,6 +247,56 @@ function addAppointment(req, res) {
   }
 }
 
+// Update appointment
+function updateAppointment(req, res) {
+  try {
+    console.log(`++++++++++++++++++:`, )
+    console.log(`req.body:`, req.body)
+    const { customerId, employeeId, treatmentId, appointmentDateTime, appointmentId } = req.body.rescheduledAppointment;
+    console.log(`appointmentId:`, appointmentId)
+    console.log(`appointmentDateTime:`, appointmentDateTime)
+    console.log(`customerId:`, customerId)
+    console.log(`employeeId:`, employeeId)
+    console.log(`treatmentId:`, treatmentId)
+
+    if (appointmentId && appointmentDateTime && customerId && employeeId && treatmentId) {
+      // SQL query to update an existing appointment
+      const sql = `
+        UPDATE appointments
+        SET appointmentDateTime = ?, customerId = ?, employeeId = ?, treatmentId = ? 
+        WHERE id = ?
+      `;
+console.log(`appointmentDateTime:`, appointmentDateTime)
+      const formattedDateTime = appointmentDateTime.substring(0, 10) + ' ' + appointmentDateTime.substring(11, 16);
+      console.log(`formattedDateTime:`, formattedDateTime)
+      const params = [formattedDateTime, customerId, employeeId, treatmentId, appointmentId];
+
+      const cb = (error, results) => {
+        if (error) {
+          // If there's an error during database update, return a server error status
+          res.writeHead(500, { "Content-Type": "application/json" });
+          res.end(error.message);
+        } else {
+          // If the appointment is updated successfully, return a success status
+          res.writeHead(200, { "Content-Type": "application/json" });
+          res.end(JSON.stringify({ message: "Appointment updated successfully" }));
+        }
+      }
+
+      // Execute the SQL query using the 'doQuery' function
+      doQuery(sql, params, cb);
+    } else {
+      // If any required appointment field or appointmentId is missing, return a bad request status
+      res.sendStatus(400);
+    }
+  } catch (exp) {
+    // If an exception occurs during the process, return a server error status
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+}
+
+
 // Remove appointment
 function removeAppointment(req, res) {
   try {
@@ -285,6 +342,8 @@ function getEmployeeAppointments(req, res) {
     const sql = `
     SELECT 
     appointments.id,
+    appointments.treatmentId,
+    appointments.customerId,
     CONVERT_TZ(appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
     treatments.treatmentType,
     treatments.duration AS treatmentDuration,

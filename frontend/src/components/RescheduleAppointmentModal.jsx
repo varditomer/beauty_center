@@ -1,15 +1,37 @@
+import Box from '@mui/material/Box';
+import Button from '@mui/material/Button';
+import Typography from '@mui/material/Typography';
+import Modal from '@mui/material/Modal';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import UserMessage from '../components/UserMessage';
 
-export default function AddAppointment({ BASE_URL, loggedInUser }) {
+const style = {
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    transform: 'translate(-50%, -50%)',
+    width: 400,
+    bgcolor: 'background.paper',
+    border: '2px solid #000',
+    boxShadow: 24,
+    p: 4,
+};
+
+export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, setIsRescheduleAppointment, appointmentToReschedule}) {
+    const [open, setOpen] = useState(true);
+    const handleClose = () => {
+        setIsRescheduleAppointment(false)
+        setOpen(false)
+    };
+
 
     // State variables for various data
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
     const [treatments, setTreatments] = useState(null)
     const [selectedTreatment, setSelectedTreatment] = useState(null)
-    const [dateToShow, setDateToShow] = useState('')
+    const [daysOptions, setDaysOptions] = useState(null)
     const [selectedDay, setSelectedDay] = useState('');
     const [employees, setEmployees] = useState(null)
     const [selectedEmployee, setSelectedEmployee] = useState(null)
@@ -20,78 +42,41 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
 
     // Getting treatments from the server
     useEffect(() => {
-        const getTreatments = async () => {
-            try {
-                const treatments = await fetchTreatments();
-                setTreatments(treatments);
-            } catch (error) {
-                console.error(error);
-            }
-        };
-        getTreatments();
+        setSelectedTreatment(appointmentToReschedule.treatmentType)
+        const daysOptions = generateDaysOptions()
+        setDaysOptions(daysOptions)
     }, []);
 
-    //  Functions:
+    // Function to generate 7 days options from the current day
+    const generateDaysOptions = () => {
+        const today = new Date();
 
-    // Function to fetch treatments from the server
-    const fetchTreatments = async () => {
-        try {
-            const response = await fetch(`${BASE_URL}/treatment`, {
-                method: 'GET',
-                headers: {
-                    accept: 'application/json',
-                    'content-type': 'application/json',
-                },
-            });
-            const treatments = await response.json();
-            return treatments;
-        } catch (error) {
-            console.error(error);
-            return [];
+        // Calculate the options for the next 7 business days (Monday to Friday)
+        const options = [];
+        let count = 0;
+        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
+        while (options.length < 7) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + count);
+            const dayOfWeek = date.getDay();
+
+            if (dayOfWeek >= 0 && dayOfWeek <= 4) {
+                const dayName = daysOfWeek[dayOfWeek];
+                options.push(
+                    { dayName, date }
+                );
+            }
+            count++;
         }
-    };
-
-    // Function to handle treatment selection
-    function onSelectTreatment(selectedTreatment) {
-        setEmployees(null)
-        setSlots(null)
-        // 
-        setSelectedTreatment(selectedTreatment)
-        // const daysOptions = generateDaysOptions()
-        // setDaysOptions(daysOptions)
+        return options
     }
-
-    // // Function to generate 7 days options from the current day
-    // const generateDaysOptions = () => {
-    //     const today = new Date();
-
-    //     // Calculate the options for the next 7 business days (Monday to Friday)
-    //     const options = [];
-    //     let count = 0;
-    //     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
-    //     while (options.length < 7) {
-    //         const date = new Date(today);
-    //         date.setDate(today.getDate() + count);
-    //         const dayOfWeek = date.getDay();
-
-    //         if (dayOfWeek >= 0 && dayOfWeek <= 4) {
-    //             const dayName = daysOfWeek[dayOfWeek];
-    //             options.push(
-    //                 { dayName, date }
-    //             );
-    //         }
-    //         count++;
-    //     }
-    //     return options
-    // }
 
     // Function to handle day selection
     const onSelectDay = async (event) => {
-        setDateToShow(event.target.value)
         const selectedDate = new Date(event.target.value);
         const formattedDate = selectedDate.toISOString();
-        setSelectedDay(formattedDate)
-        const employees = await fetchEmployeesByTreatmentId(selectedTreatment)
+        setSelectedDay(formattedDate);
+        const employees = await fetchEmployeesByTreatmentId(appointmentToReschedule.treatmentId)
         setEmployees(employees)
     }
 
@@ -120,22 +105,28 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         setSelectedEmployee(selectedEmployee)
 
         // 1. Get selected employee available hours
-        const availableHours = await fetchEmployeeAvailableHoursByTreatment(selectedEmployee, selectedTreatment)
+        const availableHours = await fetchEmployeeAvailableHoursByTreatment(selectedEmployee, appointmentToReschedule.treatmentId)
 
         // Extract start and end time from available hours
         const { patientAcceptStart, patientAcceptEnd } = availableHours[0]
 
         // Extract treatment duration
-        const treatmentDuration = treatments[selectedTreatment - 1].duration
+        const treatmentDuration = appointmentToReschedule.treatmentDuration
 
         // 2. Generating treatments slots according to start-end time
+        console.log(`patientAcceptStart:`, patientAcceptStart)
+        console.log(`patientAcceptEnd:`, patientAcceptEnd)
+        console.log(`treatmentDuration:`, treatmentDuration)
         const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration)
+        console.log(`treatmentsSlots:`, treatmentsSlots)
 
         // 3. Getting employee's appointments for the selected date
         const employeeAppointments = await fetchEmployeeAppointments(selectedEmployee, selectedDay)
+        console.log(`employeeAppointments:`, employeeAppointments)
 
         // 4. Getting customer's appointments for the selected date
-        const customerAppointments = await fetchCustomerAppointments(loggedInUser.id, selectedDay)
+        const customerAppointments = await fetchCustomerAppointments(loggedInUser.isEmployee? appointmentToReschedule.customerId : loggedInUser.id, selectedDay)
+        console.log(`customerAppointments:`, customerAppointments)
 
         // 5. Filtering the available slots by already assigned employee's and customer's appointments
         const filteredByEmployeesAppointmentsSlots = filterSlotsByAppointments(treatmentsSlots, employeeAppointments, treatmentDuration);
@@ -166,6 +157,7 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     function generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration) {
         const appointmentSlots = [];
         const currentDate = new Date(selectedDay);
+        console.log(`currentDate:`, currentDate)
 
         // Parse the hours and minutes from patientAcceptStart
         const [startHours, startMinutes] = patientAcceptStart.split(':');
@@ -180,6 +172,7 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         const endTime = new Date(selectedDay);
         endTime.setHours(endHours);
         endTime.setMinutes(endMinutes - treatmentDuration);
+        console.log(`endTime:`, endTime)
         // currentDate.setHours(currentDate.getHours() + 3)
         while (currentDate <= endTime) {
             const date = structuredClone(currentDate)
@@ -259,14 +252,16 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
 
     // Function to handle appointment selection
     const onSelectAppointment = (event) => {
+        console.log(`appointmentToReschedule:`, appointmentToReschedule)
         const appointmentDateTime = event.target.value
-        const newAppointment = {
+        const rescheduledAppointment = {
             appointmentDateTime,
-            employeeId: selectedEmployee,
-            customerId: loggedInUser.id,
-            treatmentId: selectedTreatment
+            employeeId: +selectedEmployee,
+            customerId: +appointmentToReschedule.customerId,
+            treatmentId: +appointmentToReschedule.treatmentId,
+            appointmentId: appointmentToReschedule.id
         }
-        setSelectedAppointment(newAppointment)
+        setSelectedAppointment(rescheduledAppointment)
     }
 
     const onAddAppointment = async () => {
@@ -280,15 +275,16 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     }
 
     // Function to add a new appointment
-    const fetchAddNewAppointment = async (newAppointment) => {
+    const fetchAddNewAppointment = async (rescheduledAppointment) => {
+        console.log(`rescheduledAppointment:`, rescheduledAppointment)
         try {
-            const response = await fetch(`${BASE_URL}/appointment/addAppointment`, {
-                method: 'POST',
+            const response = await fetch(`${BASE_URL}/appointment/updateAppointment`, {
+                method: 'PUT',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify({ newAppointment })
+                body: JSON.stringify({ rescheduledAppointment })
             });
             const employees = await response.json();
             return employees
@@ -299,93 +295,101 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     };
 
     return (
-        <section className="add-appointment-page">
-            <div className="add-appointment-container">
-                <h1>Add new appointment</h1>
-                {/* Select treatment */}
-                <>
-                    <label htmlFor="weekday">Select Treatment:</label>
-                    <select id='treatmentType' className="select-treatment" onChange={(event) => onSelectTreatment(event.target.value)}>
-                        <option value="">Select Treatment Type</option>
-                        {treatments &&
-                            treatments.map((treatment) => (
-                                <option key={treatment.id} value={treatment.id}>
-                                    {treatment.treatmentType}
-                                </option>
-                            ))
-                        }
-                    </select>
-                </>
-                {/* -------------------- */}
+        <div>
+            {/* <Button onClick={handleOpen}>Open modal</Button> */}
+            <Modal
+                open={open}
+                onClose={handleClose}
+                aria-labelledby="modal-modal-title"
+                aria-describedby="modal-modal-description"
+            >
+                <Box sx={style}>
+                    <section className="add-appointment-page">
+                        <div className="add-appointment-container">
+                            <h1>Reschedule Appointment</h1>
+                            {/* Select treatment */}
+                            <>
+                                <label htmlFor="weekday">Select Treatment:</label>
+                                <span>{appointmentToReschedule.treatmentType}</span>
+                            </>
+                            {/* -------------------- */}
 
-                {/* Select appointment day */}
-                {selectedTreatment &&
-                    <>
-                        <label htmlFor="weekday">Select a Day:</label>
-                            <input
-                                type="date"
-                                id="weekday"
-                                value={dateToShow}
-                                onChange={onSelectDay}
-                            />
-                    </>
-                }
-                {/* -------------------- */}
-
-                {/* Select employee */}
-                {employees &&
-                    <>
-                        <label htmlFor="employee">Select employee:</label>
-                        <select id="employee" onChange={onSelectEmployee}>
-                            <option value="">Select an employee</option>
-                            {employees.map((employee, index) => {
-                                return (
-                                    <option key={index} value={employee.id}>
-                                        {employee.name}
-                                    </option>
-                                )
-                            })
+                            {/* Select appointment day */}
+                            {daysOptions &&
+                                <>
+                                    <label htmlFor="weekday">Select a Day:</label>
+                                    <select id="weekday" onChange={onSelectDay}>
+                                        <option value="">Select a day</option>
+                                        {daysOptions.map((option, index) => {
+                                            return (
+                                                <option key={index} value={option.date}>
+                                                    {option.dayName} ({option.date.toLocaleDateString()})
+                                                </option>
+                                            )
+                                        })
+                                        }
+                                    </select>
+                                </>
                             }
-                        </select>
-                    </>
-                }
-                {/* -------------------- */}
+                            {/* -------------------- */}
 
-                {/* Select appointment */}
-                {slots &&
-                    <>
-                        <label htmlFor="slot">Select Appointment from Available:</label>
-                        <select id="slot" onChange={onSelectAppointment}>
-                            <option value="">Select appointment</option>
-                            {slots.map((appointment, index) => {
-                                return (
-                                    <option key={index} value={appointment.start}>
-                                        {appointment.start.substring(11, 16)}
-                                    </option>
-                                )
-                            })
+                            {/* Select employee */}
+                            {employees &&
+                                <>
+                                    <label htmlFor="employee">Select employee:</label>
+                                    <select id="employee" onChange={onSelectEmployee}>
+                                        <option value="">Select an employee</option>
+                                        {employees.map((employee, index) => {
+                                            return (
+                                                <option key={index} value={employee.id}>
+                                                    {employee.name}
+                                                </option>
+                                            )
+                                        })
+                                        }
+                                    </select>
+                                </>
                             }
-                        </select>
-                    </>
-                }
-                {/* -------------------- */}
-                {/* Add appointment */}
-                {!!selectedAppointment &&
-                    <button className="add-appointment-btn" onClick={onAddAppointment}>
-                        Add Appointment
-                    </button>
-                }
-                {/* -------------------- */}
-                {userMessage.length > 0 &&
-                    <UserMessage
-                        userMessage={userMessage}
-                        setUserMessage={setUserMessage}
-                        isSuccess={isSuccess}
-                        setIsSuccess={setIsSuccess}
-                    />
-                }
+                            {/* -------------------- */}
 
-            </div>
-        </section>
-    )
+                            {/* Select appointment */}
+                            {slots &&
+                                <>
+                                    <label htmlFor="slot">Select Appointment from Available:</label>
+                                    <select id="slot" onChange={onSelectAppointment}>
+                                        <option value="">Select appointment</option>
+                                        {slots.map((appointment, index) => {
+                                            return (
+                                                <option key={index} value={appointment.start}>
+                                                    {appointment.start.substring(11, 16)}
+                                                </option>
+                                            )
+                                        })
+                                        }
+                                    </select>
+                                </>
+                            }
+                            {/* -------------------- */}
+                            {/* Add appointment */}
+                            {!!appointmentToReschedule &&
+                                <button className="add-appointment-btn" onClick={onAddAppointment}>
+                                    Reschedule
+                                </button>
+                            }
+                            {/* -------------------- */}
+                            {userMessage.length > 0 &&
+                                <UserMessage
+                                    userMessage={userMessage}
+                                    setUserMessage={setUserMessage}
+                                    isSuccess={isSuccess}
+                                    setIsSuccess={setIsSuccess}
+                                />
+                            }
+
+                        </div>
+                    </section>
+                </Box>
+            </Modal>
+        </div>
+    );
 }

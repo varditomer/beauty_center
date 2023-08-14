@@ -1,7 +1,13 @@
+import { useState } from "react";
+import RescheduleAppointmentModal from "./RescheduleAppointmentModal";
+
 export default function AppointmentTable({ appointments, BASE_URL, setAppointments, loggedInUser }) {
 
 
   const titles = ['Date', 'Time', 'Type', 'Duration', 'Price', `${loggedInUser.isEmployee ? 'Customer' : 'Therapist'}`, '']
+  const [isRescheduleAppointment, setIsRescheduleAppointment] = useState(false)
+  const [appointmentToReschedule, setAppointmentToReschedule] = useState(null)
+
 
   const onRemoveAppointment = async (appointmentToRemove) => {
     try {
@@ -22,8 +28,22 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
     }
   }
 
+  const onRescheduleAppointment = (appointment) => {
+    console.log(`appointment:`, appointment)
+    setAppointmentToReschedule(appointment)
+    setIsRescheduleAppointment(true)
+  }
+
   return (
     <>
+      {isRescheduleAppointment &&
+        <RescheduleAppointmentModal
+          loggedInUser={loggedInUser}
+          BASE_URL={BASE_URL}
+          setIsRescheduleAppointment={setIsRescheduleAppointment}
+          appointmentToReschedule={appointmentToReschedule}
+        />
+      }
       {appointments &&
         <div className="custom-table">
           {/* Table Header */}
@@ -59,14 +79,17 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
                   appointment.employeeName
                 }
               </div>
-              <div className="cell" style={{ justifyContent: "center", alignItems: "center" }}>
+              <div className="cell" style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
                 <div onClick={() => onRemoveAppointment(appointment)} title="Remove-appointment" className="remove-btn">X</div>
+
+                <div onClick={() => onRescheduleAppointment(appointment)} title="Remove-appointment" className="remove-btn">@</div>
               </div>
             </div>
           })}
         </div>
       }
     </>
+
   )
 }
 
