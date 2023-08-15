@@ -6,15 +6,28 @@ import TreatmentTypeModal from "../components/TreatmentTypeModal";
 
 export default function Treatments({ BASE_URL, loggedInUser }) {
     const [treatments, setTreatments] = useState(null)
+    const [treatmentsToAdd, setTreatmentsToAdd] = useState(null)
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
     const [isChangingTreatmentType, setIsChangingTreatmentType] = useState(null)
+    const [isUpdatingTreatmentType, setIsUpdatingTreatmentType] = useState(false)
+    const [treatmentTypeToUpdate, setTreatmentTypeToUpdate] = useState(null)
 
     useEffect(() => {
         const fetchTreatments = async () => {
             try {
-                const treatments = loggedInUser.isEmployee ? await getEmployeeTreatments() : await getTreatments();
-                setTreatments(treatments);
+                const treatments = await getTreatments();
+                if (loggedInUser.isEmployee) {
+                    const employeeTreatments = await getEmployeeTreatments()
+                    // Filter treatments that are not present in employeeTreatments
+                    const newTreatments = treatments.filter(treatment => {
+                        return !employeeTreatments.some(empTreatment => empTreatment.id === treatment.id);
+                    });
+                    setTreatments(employeeTreatments)
+                    setTreatmentsToAdd(newTreatments)
+                } else {
+                    setTreatments(treatments);
+                }
             } catch (error) {
                 console.error(error);
             }
@@ -73,8 +86,13 @@ export default function Treatments({ BASE_URL, loggedInUser }) {
             });
             setIsSuccess(true)
             setUserMessage(`Treatment Type was removed!`);
+            const treatmentToRemove = treatments.find(treatment => treatment.id === treatmentId)
             const employeeTreatments = treatments.filter(treatment => treatment.id !== treatmentId)
             setTreatments(employeeTreatments)
+            setTreatmentsToAdd([...treatmentsToAdd, treatmentToRemove])
+            setTimeout(() => {
+                setUserMessage('')
+            }, 2000);
 
         } catch (error) {
             return setUserMessage(`Treatment Type Remove Failed!`);
@@ -90,15 +108,22 @@ export default function Treatments({ BASE_URL, loggedInUser }) {
                     BASE_URL={BASE_URL}
                     setIsChangingTreatmentType={setIsChangingTreatmentType}
                     treatmentTypeToUpdate={null}
-                    treatments={treatments}
-
+                    treatments={treatmentsToAdd}
+                />
+            }
+            {isUpdatingTreatmentType &&
+                <TreatmentTypeModal
+                    loggedInUser={loggedInUser}
+                    BASE_URL={BASE_URL}
+                    setIsUpdatingTreatmentType={setIsUpdatingTreatmentType}
+                    treatmentTypeToUpdate={treatmentTypeToUpdate}
                 />
             }
             {!!loggedInUser.isEmployee &&
-                <button className="add-appointment-btn" style={{ marginBottom: '16px' }} onClick={()=>setIsChangingTreatmentType(true)}>Add Treatment Type</button>
+                <button className="add-appointment-btn" style={{ marginBottom: '16px' }} onClick={() => setIsChangingTreatmentType(true)}>Add Treatment Type</button>
             }
             {treatments &&
-                <TreatmentTable loggedInUser={loggedInUser} treatments={treatments} onRemoveTreatmentType={onRemoveTreatmentType} />
+                <TreatmentTable setIsUpdatingTreatmentType={setIsUpdatingTreatmentType} setTreatmentTypeToUpdate={setTreatmentTypeToUpdate} loggedInUser={loggedInUser} treatments={treatments} onRemoveTreatmentType={onRemoveTreatmentType} />
             }
             <UserMessage
                 userMessage={userMessage}

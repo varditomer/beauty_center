@@ -103,10 +103,12 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                 }
             </div>
             <div className="appointment-section">
-            <h1 className="page-title" style={{marginBottom:"20px"}}>Canceled Appointments</h1>
                 {/* Display AppointmentTable component if appointments are available */}
-                {loggedInUser.isEmployee && canceledAppointments &&
-                    <AppointmentTable isCanceledAppointment={true} setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={canceledAppointments} loggedInUser={loggedInUser} />
+                {!!loggedInUser.isEmployee && canceledAppointments &&
+                    <>
+                        <h1 className="page-title" style={{ marginBottom: "20px" }}>Canceled Appointments</h1>
+                        <AppointmentTable isCanceledAppointment={true} setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={canceledAppointments} loggedInUser={loggedInUser} />
+                    </>
                 }
             </div>
         </section>

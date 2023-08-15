@@ -3,6 +3,7 @@ import logoImg from '../assets/images/logo.png';
 import UserMessage from '../components/UserMessage';
 import { userService } from '../services/user.service';
 import { storageService } from '../services/storage.service';
+import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
 
 // Functional component for Login/Signup page
 export default function LoginSignup({ setLoggedInUser }) {
@@ -11,6 +12,7 @@ export default function LoginSignup({ setLoggedInUser }) {
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
     const [isForgotPasswordMode, setIsForgotPasswordMode] = useState(false)
+    const [isResetPasswordMailValid, setIsResetPasswordMailValid] = useState(false)
     const [resetPasswordEmail, setResetPasswordEmail] = useState('')
 
     // Function to handle the login/signup form submission
@@ -95,7 +97,8 @@ export default function LoginSignup({ setLoggedInUser }) {
     }
 
     // Function to validate the email format
-    function isValidMail(email) {
+    function isValidMail() {
+        const email = document.querySelector('.mail').value
         // Check if the email contains the "@" symbol and at least one "." after the "@"
 
         // Find the index of the "@" symbol in the email address
@@ -108,12 +111,22 @@ export default function LoginSignup({ setLoggedInUser }) {
         // 1. The "@" symbol is present and appears after the first character (index > 0).
         // 2. There is at least one "." after the "@" symbol (dotIndex > atIndex + 1).
         // 3. The last "." appears before the last character of the email (dotIndex < email.length - 1).
+        console.log(`atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1:`, atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1)
         return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1;
     }
 
+    function handleResetPasswordMailChange(event) {
+        !!isValidMail(event.target.value) ? setIsResetPasswordMailValid(true) : console.log('not valid')
+    }
+
+    function handleCloseResetPassword() {
+        setIsResetPasswordMailValid(false)
+        setIsForgotPasswordMode(false)
+    }
+
     async function onResetPassword() {
-        const res = await userService.initiateResetPassword(resetPasswordEmail)
-        console.log(`res:`, res)
+        const email = document.querySelector("#resetPasswordEmail").value
+        const res = await userService.initiateResetPassword(email)
         const elEmail = document.querySelector('.mail')
         if (res.error) { // Check for the "error" property instead of "status" to handle user already exists case
             elEmail.focus();
@@ -134,21 +147,31 @@ export default function LoginSignup({ setLoggedInUser }) {
                     <img src={logoImg} alt="Beauty Center logo" />
                 </div>
                 <form onSubmit={handleLoginSignup}>
-                    <label>
-                        Email:
-                        <input type="email" name="mail" className='mail' />
-                    </label>
-                    {isForgotPasswordMode &&
+                    {!isForgotPasswordMode &&
                         <>
-                            <span onClick={() => setIsForgotPasswordMode(false)} className='text-btn'>Close</span>
-                            <button disabled={!isValidMail(resetPasswordEmail)} type='button' onClick={onResetPassword}>Send</button>
+                            <label>
+                                Email:
+                                <input type="email" name="mail" className='mail' />
+                            </label>
+                            <label>
+                                Password:
+                                <input type="password" name="password" />
+                            </label>
                         </>
                     }
-                    {!isForgotPasswordMode &&
-                        <label>
-                            Password:
-                            <input type="password" name="password" />
-                        </label>
+                    {isForgotPasswordMode &&
+                        <div className='reset-password-card'>
+                            <label>
+                                Email:
+                                <input type="email" id="resetPasswordEmail" name="reset-password-mail" className='mail' onChange={handleResetPasswordMailChange} />
+                            </label>
+                            <span onClick={handleCloseResetPassword} className='close-btn'>
+                                <CloseTwoToneIcon />
+                            </span>
+                            {isResetPasswordMailValid &&
+                                <button type='button' className='add-appointment-btn' onClick={onResetPassword}>Send</button>
+                            }
+                        </div>
                     }
 
                     {!isLoginMode &&

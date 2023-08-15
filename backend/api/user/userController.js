@@ -17,8 +17,6 @@ function login(req, res) {
     password
   } = req.body;
 
-  console.log(`req.body:`, req.body)
-
   // Check if both username (email) and password are provided in the request
   if (mail && password) {
     // SQL query to fetch user data based on email and password
@@ -135,14 +133,13 @@ async function initiateResetPassword(req, res) {
       await doQueryAndReturnResults(sql, params);
     } catch (error) {
       console.error('Error while querying the database:', error);
-      throw error;
     }
 
     const resetPasswordLink = 'http://localhost:3000/resetPassword'; // Update with the actual reset password link
 
 
     const mailOptions = {
-      from: 'varditom@post.bgu.ac.il',
+      from: 'nourgbareen2001@gmail.com',
       to: mail,
       subject: 'Password Reset',
       html: `

@@ -17,6 +17,12 @@ import logoImg from '../assets/images/logo.png'
 import { userService } from '../services/user.service';
 import { storageService } from '../services/storage.service';
 import ContentCutIcon from '@mui/icons-material/ContentCut';
+import { styled } from '@mui/system';
+
+const StyledAppBar = styled(AppBar)({
+  backgroundColor: '#d02fbd', 
+});
+
 
 
 const pages = ['employees', 'treatments', 'appointments'];
@@ -53,7 +59,7 @@ export default function Header({ loggedInUser, setLoggedInUser }) {
 }
 
   return (
-    <AppBar position="static">
+    <StyledAppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <ContentCutIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
@@ -177,6 +183,6 @@ export default function Header({ loggedInUser, setLoggedInUser }) {
           </Box>
         </Toolbar>
       </Container>
-    </AppBar>
+    </StyledAppBar>
   );
 }

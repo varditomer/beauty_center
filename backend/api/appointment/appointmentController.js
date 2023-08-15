@@ -1,5 +1,7 @@
 const console = require("console");
 const { doQuery } = require('../../services/database.service');
+const transporter = require("../../services/mail.service");
+
 
 module.exports = {
   getCustEmployeeRevenue,
@@ -209,8 +211,9 @@ function getNextTreatments(req, res) {
 // Add appointment
 function addAppointment(req, res) {
   try {
-    const { customerId, employeeId, treatmentId, appointmentDateTime } = req.body.newAppointment;
+    const { customerId, employeeId, treatmentId, appointmentDateTime, email } = req.body.newAppointment;
     if (appointmentDateTime && customerId && employeeId && treatmentId) {
+      console.log(`customerId:`, customerId)
       // SQL query to add a new appointment
       const sql = `
         INSERT INTO appointments (appointmentDateTime, customerId, employeeId, treatmentId) 
@@ -226,6 +229,26 @@ function addAppointment(req, res) {
           res.end(error.message);
         }
         else {
+          const mailOptions = {
+            from: 'nourgbareen2001@gmail.com',
+            to: email,
+            subject: 'New Appointment',
+            html: `
+            <p>This is a confirmation email sent from Beauty Center.</p>
+            <p>Your new appointment set to: <span style="color: blue; user-select: all; cursor: pointer;">${appointmentDateTime.substring(0,10)} ${appointmentDateTime.substring(11,16)}</span></p>
+            <p>Log in to view more details</p>
+            `
+          };
+      
+      
+          transporter.sendMail(mailOptions, (error, info) => {
+            if (error) {
+              console.error('Error sending email:', error);
+            } else {
+              console.log('Email sent:', info.response);
+            }
+          });
+
           // If the appointment is added successfully, return a the added appointment
           res.writeHead(200, { "Content-Type": "application/json" });
           res.end(JSON.stringify(req.body.newAppointment));
@@ -257,9 +280,7 @@ function updateAppointment(req, res) {
         SET appointmentDateTime = ?, customerId = ?, employeeId = ?, treatmentId = ? 
         WHERE id = ?
       `;
-console.log(`appointmentDateTime:`, appointmentDateTime)
       const formattedDateTime = appointmentDateTime.substring(0, 10) + ' ' + appointmentDateTime.substring(11, 16);
-      console.log(`formattedDateTime:`, formattedDateTime)
       const params = [formattedDateTime, customerId, employeeId, treatmentId, appointmentId];
 
       const cb = (error, results) => {

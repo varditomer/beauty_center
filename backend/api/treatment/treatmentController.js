@@ -3,7 +3,9 @@ const { doQuery, doQueryAndReturnResults } = require('../../services/database.se
 module.exports = {
   getTreatments,
   getEmployeeTreatments,
-  removeTreatmentType
+  removeTreatmentType,
+  addEmployeeTreatmentType,
+  updateEmployeeTreatmentType
 }
 
 function getTreatments(req, res) {
@@ -57,7 +59,88 @@ function getEmployeeTreatments(req, res) {
   }
 }
 
+function addEmployeeTreatmentType(req, res) {
+  try {
+    console.log(`req.body:`, req.body)
+    const {
+      treatmentType,
+      startTime,
+      endTime,
+      userId
+    } = req.body.treatmentTypeToAdd
 
+    const employee_treatmentsInsertSQL = `
+      INSERT INTO employee_treatments (employeeId, treatmentId) 
+      VALUES (?,?)
+    `;
+    const employee_treatmentsParams = [userId, treatmentType];
+    
+    const employee_available_hoursInsertSQL = `
+    INSERT INTO employee_available_hours (employeeId, treatmentId, patientAcceptStart, patientAcceptEnd) 
+    VALUES (?,?,?,?)
+    `;
+    const employee_available_hoursParams = [userId, treatmentType, startTime, endTime];
+
+
+
+    const cb = (error, results) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({}));
+      }
+    }
+    doQueryAndReturnResults(employee_treatmentsInsertSQL, employee_treatmentsParams, cb)
+    doQuery(employee_available_hoursInsertSQL, employee_available_hoursParams, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
+
+function updateEmployeeTreatmentType(req, res) {
+  console.log(`req.body:`, req.body)
+  try {
+    const {
+      treatmentType,
+      startTime,
+      endTime,
+      userId
+    } = req.body.treatmentTypeToUpdate
+
+    
+    const employee_available_hoursInsertSQL = `
+    UPDATE employee_available_hours
+    SET patientAcceptStart = ?, patientAcceptEnd = ? 
+    WHERE employeeId = ? AND treatmentId=?
+    `;
+    const employee_available_hoursParams = [startTime, endTime, userId, treatmentType];
+
+
+
+    const cb = (error, results) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({}));
+      }
+    }
+    doQuery(employee_available_hoursInsertSQL, employee_available_hoursParams, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
 
 function removeTreatmentType(req, res) {
   try {

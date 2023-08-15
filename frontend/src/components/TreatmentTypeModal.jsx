@@ -18,7 +18,7 @@ const style = {
     p: 4,
 };
 
-export default function TreatmentTypeModal({ loggedInUser, BASE_URL, setIsChangingTreatmentType, treatmentTypeToUpdate, treatments }) {
+export default function TreatmentTypeModal({ loggedInUser, BASE_URL, setIsChangingTreatmentType, treatmentTypeToUpdate, treatments, setIsUpdatingTreatmentType }) {
     // State variables for various data
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
@@ -30,11 +30,27 @@ export default function TreatmentTypeModal({ loggedInUser, BASE_URL, setIsChangi
     const [selectedStartTime, setSelectedStartTime] = useState('')
     const [selectedEndTime, setSelectedEndTime] = useState('')
 
+    useEffect(() => {
+        if (treatmentTypeToUpdate) {
+            setSelectedTreatment(treatmentTypeToUpdate.id)
+            setSelectedStartTime(treatmentTypeToUpdate.patientAcceptStart)
+            setSelectedEndTime(treatmentTypeToUpdate.patientAcceptEnd)
+            const timeSlots = generateAppointmentSlots()
+            setTimeSlots(timeSlots)
+        }
+    }, [])
+
+
 
     const handleClose = () => {
-        setIsChangingTreatmentType(false)
+        if (treatmentTypeToUpdate) {
+            setIsUpdatingTreatmentType(false)
+        } else {
+            setIsChangingTreatmentType(false)
+        }
         setOpen(false)
     };
+
     function onSelectTreatment(selectedTreatment) {
         setTimeSlots(null)
         setSelectedTreatment(selectedTreatment)
@@ -87,9 +103,56 @@ export default function TreatmentTypeModal({ loggedInUser, BASE_URL, setIsChangi
             endTime: selectedEndTime,
             userId: loggedInUser.id
         }
+        try {
+            const response = await fetch(`${BASE_URL}/treatment/addEmployeeTreatmentType`, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({ treatmentTypeToAdd })
+            });
+            const treatmentType = await response.json();
+            setIsSuccess(true)
+            setUserMessage('Employee treatment type added')
+            setTimeout(() => {
+                window.location.href = '/treatments'
+            }, 2000);
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+
     }
 
+    const onUpdateTreatmentType = async () => {
+        const treatmentTypeToUpdate = {
+            treatmentType: selectedTreatment,
+            startTime: selectedStartTime,
+            endTime: selectedEndTime,
+            userId: loggedInUser.id
+        }
+        try {
+            const response = await fetch(`${BASE_URL}/treatment/updateEmployeeTreatmentType`, {
+                method: 'PUT',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({ treatmentTypeToUpdate })
+            });
+            const treatmentType = await response.json();
+            setIsSuccess(true)
+            setUserMessage('Employee treatment type updated')
+            setTimeout(() => {
+                window.location.href = '/treatments'
+            }, 2000);
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
 
+    }
 
     return (
         <div>
@@ -100,62 +163,116 @@ export default function TreatmentTypeModal({ loggedInUser, BASE_URL, setIsChangi
                 aria-describedby="modal-modal-description"
             >
                 <Box sx={style}>
-                    <section className="add-appointment-page">
-                        <div className="add-appointment-container">
-                            {/* Select treatment */}
-                            <>
-                                <label htmlFor="treatmentType">Select Treatment:</label>
-                                <select id='treatmentType' className="select-treatment" onChange={(event) => onSelectTreatment(event.target.value)}>
-                                    <option value="">Select Treatment Type</option>
-                                    {treatments &&
-                                        treatments.map((treatment) => (
-                                            <option key={treatment.id} value={treatment.id}>
-                                                {treatment.treatmentType}
-                                            </option>
-                                        ))
-                                    }
-                                </select>
-                            </>
-                            {!!timeSlots &&
+                    {treatmentTypeToUpdate ?
+                        <section className="add-appointment-page">
+                            <div className="add-appointment-container">
+                                {/* Select treatment */}
                                 <>
-                                    {/* Select start & end time */}
-                                    <label htmlFor="slot">Select Start Time:</label>
-                                    <select id="slot" onChange={onSelectStartTime}>
-                                        <option value="">Select Start Time</option>
-                                        {timeSlots.map((time, index) => {
-                                            return (
-                                                <option key={index} value={time.start}>
-                                                    {time.start.substring(11, 16)}
+                                    <label htmlFor="treatmentType">Treatment to update</label>
+                                    <span>{treatmentTypeToUpdate.treatmentType}</span>
+                                </>
+                                {!!timeSlots &&
+                                    <>
+                                        {/* Select start & end time */}
+                                        <label htmlFor="slot">Select Start Time:</label>
+                                        <select id="slot" onChange={onSelectStartTime}>
+                                            <option value={treatmentTypeToUpdate.patientAcceptStart}>{treatmentTypeToUpdate.patientAcceptStart}</option>
+                                            {timeSlots.map((time, index) => {
+                                                return (
+                                                    <option key={index} value={time.start}>
+                                                        {time.start.substring(11, 16)}
+                                                    </option>
+                                                )
+                                            })
+                                            }
+                                        </select>
+                                        <label htmlFor="slot">Select End TIme:</label>
+                                        <select id="slot" onChange={onSelectEndTime}>
+                                            <option value={treatmentTypeToUpdate.patientAcceptEnd}>{treatmentTypeToUpdate.patientAcceptEnd}</option>
+                                            {timeSlots.map((time, index) => {
+                                                return (
+                                                    <option key={index} value={time.start}>
+                                                        {time.start.substring(11, 16)}
+                                                    </option>
+                                                )
+                                            })
+                                            }
+                                        </select>
+                                    </>
+                                }
+                            </div>
+                            {(selectedTreatment && selectedStartTime && selectedEndTime) &&
+                                <>
+                                    <button className="add-appointment-btn" style={{ width: "100%" }} onClick={onUpdateTreatmentType}>
+                                        Update
+                                    </button>
+                                </>
+                            }
+                        </section>
+                        :
+                        <section className="add-appointment-page">
+                            <div className="add-appointment-container">
+                                {/* Select treatment */}
+                                <>
+                                    <label htmlFor="treatmentType">Select Treatment:</label>
+                                    <select id='treatmentType' className="select-treatment" onChange={(event) => onSelectTreatment(event.target.value)}>
+                                        <option value="">Select Treatment Type</option>
+                                        {treatments &&
+                                            treatments.map((treatment) => (
+                                                <option key={treatment.id} value={treatment.id}>
+                                                    {treatment.treatmentType}
                                                 </option>
-                                            )
-                                        })
-                                        }
-                                    </select>
-                                    <label htmlFor="slot">Select End TIme:</label>
-                                    <select id="slot" onChange={onSelectEndTime}>
-                                        <option value="">Select End TIme</option>
-                                        {timeSlots.map((time, index) => {
-                                            return (
-                                                <option key={index} value={time.start}>
-                                                    {time.start.substring(11, 16)}
-                                                </option>
-                                            )
-                                        })
+                                            ))
                                         }
                                     </select>
                                 </>
+                                {!!timeSlots &&
+                                    <>
+                                        {/* Select start & end time */}
+                                        <label htmlFor="slot">Select Start Time:</label>
+                                        <select id="slot" onChange={onSelectStartTime}>
+                                            <option value="">Select Start Time</option>
+                                            {timeSlots.map((time, index) => {
+                                                return (
+                                                    <option key={index} value={time.start}>
+                                                        {time.start.substring(11, 16)}
+                                                    </option>
+                                                )
+                                            })
+                                            }
+                                        </select>
+                                        <label htmlFor="slot">Select End TIme:</label>
+                                        <select id="slot" onChange={onSelectEndTime}>
+                                            <option value="">Select End TIme</option>
+                                            {timeSlots.map((time, index) => {
+                                                return (
+                                                    <option key={index} value={time.start}>
+                                                        {time.start.substring(11, 16)}
+                                                    </option>
+                                                )
+                                            })
+                                            }
+                                        </select>
+                                    </>
+                                }
+                            </div>
+                            {(selectedTreatment && selectedStartTime && selectedEndTime) &&
+                                <>
+                                    <button className="add-appointment-btn" style={{ width: "100%" }} onClick={onAddTreatmentType}>
+                                        Add
+                                    </button>
+                                </>
                             }
-                        </div>
-                        {(selectedTreatment && selectedStartTime && selectedEndTime) && 
-                        <>
-                            <button className="add-appointment-btn" style={{ width: "100%" }} onClick={onAddTreatmentType}>
-                                Add
-                            </button>
-                        </>
-                        }
-                </section>
-            </Box>
-        </Modal>
+                        </section>
+                    }
+                </Box>
+            </Modal>
+            <UserMessage
+                userMessage={userMessage}
+                setUserMessage={setUserMessage}
+                isSuccess={isSuccess}
+                setIsSuccess={setIsSuccess}
+            />
         </div >
     );
 }

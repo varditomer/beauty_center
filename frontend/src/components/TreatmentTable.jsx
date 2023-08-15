@@ -1,10 +1,14 @@
 import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
 import DeleteOutlineTwoToneIcon from '@mui/icons-material/DeleteOutlineTwoTone';
 
-export default function TreatmentTable({ treatments, onRemoveTreatmentType, loggedInUser }) {
+export default function TreatmentTable({ treatments, onRemoveTreatmentType, loggedInUser, setTreatmentTypeToUpdate, setIsUpdatingTreatmentType }) {
 
     const titles = loggedInUser.isEmployee ?  ['Duration', 'Price', 'Type', 'Start', 'End', ''] : ['Duration', 'Price', 'Type']
-    console.log(`treatments:`, treatments)
+    const onEditTreatmentType = (treatmentTypeToUpdate) => {
+        console.log(`treatmentTypeToUpdate:`, treatmentTypeToUpdate)
+        setTreatmentTypeToUpdate(treatmentTypeToUpdate)
+        setIsUpdatingTreatmentType(true)
+    }
     return (
         <>
             <div className="custom-table">
@@ -40,7 +44,7 @@ export default function TreatmentTable({ treatments, onRemoveTreatmentType, logg
                                         <div onClick={() => onRemoveTreatmentType(treatment.id)} title="Remove Treatment Type" className="remove-btn">
                                             <DeleteOutlineTwoToneIcon />
                                         </div>
-                                        <div onClick={() => onRemoveTreatmentType(treatment.id)} title="Edit Treatment Type" className="remove-btn">
+                                        <div onClick={() => onEditTreatmentType(treatment)} title="Edit Treatment Type" className="remove-btn">
                                             <EditCalendarTwoToneIcon />
                                         </div>
                                     </div>

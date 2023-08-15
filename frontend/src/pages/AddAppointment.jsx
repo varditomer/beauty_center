@@ -89,7 +89,6 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
 
     // Function to handle employee selection
     async function onSelectEmployee(event) {
-        console.log(`00000000000000000000000000:`, )
         // Set selected employee
         const selectedEmployee = event.target.value
         setSelectedEmployee(selectedEmployee)
@@ -102,7 +101,6 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
 
         // Extract treatment duration
         const treatmentDuration = treatments[selectedTreatment - 1].duration
-        console.log(`patientAcceptStart:`, patientAcceptStart)
 
         // 2. Generating treatments slots according to start-end time
         const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration)
@@ -240,7 +238,8 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
             appointmentDateTime,
             employeeId: selectedEmployee,
             customerId: loggedInUser.id,
-            treatmentId: selectedTreatment
+            treatmentId: selectedTreatment,
+            email: loggedInUser.mail
         }
         setSelectedAppointment(newAppointment)
     }
@@ -303,6 +302,7 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
                                 id="weekday"
                                 value={dateToShow}
                                 onChange={onSelectDay}
+                                min={new Date().toISOString().split('T')[0]}
                             />
                     </>
                 }
