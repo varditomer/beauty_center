@@ -298,37 +298,175 @@ console.log(`appointmentDateTime:`, appointmentDateTime)
 
 
 // Remove appointment
+// function removeAppointment(req, res) {
+//   try {
+//     const appointmentId = req.params.id;
+//     if (appointmentId) {
+//       // SQL query to remove an appointment by its ID
+//       const sql = `
+//       DELETE FROM appointments where id=?
+//       `;
+//       // Set the appointmentId to the value from the request parameters
+//       const params = [appointmentId];
+//       const cb = (error, results) => {
+//         if (error) {
+//           // If there's an error during database deletion, return a server error status
+//           res.writeHead(500, { "Content-Type": "application/json" });
+//           res.end(error.message);
+//         }
+//         else {
+//           console.log("Deleted");
+//           // If the appointment is deleted successfully, return a success status
+//           res.writeHead(200, { "Content-Type": "application/json" });
+//           res.end(JSON.stringify(appointmentId));
+//         }
+//       }
+//       // Execute the SQL query using the 'doQuery' function
+//       doQuery(sql, params, cb)
+//     } else {
+//       // If the appointmentId parameter is missing, return a bad request status
+//       res.sendStatus(400);
+//     }
+//   }
+//   catch (exp) {
+//     // If an exception occurs during the process, return a server error status
+//     res.writeHead(500, { "Content-Type": "application/json" });
+//     res.end(exp.message);
+//   }
+// }
+
+// function removeAppointment(req, res) {
+//   try {
+//     const appointmentId = req.params.id;
+//     if (appointmentId) {
+//       console.log(appointmentId);
+//       // SQL query to retrieve appointment details by its ID
+//       const selectSql = `
+//       SELECT * FROM appointments WHERE id = ?
+//       `;
+//       // Set the appointmentId to the value from the request parameters
+//       const selectParams = [appointmentId];
+
+//       const selectCb = (selectError, selectResults) => {
+//         if (selectError) {
+//           res.writeHead(500, { "Content-Type": "application/json" });
+//           res.end(selectError.message);
+//         } else {
+//           if (selectResults.length === 0) {
+//             console.log(selectResults);
+//             // No appointment found with the given ID, return a not found status
+//             res.sendStatus(404);
+//           } else {
+//             const appointmentData = selectResults[0];
+
+//             // SQL query to insert the appointment into the canceled_appointments table
+//             const insertSql = `
+//             INSERT INTO canceled_appointments (appointmentDateTime, employeeId, customerId, treatmentId)
+//             VALUES (?, ?, ?, ?)
+//             `;
+
+//             const insertParams = [
+//               appointmentData.appointmentDateTime,
+//               appointmentData.employeeId,
+//               appointmentData.customerId,
+//               appointmentData.treatmentId
+//             ];
+
+//             const insertCb = (insertError, insertResults) => {
+//               if (insertError) {
+//                 res.writeHead(500, { "Content-Type": "application/json" });
+//                 res.end(insertError.message);
+//               } else {
+//                 // SQL query to delete the appointment from the appointments table
+//                 const deleteSql = `
+//                 DELETE FROM appointments WHERE id = ?
+//                 `;
+//                 const deleteParams = [appointmentId];
+
+//                 const deleteCb = (deleteError, deleteResults) => {
+//                   if (deleteError) {
+//                     res.writeHead(500, { "Content-Type": "application/json" });
+//                     res.end(deleteError.message);
+//                   } else {
+//                     console.log("Appointment Moved and Deleted");
+//                     res.writeHead(200, { "Content-Type": "application/json" });
+//                     res.end(JSON.stringify(appointmentId));
+//                   }
+//                 };
+
+//                 // Execute the delete SQL query using the 'doQuery' function
+//                 doQuery(deleteSql, deleteParams, deleteCb);
+//               }
+//             };
+
+       
+//             // Execute the insert SQL query using the 'doQuery' function
+//             doQuery(insertSql, insertParams, insertCb);
+//           }
+//         }
+//       };
+//       doQuery(selectSql, selectParams, selectCb);
+
+      
+//       // Execute the select SQL query using the 'doQuery' function
+//     } else {
+//       // If the appointmentId parameter is missing, return a bad request status
+//       res.sendStatus(400);
+//     }
+//   } catch (exp) {
+//     // If an exception occurs during the process, return a server error status
+//     res.writeHead(500, { "Content-Type": "application/json" });
+//     res.end(exp.message);
+//   }
+// }
+
 function removeAppointment(req, res) {
   try {
     const appointmentId = req.params.id;
     if (appointmentId) {
-      // SQL query to remove an appointment by its ID
-      const sql = `
-      DELETE FROM appointments where id=?
+      // SQL query to move the appointment to the canceled_appointments table
+      const moveSql = `
+      INSERT INTO canceled_appointments (appointmentDateTime, employeeId, customerId, treatmentId)
+      SELECT appointmentDateTime, employeeId, customerId, treatmentId
+      FROM appointments
+      WHERE id = ?
       `;
-      // Set the appointmentId to the value from the request parameters
-      const params = [appointmentId];
-      const cb = (error, results) => {
-        if (error) {
-          // If there's an error during database deletion, return a server error status
+      const moveParams = [appointmentId];
+
+      const moveCb = (moveError, moveResults) => {
+        if (moveError) {
           res.writeHead(500, { "Content-Type": "application/json" });
-          res.end(error.message);
+          res.end(moveError.message);
+        } else {
+          // SQL query to delete the appointment from the appointments table
+          const deleteSql = `
+          DELETE FROM appointments WHERE id = ?
+          `;
+          const deleteParams = [appointmentId];
+
+          const deleteCb = (deleteError, deleteResults) => {
+            if (deleteError) {
+              res.writeHead(500, { "Content-Type": "application/json" });
+              res.end(deleteError.message);
+            } else {
+              console.log("Appointment Moved and Deleted");
+              res.writeHead(200, { "Content-Type": "application/json" });
+              res.end(JSON.stringify(appointmentId));
+            }
+          };
+
+          // Execute the delete SQL query using the 'doQuery' function
+          doQuery(deleteSql, deleteParams, deleteCb);
         }
-        else {
-          console.log("Deleted");
-          // If the appointment is deleted successfully, return a success status
-          res.writeHead(200, { "Content-Type": "application/json" });
-          res.end(JSON.stringify(appointmentId));
-        }
-      }
-      // Execute the SQL query using the 'doQuery' function
-      doQuery(sql, params, cb)
+      };
+
+      // Execute the move SQL query using the 'doQuery' function
+      doQuery(moveSql, moveParams, moveCb);
     } else {
       // If the appointmentId parameter is missing, return a bad request status
       res.sendStatus(400);
     }
-  }
-  catch (exp) {
+  } catch (exp) {
     // If an exception occurs during the process, return a server error status
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(exp.message);

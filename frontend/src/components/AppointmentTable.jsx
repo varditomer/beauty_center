@@ -19,7 +19,9 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
         },
       });
       const res = await response.json();
-      const newAppointments = appointments.filter(appointment => appointment.id !== res)
+      console.log(res);
+      const newAppointments = appointments.filter(appointment => appointment.id !== +res)
+      console.log(newAppointments);
       setAppointments(newAppointments)
       return res;
     } catch (error) {

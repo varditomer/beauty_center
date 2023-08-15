@@ -191,3 +191,14 @@ INSERT INTO `appointments` (`id`, `appointmentDateTime`, `employeeId`, `customer
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 
+DROP TABLE IF EXISTS `canceled_appointments`;
+CREATE TABLE IF NOT EXISTS `canceled_appointments` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `appointmentDateTime` datetime NOT NULL,
+  `employeeId` varchar(9) NOT NULL,
+  `customerId` varchar(9) NOT NULL,
+  `treatmentId` varchar(9) DEFAULT NULL,
+  FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`customerId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
