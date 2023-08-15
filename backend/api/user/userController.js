@@ -243,8 +243,6 @@ function updateProfile(req, res) {
     userToUpdate
   } = req.body;
 
-  console.log(`req.body:`, req.body)
-
   const { mail, name, address, phoneNumber,id } = userToUpdate
 
   // Check if both username (email) and password are provided in the request

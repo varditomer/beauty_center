@@ -12,7 +12,6 @@ export default function Employees({ BASE_URL }) {
                 employees.forEach(employee => {
                     employee.treatmentTypes = employee.treatmentTypes.split(',')
                 })
-                console.log(`employees:`, employees)
                 setEmployees(employees);
             } catch (error) {
                 console.error(error);

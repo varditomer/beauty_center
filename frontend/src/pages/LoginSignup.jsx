@@ -111,7 +111,6 @@ export default function LoginSignup({ setLoggedInUser }) {
         // 1. The "@" symbol is present and appears after the first character (index > 0).
         // 2. There is at least one "." after the "@" symbol (dotIndex > atIndex + 1).
         // 3. The last "." appears before the last character of the email (dotIndex < email.length - 1).
-        console.log(`atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1:`, atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1)
         return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1;
     }
 

@@ -52,7 +52,6 @@ function getCustomerAppointments(req, res) {
       else {
         // If the query is successful, return the appointments data as JSON
         res.writeHead(200, { "Content-Type": "application/json" });
-        console.log(`results:`, results)
         res.end(JSON.stringify(results));
       }
     }
@@ -144,7 +143,6 @@ function getNextAppointments(req, res) {
       else {
         // If the query is successful, return the appointments data as JSON
         res.writeHead(200, { "Content-Type": "application/json" });
-        console.log(JSON.stringify(results[0]));
         res.end(JSON.stringify(results));
       }
     }
@@ -194,7 +192,6 @@ function getNextTreatments(req, res) {
       } else {
         // If the query is successful, return the appointment data as JSON
         res.writeHead(200, { "Content-Type": "application/json" });
-        console.log(JSON.stringify(results[0]));
         res.end(JSON.stringify(results));
       }
     };
@@ -213,7 +210,6 @@ function addAppointment(req, res) {
   try {
     const { customerId, employeeId, treatmentId, appointmentDateTime, email } = req.body.newAppointment;
     if (appointmentDateTime && customerId && employeeId && treatmentId) {
-      console.log(`customerId:`, customerId)
       // SQL query to add a new appointment
       const sql = `
         INSERT INTO appointments (appointmentDateTime, customerId, employeeId, treatmentId) 

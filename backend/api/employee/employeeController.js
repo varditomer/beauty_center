@@ -47,7 +47,6 @@ function getEmployees(req, res) {
 function getEmployeesByTreatmentId(req, res) {
   try {
     const treatmentId = req.params.id
-    console.log(`treatmentId:`, treatmentId)
     const sql = `
     SELECT users.*
     FROM users
@@ -98,7 +97,6 @@ function getEmployeeAvailableHoursByTreatmentId(req, res) {
       }
       else {
         res.writeHead(200, { "Content-Type": "application/json" });
-        console.log(`results:`, results)
         res.end(JSON.stringify(results));
       }
     }

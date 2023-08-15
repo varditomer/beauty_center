@@ -18,7 +18,6 @@ export default function Home({ loggedInUser, BASE_URL }) {
                 if (loggedInUser.isEmployee) {
                     const employeeRevenue = await getEmployeeRevenue()
                     setRevenue(employeeRevenue.monthlyTotal)
-                    console.log(employeeRevenue);
                 }
                 if (appointments.length) {
                     setAppointments(appointments)
@@ -44,7 +43,6 @@ export default function Home({ loggedInUser, BASE_URL }) {
                 },
             });
             const nextAppointment = await response.json();
-            console.log(`nextAppointment:`, nextAppointment)
             return nextAppointment;
         } catch (error) {
             console.error(error);

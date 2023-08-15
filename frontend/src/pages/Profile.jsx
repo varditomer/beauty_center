@@ -10,7 +10,6 @@ export default function Profile({ loggedInUser , BASE_URL}) {
 
     const handleChange = (event) => {
         // event.preventDefault()
-        console.log(event);
         if (event.target) {
             const { target } = event
             let field = target.name
@@ -52,7 +51,6 @@ export default function Profile({ loggedInUser , BASE_URL}) {
             id:loggedInUser.id
         };
 
-        console.log(userToUpdate);
             const res = await updatePtofile(userToUpdate);
             if (res.error) { // Check for the "error" property instead of "status" to handle user already exists case
                 elMail.focus();
@@ -110,7 +108,6 @@ export default function Profile({ loggedInUser , BASE_URL}) {
         return atIndex > 0 && dotIndex > atIndex + 1 && dotIndex < email.length - 1;
     }
 
-    console.log(user);
     return (
         <section className="profile-page">
             <form onSubmit={handleSubmit}>

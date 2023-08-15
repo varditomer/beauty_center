@@ -5,7 +5,6 @@ export default function TreatmentTable({ treatments, onRemoveTreatmentType, logg
 
     const titles = loggedInUser.isEmployee ?  ['Duration', 'Price', 'Type', 'Start', 'End', ''] : ['Duration', 'Price', 'Type']
     const onEditTreatmentType = (treatmentTypeToUpdate) => {
-        console.log(`treatmentTypeToUpdate:`, treatmentTypeToUpdate)
         setTreatmentTypeToUpdate(treatmentTypeToUpdate)
         setIsUpdatingTreatmentType(true)
     }

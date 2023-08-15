@@ -61,7 +61,6 @@ function getEmployeeTreatments(req, res) {
 
 function addEmployeeTreatmentType(req, res) {
   try {
-    console.log(`req.body:`, req.body)
     const {
       treatmentType,
       startTime,
@@ -104,7 +103,6 @@ function addEmployeeTreatmentType(req, res) {
 }
 
 function updateEmployeeTreatmentType(req, res) {
-  console.log(`req.body:`, req.body)
   try {
     const {
       treatmentType,

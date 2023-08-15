@@ -69,7 +69,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
     };
 
     const fetchEmployeeCanceledAppointments = async () => {
-        console.log(loggedInUser);
         try {
             const response = await fetch(`${BASE_URL}/appointment/canceledAppointments/${loggedInUser.id}`, {
                 method: 'GET',
