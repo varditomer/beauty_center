@@ -1,1 +1,124 @@
+.login-signup-page {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 100%;
+    justify-content: center;
+    margin: 0 auto;
+    gap: 20px;
+}
+
+ .form-container {
+    display: flex;
+    flex-direction: column;
+}
+
+ h1 {
+    font-size: 2rem;
+    margin-bottom: 0;
+}
+
+@media screen and (min-width:650px) {
  
+     form {
+        flex: 1;
+    }
+
+     .logo-container {
+        flex: 2;
+        display: flex;
+        align-items: center;
+    }
+
+     .form-container {
+        flex-direction: row;
+    }
+
+}
+
+ img {
+    width: 100%;
+}
+
+ form {
+    padding: 20px;
+    border-radius: 8px;
+    display: flex;
+    gap: 20px;
+    flex-direction: column;
+}
+
+
+ input,
+ select {
+    width: 100%;
+    padding: 10px;
+    font-size: 16px;
+    border-radius: 8px;
+    border: 1px solid rgb(214, 146, 197);
+}
+
+ .login-signup {
+    background-color: var(--btn-color);
+    color: white;
+    font-size: 16px;
+    font-weight: 500;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: none;
+}
+
+ .login-signup,
+ .reset-password {
+    border: none;
+}
+
+ .reset-password {
+    background-color: unset;
+    color: rgba(123, 121, 121, 0.75);
+    font-size: 14px;
+    cursor: default;
+    transition: 0.3s ease-in-out;
+}
+
+ .reset-password:hover {
+    color: black;
+}
+
+ .login-signup:hover {
+    background-color: var(--btn-hover);
+}
+
+.signup {
+    font-size: 16px;
+}
+
+.text-btn {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.text-btn:hover {
+    color: var(--accent);
+}
+
+ .login-signup,
+ .singup {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+
+}
+
+
+ .login-signup button:hover,
+ .singIn button:hover {
+    background-color: #cf3dbe;
+
+}
+
+@media (min-width: 768px) {
+     form {
+        width: 50%;
+    }
+}

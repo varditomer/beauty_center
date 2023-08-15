@@ -4,7 +4,8 @@ import { Link } from 'react-router-dom';
 
 export default function Appointments({ BASE_URL, loggedInUser }) {
     // State to hold appointments
-    const [appointments, setAppointments] = useState(null);
+    const [appointments, setAppointments] = useState([]);
+    const [canceledAppointments, setCanceledAppointments] = useState(null);
 
     useEffect(() => {
         // Fetch and sort user appointments when component mounts
@@ -13,7 +14,8 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                 // Fetch user appointments
                 const isEmployee = loggedInUser.isEmployee
                 const appointments = isEmployee ? await fetchEmployeeAppointments() : await fetchCustomerAppointments();
-                console.log(`appointments:`, appointments)
+                const canceledAppointments = isEmployee ? await fetchEmployeeCanceledAppointments() : null
+                setCanceledAppointments(canceledAppointments)
                 // Sort appointments by appointmentDateTime
                 appointments.sort((a, b) => {
                     const dateA = new Date(a.appointmentDateTime);
@@ -66,6 +68,24 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
         }
     };
 
+    const fetchEmployeeCanceledAppointments = async () => {
+        console.log(loggedInUser);
+        try {
+            const response = await fetch(`${BASE_URL}/appointment/canceledAppointments/${loggedInUser.id}`, {
+                method: 'GET',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                },
+            });
+            const appointments = await response.json();
+            return appointments;
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
     return (
         <section className="appointment-page">
             {/* Display page title */}
@@ -78,8 +98,15 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
             <div className="appointment-section">
                 {/* Display AppointmentTable component if appointments are available */}
-                {appointments &&
+                {!!appointments.length &&
                     <AppointmentTable setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={appointments} loggedInUser={loggedInUser} />
+                }
+            </div>
+            <div className="appointment-section">
+            <h1 className="page-title" style={{marginBottom:"20px"}}>Canceled Appointments</h1>
+                {/* Display AppointmentTable component if appointments are available */}
+                {loggedInUser.isEmployee && canceledAppointments &&
+                    <AppointmentTable isCanceledAppointment={true} setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={canceledAppointments} loggedInUser={loggedInUser} />
                 }
             </div>
         </section>

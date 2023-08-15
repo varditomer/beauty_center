@@ -3,7 +3,7 @@ import RescheduleAppointmentModal from "./RescheduleAppointmentModal";
 import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
 import DeleteOutlineTwoToneIcon from '@mui/icons-material/DeleteOutlineTwoTone';
 
-export default function AppointmentTable({ appointments, BASE_URL, setAppointments, loggedInUser }) {
+export default function AppointmentTable({ appointments, BASE_URL, setAppointments, loggedInUser, isCanceledAppointment = false }) {
 
 
   const titles = ['Date', 'Time', 'Type', 'Duration', 'Price', `${loggedInUser.isEmployee ? 'Customer' : 'Therapist'}`, '']
@@ -33,7 +33,6 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
   }
 
   const onRescheduleAppointment = (appointment) => {
-    console.log(`appointment:`, appointment)
     setAppointmentToReschedule(appointment)
     setIsRescheduleAppointment(true)
   }
@@ -52,11 +51,12 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
         <div className="custom-table">
           {/* Table Header */}
           <div className="row header">
-            {titles.map((title) => (
-              <div key={title} className="cell">
+            {titles.map((title) => {
+              if (isCanceledAppointment && title === '') return
+              return <div key={title} className="cell">
                 {title}
               </div>
-            ))}
+            })}
           </div>
           {/* Table Rows */}
           {appointments.map((appointment, idx) => {
@@ -83,14 +83,17 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
                   appointment.employeeName
                 }
               </div>
-              <div className="cell" style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
-                <div onClick={() => onRemoveAppointment(appointment)} title="Remove Appointment" className="remove-btn">
-                  <DeleteOutlineTwoToneIcon />
+              {!isCanceledAppointment &&
+                <div className="cell" style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
+
+                  <div onClick={() => onRemoveAppointment(appointment)} title="Remove-appointment" className="remove-btn">
+                    <DeleteOutlineTwoToneIcon />
+                  </div>
+                  <div onClick={() => onRescheduleAppointment(appointment)} title="Remove-appointment" className="remove-btn">
+                    <EditCalendarTwoToneIcon />
+                  </div>
                 </div>
-                <div onClick={() => onRescheduleAppointment(appointment)} title="Edit Appointment" className="remove-btn">
-                  <EditCalendarTwoToneIcon />
-                </div>
-              </div>
+              }
             </div>
           })}
         </div>

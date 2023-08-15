@@ -11,7 +11,8 @@ module.exports = {
   getEmployeeIncomes,
   getCustomerAppointments,
   getEmployeeAppointments,
-  getCustomerAppointmentsByDay
+  getCustomerAppointmentsByDay,
+  getCanceledAppointments
 }
 
 // Get appointments by user Id
@@ -447,6 +448,49 @@ function getCustomerAppointmentsByDay(req, res) {
     const params = [customerId, date]
     const cb = (error, results) => {
       if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(results));
+      }
+    }
+    doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
+
+function getCanceledAppointments(req, res) {
+  try {
+    const employeeId = +req.params.id
+    const sql = `
+    SELECT 
+    canceled_appointments.id,
+    canceled_appointments.treatmentId,
+    canceled_appointments.customerId,
+    CONVERT_TZ(canceled_appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
+    treatments.treatmentType,
+    treatments.duration AS treatmentDuration,
+    treatments.price AS treatmentPrice,
+    users.name AS customerName
+    FROM 
+    canceled_appointments
+    INNER JOIN 
+    treatments ON canceled_appointments.treatmentId = treatments.id
+    INNER JOIN 
+    users ON canceled_appointments.customerId = users.id
+    WHERE 
+    canceled_appointments.employeeId = ?;
+    `;
+    const params = [employeeId]
+    const cb = (error, results) => {
+      if (error) {
+        console.log(error);
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(error.message);
       }
