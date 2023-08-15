@@ -51,7 +51,7 @@ export default function Employees({ BASE_URL }) {
                         <div className="details">
                             <div className="name detail"><span className="title">Name:</span> {employee.name.toUpperCase()}</div>
                             <div className="address detail"><span className="title">Address:</span> {employee.address}</div>
-                            <div className="treatment detail"><span className="title">Treatments:</span> {employee.treatmentTypes.map(treatment => <span>*  {treatment}</span>)}</div>
+                            <div className="treatment detail"><span className="title">Treatments:</span> {employee.treatmentTypes.map((treatment, idx) => <span key={idx}>*  {treatment}</span>)}</div>
                         </div>
                     </article>
                 })

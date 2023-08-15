@@ -1,27 +1,20 @@
 import { useEffect, useState } from "react"
 import TreatmentTable from "../components/TreatmentTable";
 import UserMessage from '../components/UserMessage';
+import TreatmentTypeModal from "../components/TreatmentTypeModal";
 
 
 export default function Treatments({ BASE_URL, loggedInUser }) {
     const [treatments, setTreatments] = useState(null)
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
+    const [isChangingTreatmentType, setIsChangingTreatmentType] = useState(null)
 
     useEffect(() => {
         const fetchTreatments = async () => {
             try {
-                const treatments = await getTreatments();
-                console.log(`treatments:`, treatments)
-                if (loggedInUser.isEmployee) {
-                    const employeeTreatmentsTypes = await getEmployeeTreatmentsTypes()
-                    console.log(`employeeTreatmentsTypes:`, employeeTreatmentsTypes)
-                    const employeeTreatments = treatments.filter(treatment => {
-                        return employeeTreatmentsTypes.includes(treatment.id)
-                    })
-                    console.log(`employeeTreatments:`, employeeTreatments)
-                    setTreatments(employeeTreatments);
-                } else setTreatments(treatments);
+                const treatments = loggedInUser.isEmployee ? await getEmployeeTreatments() : await getTreatments();
+                setTreatments(treatments);
             } catch (error) {
                 console.error(error);
             }
@@ -47,7 +40,7 @@ export default function Treatments({ BASE_URL, loggedInUser }) {
         }
     };
 
-    const getEmployeeTreatmentsTypes = async () => {
+    const getEmployeeTreatments = async () => {
         try {
             const response = await fetch(`${BASE_URL}/treatment/employeeTreatments/${loggedInUser.id}`, {
                 method: 'GET',
@@ -57,11 +50,6 @@ export default function Treatments({ BASE_URL, loggedInUser }) {
                 },
             });
             const employeeTreatments = await response.json();
-            console.log(`employeeTreatments:`, employeeTreatments)
-            // Extract the treatmentTypeIds from the first element in the array
-            if (employeeTreatments.length) {
-                return employeeTreatments[0].treatmentTypeIds.split(',');
-            }
             return employeeTreatments;
         } catch (error) {
             console.error(error);
@@ -70,10 +58,9 @@ export default function Treatments({ BASE_URL, loggedInUser }) {
     }
 
     async function onRemoveTreatmentType(treatmentId) {
-        console.log(`treatmentId:`, treatmentId)
         try {
             await fetch(`${BASE_URL}/treatment/removeTreatmentType`, {
-                method: 'POST',
+                method: 'DELETE',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
@@ -96,7 +83,20 @@ export default function Treatments({ BASE_URL, loggedInUser }) {
 
     return (
         <section className="treatments-page">
-            <h1 className="page-title">{loggedInUser.isEmployee ? `Employee's ` : 'All '} Treatments</h1>
+            <h1 className="page-title" style={loggedInUser.isEmployee ? {} : { marginBottom: '20px' }}>{loggedInUser.isEmployee ? `Employee's ` : 'All '} Treatments</h1>
+            {isChangingTreatmentType &&
+                <TreatmentTypeModal
+                    loggedInUser={loggedInUser}
+                    BASE_URL={BASE_URL}
+                    setIsChangingTreatmentType={setIsChangingTreatmentType}
+                    treatmentTypeToUpdate={null}
+                    treatments={treatments}
+
+                />
+            }
+            {!!loggedInUser.isEmployee &&
+                <button className="add-appointment-btn" style={{ marginBottom: '16px' }} onClick={()=>setIsChangingTreatmentType(true)}>Add Treatment Type</button>
+            }
             {treatments &&
                 <TreatmentTable loggedInUser={loggedInUser} treatments={treatments} onRemoveTreatmentType={onRemoveTreatmentType} />
             }

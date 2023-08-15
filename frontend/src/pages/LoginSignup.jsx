@@ -113,6 +113,7 @@ export default function LoginSignup({ setLoggedInUser }) {
 
     async function onResetPassword() {
         const res = await userService.initiateResetPassword(resetPasswordEmail)
+        console.log(`res:`, res)
         const elEmail = document.querySelector('.mail')
         if (res.error) { // Check for the "error" property instead of "status" to handle user already exists case
             elEmail.focus();

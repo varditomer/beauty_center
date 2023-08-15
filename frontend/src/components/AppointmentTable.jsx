@@ -84,12 +84,10 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
                 }
               </div>
               <div className="cell" style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
-
-
-                <div onClick={() => onRemoveAppointment(appointment)} title="Remove-appointment" className="remove-btn">
+                <div onClick={() => onRemoveAppointment(appointment)} title="Remove Appointment" className="remove-btn">
                   <DeleteOutlineTwoToneIcon />
                 </div>
-                <div onClick={() => onRescheduleAppointment(appointment)} title="Remove-appointment" className="remove-btn">
+                <div onClick={() => onRescheduleAppointment(appointment)} title="Edit Appointment" className="remove-btn">
                   <EditCalendarTwoToneIcon />
                 </div>
               </div>

@@ -1,6 +1,10 @@
+import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
+import DeleteOutlineTwoToneIcon from '@mui/icons-material/DeleteOutlineTwoTone';
+
 export default function TreatmentTable({ treatments, onRemoveTreatmentType, loggedInUser }) {
 
     const titles = loggedInUser.isEmployee ?  ['Duration', 'Price', 'Type', 'Start', 'End', ''] : ['Duration', 'Price', 'Type']
+    console.log(`treatments:`, treatments)
     return (
         <>
             <div className="custom-table">
@@ -27,13 +31,18 @@ export default function TreatmentTable({ treatments, onRemoveTreatmentType, logg
                             {!!loggedInUser.isEmployee &&
                                 <>
                                     <div className="cell capitalize" data-title={titles[2]}>
-                                        14:00
+                                        {treatment.patientAcceptStart}
                                     </div>
                                     <div className="cell capitalize" data-title={titles[2]}>
-                                        19:00
+                                        {treatment.patientAcceptEnd}
                                     </div>
-                                    <div className="cell" style={{ justifyContent: "center", alignItems: "center" }}>
-                                        <div onClick={() => onRemoveTreatmentType(treatment.id)} title="Remove-Treatment" className="remove-btn">X</div>
+                                    <div className="cell" style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
+                                        <div onClick={() => onRemoveTreatmentType(treatment.id)} title="Remove Treatment Type" className="remove-btn">
+                                            <DeleteOutlineTwoToneIcon />
+                                        </div>
+                                        <div onClick={() => onRemoveTreatmentType(treatment.id)} title="Edit Treatment Type" className="remove-btn">
+                                            <EditCalendarTwoToneIcon />
+                                        </div>
                                     </div>
                                 </>
                             }

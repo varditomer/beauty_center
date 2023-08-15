@@ -5,6 +5,6 @@ const { getTreatments, getEmployeeTreatments, removeTreatmentType } = require('.
 
 router.get('/', getTreatments)
 router.get('/employeeTreatments/:id', getEmployeeTreatments)
-router.post('/removeTreatmentType', removeTreatmentType)
+router.delete('/removeTreatmentType', removeTreatmentType)
 
 module.exports = router

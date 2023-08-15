@@ -29,10 +29,9 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
     // State variables for various data
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
-    const [treatments, setTreatments] = useState(null)
-    const [selectedTreatment, setSelectedTreatment] = useState(null)
     const [daysOptions, setDaysOptions] = useState(null)
     const [selectedDay, setSelectedDay] = useState('');
+    const [selectedTreatment, setSelectedTreatment] = useState(null)
     const [employees, setEmployees] = useState(null)
     const [selectedEmployee, setSelectedEmployee] = useState(null)
     const [slots, setSlots] = useState(null)
@@ -114,19 +113,13 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
         const treatmentDuration = appointmentToReschedule.treatmentDuration
 
         // 2. Generating treatments slots according to start-end time
-        console.log(`patientAcceptStart:`, patientAcceptStart)
-        console.log(`patientAcceptEnd:`, patientAcceptEnd)
-        console.log(`treatmentDuration:`, treatmentDuration)
         const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration)
-        console.log(`treatmentsSlots:`, treatmentsSlots)
 
         // 3. Getting employee's appointments for the selected date
         const employeeAppointments = await fetchEmployeeAppointments(selectedEmployee, selectedDay)
-        console.log(`employeeAppointments:`, employeeAppointments)
 
         // 4. Getting customer's appointments for the selected date
         const customerAppointments = await fetchCustomerAppointments(loggedInUser.isEmployee? appointmentToReschedule.customerId : loggedInUser.id, selectedDay)
-        console.log(`customerAppointments:`, customerAppointments)
 
         // 5. Filtering the available slots by already assigned employee's and customer's appointments
         const filteredByEmployeesAppointmentsSlots = filterSlotsByAppointments(treatmentsSlots, employeeAppointments, treatmentDuration);
@@ -157,7 +150,6 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
     function generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration) {
         const appointmentSlots = [];
         const currentDate = new Date(selectedDay);
-        console.log(`currentDate:`, currentDate)
 
         // Parse the hours and minutes from patientAcceptStart
         const [startHours, startMinutes] = patientAcceptStart.split(':');
@@ -172,7 +164,6 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
         const endTime = new Date(selectedDay);
         endTime.setHours(endHours);
         endTime.setMinutes(endMinutes - treatmentDuration);
-        console.log(`endTime:`, endTime)
         // currentDate.setHours(currentDate.getHours() + 3)
         while (currentDate <= endTime) {
             const date = structuredClone(currentDate)
@@ -252,7 +243,6 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
 
     // Function to handle appointment selection
     const onSelectAppointment = (event) => {
-        console.log(`appointmentToReschedule:`, appointmentToReschedule)
         const appointmentDateTime = event.target.value
         const rescheduledAppointment = {
             appointmentDateTime,
@@ -276,7 +266,6 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
 
     // Function to add a new appointment
     const fetchAddNewAppointment = async (rescheduledAppointment) => {
-        console.log(`rescheduledAppointment:`, rescheduledAppointment)
         try {
             const response = await fetch(`${BASE_URL}/appointment/updateAppointment`, {
                 method: 'PUT',

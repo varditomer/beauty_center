@@ -29,33 +29,35 @@ function getTreatments(req, res) {
 
 function getEmployeeTreatments(req, res) {
   try {
-    const employeeId = req.params.id
+    const employeeId = req.params.id;
     const sql = `
-      SELECT employeeId,
-      GROUP_CONCAT(treatmentId) AS treatmentTypeIds
-      FROM employee_treatments
-      WHERE employeeId = ?
-      GROUP BY employeeId;
+      SELECT treatments.*, 
+             employee_available_hours.patientAcceptStart, 
+             employee_available_hours.patientAcceptEnd
+      FROM treatments
+      LEFT JOIN employee_treatments ON treatments.id = employee_treatments.treatmentId
+      LEFT JOIN employee_available_hours ON employee_treatments.employeeId = employee_available_hours.employeeId 
+                                         AND treatments.id = employee_available_hours.treatmentId
+      WHERE employee_treatments.employeeId = ?
     `;
-    const params = [employeeId]
+    const params = [employeeId];
     const cb = (error, results) => {
       if (error) {
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(error.message);
-      }
-      else {
+      } else {
         res.writeHead(200, { "Content-Type": "application/json" });
         res.end(JSON.stringify(results));
       }
-    }
-    doQuery(sql, params, cb)
-  }
-  catch (exp) {
+    };
+    doQuery(sql, params, cb);
+  } catch (exp) {
     res.writeHead(500, { "Content-Type": "application/json" });
     res.end(exp.message);
   }
-
 }
+
+
 
 function removeTreatmentType(req, res) {
   try {
@@ -75,8 +77,6 @@ function removeTreatmentType(req, res) {
 
     const cb = (error, results) => {
       if (error) {
-        console.log(`results:`, results)
-        console.log(`error.message:`, error.message)
         res.writeHead(500, { "Content-Type": "application/json" });
         res.end(error.message);
       }
