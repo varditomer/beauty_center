@@ -28,7 +28,7 @@ function getCustomerAppointments(req, res) {
       treatments.treatmentType,
       treatments.duration AS treatmentDuration,
       treatments.price AS treatmentPrice,
-      users.name AS employeeName,
+      users.name AS employeeName
       FROM 
       appointments
       INNER JOIN 
@@ -209,8 +209,6 @@ function getNextTreatments(req, res) {
 function addAppointment(req, res) {
   try {
     const { customerId, employeeId, treatmentId, appointmentDateTime } = req.body.newAppointment;
-    console.log(`appointmentDateTime:`, appointmentDateTime)
-    // const id = makeId()
     if (appointmentDateTime && customerId && employeeId && treatmentId) {
       // SQL query to add a new appointment
       const sql = `
@@ -219,7 +217,6 @@ function addAppointment(req, res) {
       `;
 
       const formattedDateTime = appointmentDateTime.substring(0, 10) + '' + appointmentDateTime.substring(10, 18)
-      console.log(`formattedDateTime:`, formattedDateTime)
       const params = [formattedDateTime, customerId, employeeId, treatmentId];
       const cb = (error, results) => {
         if (error) {
@@ -250,14 +247,7 @@ function addAppointment(req, res) {
 // Update appointment
 function updateAppointment(req, res) {
   try {
-    console.log(`++++++++++++++++++:`, )
-    console.log(`req.body:`, req.body)
     const { customerId, employeeId, treatmentId, appointmentDateTime, appointmentId } = req.body.rescheduledAppointment;
-    console.log(`appointmentId:`, appointmentId)
-    console.log(`appointmentDateTime:`, appointmentDateTime)
-    console.log(`customerId:`, customerId)
-    console.log(`employeeId:`, employeeId)
-    console.log(`treatmentId:`, treatmentId)
 
     if (appointmentId && appointmentDateTime && customerId && employeeId && treatmentId) {
       // SQL query to update an existing appointment
@@ -296,129 +286,6 @@ console.log(`appointmentDateTime:`, appointmentDateTime)
   }
 }
 
-
-// Remove appointment
-// function removeAppointment(req, res) {
-//   try {
-//     const appointmentId = req.params.id;
-//     if (appointmentId) {
-//       // SQL query to remove an appointment by its ID
-//       const sql = `
-//       DELETE FROM appointments where id=?
-//       `;
-//       // Set the appointmentId to the value from the request parameters
-//       const params = [appointmentId];
-//       const cb = (error, results) => {
-//         if (error) {
-//           // If there's an error during database deletion, return a server error status
-//           res.writeHead(500, { "Content-Type": "application/json" });
-//           res.end(error.message);
-//         }
-//         else {
-//           console.log("Deleted");
-//           // If the appointment is deleted successfully, return a success status
-//           res.writeHead(200, { "Content-Type": "application/json" });
-//           res.end(JSON.stringify(appointmentId));
-//         }
-//       }
-//       // Execute the SQL query using the 'doQuery' function
-//       doQuery(sql, params, cb)
-//     } else {
-//       // If the appointmentId parameter is missing, return a bad request status
-//       res.sendStatus(400);
-//     }
-//   }
-//   catch (exp) {
-//     // If an exception occurs during the process, return a server error status
-//     res.writeHead(500, { "Content-Type": "application/json" });
-//     res.end(exp.message);
-//   }
-// }
-
-// function removeAppointment(req, res) {
-//   try {
-//     const appointmentId = req.params.id;
-//     if (appointmentId) {
-//       console.log(appointmentId);
-//       // SQL query to retrieve appointment details by its ID
-//       const selectSql = `
-//       SELECT * FROM appointments WHERE id = ?
-//       `;
-//       // Set the appointmentId to the value from the request parameters
-//       const selectParams = [appointmentId];
-
-//       const selectCb = (selectError, selectResults) => {
-//         if (selectError) {
-//           res.writeHead(500, { "Content-Type": "application/json" });
-//           res.end(selectError.message);
-//         } else {
-//           if (selectResults.length === 0) {
-//             console.log(selectResults);
-//             // No appointment found with the given ID, return a not found status
-//             res.sendStatus(404);
-//           } else {
-//             const appointmentData = selectResults[0];
-
-//             // SQL query to insert the appointment into the canceled_appointments table
-//             const insertSql = `
-//             INSERT INTO canceled_appointments (appointmentDateTime, employeeId, customerId, treatmentId)
-//             VALUES (?, ?, ?, ?)
-//             `;
-
-//             const insertParams = [
-//               appointmentData.appointmentDateTime,
-//               appointmentData.employeeId,
-//               appointmentData.customerId,
-//               appointmentData.treatmentId
-//             ];
-
-//             const insertCb = (insertError, insertResults) => {
-//               if (insertError) {
-//                 res.writeHead(500, { "Content-Type": "application/json" });
-//                 res.end(insertError.message);
-//               } else {
-//                 // SQL query to delete the appointment from the appointments table
-//                 const deleteSql = `
-//                 DELETE FROM appointments WHERE id = ?
-//                 `;
-//                 const deleteParams = [appointmentId];
-
-//                 const deleteCb = (deleteError, deleteResults) => {
-//                   if (deleteError) {
-//                     res.writeHead(500, { "Content-Type": "application/json" });
-//                     res.end(deleteError.message);
-//                   } else {
-//                     console.log("Appointment Moved and Deleted");
-//                     res.writeHead(200, { "Content-Type": "application/json" });
-//                     res.end(JSON.stringify(appointmentId));
-//                   }
-//                 };
-
-//                 // Execute the delete SQL query using the 'doQuery' function
-//                 doQuery(deleteSql, deleteParams, deleteCb);
-//               }
-//             };
-
-       
-//             // Execute the insert SQL query using the 'doQuery' function
-//             doQuery(insertSql, insertParams, insertCb);
-//           }
-//         }
-//       };
-//       doQuery(selectSql, selectParams, selectCb);
-
-      
-//       // Execute the select SQL query using the 'doQuery' function
-//     } else {
-//       // If the appointmentId parameter is missing, return a bad request status
-//       res.sendStatus(400);
-//     }
-//   } catch (exp) {
-//     // If an exception occurs during the process, return a server error status
-//     res.writeHead(500, { "Content-Type": "application/json" });
-//     res.end(exp.message);
-//   }
-// }
 
 function removeAppointment(req, res) {
   try {
@@ -473,7 +340,6 @@ function removeAppointment(req, res) {
   }
 }
 
-
 function getEmployeeAppointments(req, res) {
   try {
     const employeeId = req.params.id
@@ -516,7 +382,6 @@ function getEmployeeAppointments(req, res) {
 
 }
 
-
 function getEmployeeIncomes(req, res) {
   try {
     const employeeId = req.params.id
@@ -541,9 +406,8 @@ function getEmployeeIncomes(req, res) {
     appointments.customerId,
     treatments.treatmentType,
     users.name;
-
-
     `;
+
     const params = [employeeId]
     const cb = (error, results) => {
       if (error) {
@@ -599,13 +463,3 @@ function getCustomerAppointmentsByDay(req, res) {
   }
 
 }
-
-
-
-
-
-
-
-
-
-

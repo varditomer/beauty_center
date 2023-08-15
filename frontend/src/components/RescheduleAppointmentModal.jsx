@@ -306,10 +306,10 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
                 <Box sx={style}>
                     <section className="add-appointment-page">
                         <div className="add-appointment-container">
-                            <h1>Reschedule Appointment</h1>
+                            <h1 className='page-title'>Reschedule Appointment</h1>
                             {/* Select treatment */}
                             <>
-                                <label htmlFor="weekday">Select Treatment:</label>
+                                <label htmlFor="weekday">Treatment Type:</label>
                                 <span>{appointmentToReschedule.treatmentType}</span>
                             </>
                             {/* -------------------- */}

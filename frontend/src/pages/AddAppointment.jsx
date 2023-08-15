@@ -57,33 +57,7 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         setSlots(null)
         // 
         setSelectedTreatment(selectedTreatment)
-        // const daysOptions = generateDaysOptions()
-        // setDaysOptions(daysOptions)
     }
-
-    // // Function to generate 7 days options from the current day
-    // const generateDaysOptions = () => {
-    //     const today = new Date();
-
-    //     // Calculate the options for the next 7 business days (Monday to Friday)
-    //     const options = [];
-    //     let count = 0;
-    //     const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
-    //     while (options.length < 7) {
-    //         const date = new Date(today);
-    //         date.setDate(today.getDate() + count);
-    //         const dayOfWeek = date.getDay();
-
-    //         if (dayOfWeek >= 0 && dayOfWeek <= 4) {
-    //             const dayName = daysOfWeek[dayOfWeek];
-    //             options.push(
-    //                 { dayName, date }
-    //             );
-    //         }
-    //         count++;
-    //     }
-    //     return options
-    // }
 
     // Function to handle day selection
     const onSelectDay = async (event) => {
@@ -301,10 +275,10 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     return (
         <section className="add-appointment-page">
             <div className="add-appointment-container">
-                <h1>Add new appointment</h1>
+                <h1 className='page-title'>Add New Appointment</h1>
                 {/* Select treatment */}
                 <>
-                    <label htmlFor="weekday">Select Treatment:</label>
+                    <label htmlFor="treatmentType">Select Treatment:</label>
                     <select id='treatmentType' className="select-treatment" onChange={(event) => onSelectTreatment(event.target.value)}>
                         <option value="">Select Treatment Type</option>
                         {treatments &&

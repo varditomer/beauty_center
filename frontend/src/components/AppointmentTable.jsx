@@ -1,5 +1,7 @@
 import { useState } from "react";
 import RescheduleAppointmentModal from "./RescheduleAppointmentModal";
+import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
+import DeleteOutlineTwoToneIcon from '@mui/icons-material/DeleteOutlineTwoTone';
 
 export default function AppointmentTable({ appointments, BASE_URL, setAppointments, loggedInUser }) {
 
@@ -82,9 +84,14 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
                 }
               </div>
               <div className="cell" style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
-                <div onClick={() => onRemoveAppointment(appointment)} title="Remove-appointment" className="remove-btn">X</div>
 
-                <div onClick={() => onRescheduleAppointment(appointment)} title="Remove-appointment" className="remove-btn">@</div>
+
+                <div onClick={() => onRemoveAppointment(appointment)} title="Remove-appointment" className="remove-btn">
+                  <DeleteOutlineTwoToneIcon />
+                </div>
+                <div onClick={() => onRescheduleAppointment(appointment)} title="Remove-appointment" className="remove-btn">
+                  <EditCalendarTwoToneIcon />
+                </div>
               </div>
             </div>
           })}

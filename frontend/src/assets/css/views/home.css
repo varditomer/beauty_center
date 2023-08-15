@@ -48,9 +48,10 @@
 }
 
 .home-page h3 {
-    font-size: 18px;
-    color: var(--accent);
+    font-size: 20px;
     text-align: center;
+    text-transform: capitalize;
+    font-weight: 500;
 }
 
 .next-appointment-info {

@@ -44,6 +44,7 @@ export default function Home({ loggedInUser, BASE_URL }) {
                 },
             });
             const nextAppointment = await response.json();
+            console.log(`nextAppointment:`, nextAppointment)
             return nextAppointment;
         } catch (error) {
             console.error(error);
@@ -87,7 +88,7 @@ export default function Home({ loggedInUser, BASE_URL }) {
             <div className="appointment-info-container">
                 {appointments && <>
                     <div className="next-appointment-container">
-                        <h3>{loggedInUser.isEmployee ? "Your today treatments" : "Your next appointment"}</h3>
+                        <h3 className='page-title'>{loggedInUser.isEmployee ? "today's treatments" : "today's appointments"}</h3>
                         <AppointmentTable setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={appointments} loggedInUser={loggedInUser} />
                     </div>
                 </>

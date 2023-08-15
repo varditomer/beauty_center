@@ -98,6 +98,7 @@
     height: 30px;
     width: 30px;
     background-color: #969696;
+    margin-inline-end: 8px;
 }
 
 .row .remove-btn:hover {

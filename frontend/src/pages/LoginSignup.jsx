@@ -126,7 +126,7 @@ export default function LoginSignup({ setLoggedInUser }) {
     // JSX content for the Login/Signup page
     return (
         <section className="login-signup-page">
-            <h1>{isLoginMode ? "Login" : "Sign-up"}</h1>
+            <h1 className='page-title'>{isLoginMode ? "Login" : "Sign-up"}</h1>
             <div className="form-container">
 
                 <div className="logo-container">

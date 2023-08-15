@@ -9,6 +9,10 @@ export default function Employees({ BASE_URL }) {
         const fetchTreatments = async () => {
             try {
                 const employees = await getEmployees();
+                employees.forEach(employee => {
+                    employee.treatmentTypes = employee.treatmentTypes.split(',')
+                })
+                console.log(`employees:`, employees)
                 setEmployees(employees);
             } catch (error) {
                 console.error(error);
@@ -46,9 +50,8 @@ export default function Employees({ BASE_URL }) {
                         </div>
                         <div className="details">
                             <div className="name detail"><span className="title">Name:</span> {employee.name.toUpperCase()}</div>
-                            {/* <span className="email detail">Email: {employee.mail}</span> */}
                             <div className="address detail"><span className="title">Address:</span> {employee.address}</div>
-                            <div className="treatment detail"><span className="title">Treatments:</span> {employee.treatmentType}</div>
+                            <div className="treatment detail"><span className="title">Treatments:</span> {employee.treatmentTypes.map(treatment => <span>*  {treatment}</span>)}</div>
                         </div>
                     </article>
                 })

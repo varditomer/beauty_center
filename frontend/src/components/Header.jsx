@@ -57,19 +57,6 @@ export default function Header({ loggedInUser, setLoggedInUser }) {
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           <ContentCutIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />
-          {/* <Avatar sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}
-            src={logoImg}>
-          </Avatar> */}
-          {/* <img
-            src={logoImg}
-            alt="My Logo"
-            style={{
-              display: { xs: 'none', md: 'flex' },
-              marginRight: '8px', // Adjust the margin as needed
-              width: '160px',     // Adjust the width as needed
-              height: '60px',    // Adjust the height as needed
-            }}
-          /> */}
           <Typography
             variant="h6"
             noWrap
