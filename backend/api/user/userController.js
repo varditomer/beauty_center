@@ -7,7 +7,8 @@ module.exports = {
   login,
   signup,
   initiateResetPassword,
-  resetPassword
+  resetPassword,
+  updateProfile
 }
 
 // Function to handle user login
@@ -233,5 +234,48 @@ async function _updateUserPassword(password, mail) {
   } catch (error) {
     console.error('Error while querying the database:', error);
     throw error;
+  }
+}
+
+
+function updateProfile(req, res) {
+  const {
+    userToUpdate
+  } = req.body;
+
+  console.log(`req.body:`, req.body)
+
+  const { mail, name, address, phoneNumber,id } = userToUpdate
+
+  // Check if both username (email) and password are provided in the request
+  if (userToUpdate) {
+    // SQL query to fetch user data based on email and password
+    const sql = `
+    UPDATE users
+    SET name = ?,
+        mail = ?,
+        phoneNumber = ?,
+        address = ?
+    WHERE id = ?;
+ `
+    const params = [name, mail, phoneNumber, address,id];
+    // Callback function to handle the database query results
+    const cb = (error, results) => {
+      if (error){
+        console.log("Invalid credentials");
+        return res.status(409).json({ error: `Invalid Password or Email!` });
+      } 
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify({}));
+      }
+    }
+
+    // Execute the SQL query using the 'doQuery' function
+    doQuery(sql, params, cb);
+
+  } else {
+    // If either username or password is missing, return a bad request status
+    return res.status(409).json({ error: `Invalid Password or Email!` });
   }
 }
