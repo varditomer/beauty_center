@@ -1,0 +1,215 @@
+.home-page {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    height: 100%;
+    padding-bottom: 40px;
+}
+
+.home-page .img-link {
+    display: flex;
+    flex-direction: column;
+}
+
+.home-page .appointment-info-container {
+    padding: 40px 20px;
+    border: 1px solid black;
+    border-radius: 12px;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    /* align-items: center; */
+}
+
+.revenue-container{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: black;
+    border-radius: 8px;
+    padding: 10px;
+}
+
+.revenue-container .revenue{
+    color: var(--accent);
+}
+
+@media screen and (min-width:650px) {
+    .home-page .appointment-info-container {
+      flex-direction: row;  
+    } 
+}
+
+.home-page .next-appointment-container {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+}
+
+.home-page h3 {
+    font-size: 20px;
+    text-align: center;
+    text-transform: capitalize;
+    font-weight: 500;
+}
+
+.next-appointment-info {
+    font-size: 14px;
+}
+
+.info-item .item-content {
+    color: rgba(123, 121, 121, 0.75);
+}
+
+.home-page h1 {
+    font-size: 32px;
+    letter-spacing: 0.3rem;
+    margin-bottom: 10px;
+}
+
+.links {
+    display: flex;
+    margin-left: 20px;
+    /* Adjust the margin as needed */
+}
+
+.icons {
+    display: flex;
+    margin-right: 20px;
+    margin-left: 200px;
+    font-size: larger;
+
+    /* Adjust the margin as needed */
+}
+
+.links a,
+.icons a {
+    margin-left: 10px;
+
+    /* Adjust the margin between individual links */
+}
+
+.fa-solid.fa-house,
+.fa-regular.fa-address-card {
+    color: black;
+}
+
+
+
+nav ul {
+    list-style-type: none;
+    display: flex;
+}
+
+nav a {
+    font-size: larger;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    color: rgb(177, 102, 149);
+}
+
+header.wrapper nav ul {
+    text-align: right;
+    font-size: larger;
+    font-family: Arial, Helvetica, sans-serif;
+}
+
+
+.home-page p {
+    font-family: Arial, sans-serif;
+    font-size: 18px;
+    color: #333;
+    line-height: 2.2;
+    text-align: justify;
+    margin: 0;
+    white-space: pre-wrap;
+    flex: 1;
+
+}
+
+@media screen and (min-width:650px) {
+    .home-page p {
+        padding-right: 30px;
+    }
+
+}
+
+figcaption {
+    color: rgb(177, 102, 149);
+    font-size: large;
+}
+
+.home-page .image-container {
+    display: flex;
+    justify-content: space-around;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media screen and (min-width:650px) {
+    .home-page .image-container {
+        align-items: baseline;
+        flex-direction: row;
+    }
+}
+
+.image-container figure {
+    text-align: center;
+}
+
+@media screen and (max-width: 1000px) {
+    header.wrapper img {
+        margin-right: 0;
+    }
+
+    nav ul {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    nav a {
+        margin-right: 0;
+        margin-bottom: 1%;
+    }
+
+    nav.icons {
+        flex-direction: column;
+        align-items: center;
+        margin-left: 10%;
+    }
+
+    nav.links {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .image-container {
+        padding: 0.5em 2em;
+        width: 100%;
+        align-items: center;
+    }
+
+    .icon-text {
+        display: block;
+        text-align: center;
+        margin-top: 5px;
+    }
+
+    .icon {
+        font-size: 24px;
+        margin-bottom: 5px;
+        /* מרווח מתחת לסמל */
+        /* ניתן להוסיף עוד כללי CSS לעיצוב נוסף */
+    }
+}
+
+.emphasized {
+    font-weight: 600;
+    color: #cf3dbe;
+}
+
+.capitalized {
+    text-transform: capitalize;
+}

@@ -1,0 +1,114 @@
+/* Base Settings */
+
+/* Box sizing rules */
+* {
+  box-sizing: border-box;
+}
+
+/* Remove default margin & padding */
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+input,
+dd {
+  margin: 0;
+  padding: 0;
+  font: inherit;
+}
+
+/* Remove list styles on ul, ol elements with a list role, which suggests default styling will be removed */
+ul[role="list"],
+ol[role="list"] {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+ul{
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+/* Set core root defaults */
+html:focus-within {
+  scroll-behavior: smooth;
+}
+
+html {
+  overflow-x: hidden;
+  overflow-y: overlay;
+  height: 100%;
+}
+
+html,
+#root,
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  color: var(--text);
+  height: 100%;
+}
+
+/* Set core body defaults */
+body {
+  overflow-x: hidden;
+  overflow-y: overlay;
+  text-rendering: optimizeSpeed;
+  line-height: 1.5;
+  letter-spacing: 0.025em;
+  margin: 0;
+}
+
+.app-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.main-container {
+  background-color: var(--background);
+  flex: 1;
+  padding: 10px;
+}
+
+@media screen and (min-width:650px) {
+  .main-container {
+    padding: 20px 40px;
+
+  }
+}
+
+a {
+  color: var(--accent);
+  /* blue colors for links too */
+  text-decoration: inherit;
+  /* no underline */
+}
+
+/* Make images easier to work with */
+img,
+picture,
+svg {
+  max-width: 100%;
+  object-fit: fill;
+}
+
+button {
+  cursor: pointer;
+}
+
+.page-title {
+  font-size: 24px;
+  margin-bottom: 14px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  text-decoration: underline 2px solid rgb(177, 102, 149);
+  text-underline-offset: 4px;
+}

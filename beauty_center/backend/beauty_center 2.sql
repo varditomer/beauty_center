@@ -128,7 +128,6 @@ CREATE TABLE IF NOT EXISTS `employee_available_hours` (
   `treatmentId` varchar(9) NOT NULL,
   `patientAcceptStart` varchar(5) NOT NULL,
   `patientAcceptEnd` varchar(5) NOT NULL,
-  `day` varchar(5) NOT NULL,
   PRIMARY KEY (`employeeId`, `treatmentId`),
   FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
@@ -141,17 +140,17 @@ CREATE TABLE IF NOT EXISTS `employee_available_hours` (
 -- Dumping data for table `employee_treatments`
 --
 INSERT INTO `employee_available_hours` (`employeeId`, `treatmentId`, `patientAcceptStart`, `patientAcceptEnd`) VALUES
-('3', '3', '09:00', '18:00', 'Sunday'),
-('3', '4', '14:00', '17:00', 'Sunday'),
-('3', '5', '11:00', '18:00', 'Sunday'),
-('3', '6', '12:00', '18:00', 'Sunday'),
-('3', '7', '10:00', '18:00', 'Sunday'),
-('4', '1', '10:00', '19:00', 'Sunday'),
-('4', '2', '14:00', '19:00', 'Sunday'),
-('5', '3', '10:00', '17:00', 'Sunday'),
-('5', '5', '12:00', '17:00', 'Sunday'),
-('5', '6', '10:00', '14:00', 'Sunday'),
-('5', '7', '10:00', '16:00', 'Sunday');
+('3', '3', '09:00', '18:00'),
+('3', '4', '14:00', '17:00'),
+('3', '5', '11:00', '18:00'),
+('3', '6', '12:00', '18:00'),
+('3', '7', '10:00', '18:00'),
+('4', '1', '10:00', '19:00'),
+('4', '2', '14:00', '19:00'),
+('5', '3', '10:00', '17:00'),
+('5', '5', '12:00', '17:00'),
+('5', '6', '10:00', '14:00'),
+('5', '7', '10:00', '16:00');
 
 -- --------------------------------------------------------
 

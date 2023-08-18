@@ -1,0 +1,22 @@
+/* Imports */
+
+/* |--Settings */
+@import './settings/variables.css';
+@import './settings/base.css';
+@import './settings/helpers.css';
+
+
+/* |--Views */
+@import './views/employees.css';
+@import './views/treatments.css';
+/* @import './views/home.css'; */
+@import './views/appointment.css';
+@import './views/login-signup.css';
+@import './views/profile.css';
+@import './views/add-appointment.css';
+
+/* |--Components */
+@import './components/header.css';
+/* @import './components/footer.css'; */
+@import './components/user-message.css';
+@import './components/table.css';

@@ -1,0 +1,11 @@
+.profile-page {
+    height: 100%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+}
+
+.profile-page .info-item {
+    display: flex;
+    gap: 15px;
+}

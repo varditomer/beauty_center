@@ -1,0 +1,46 @@
+.employees-page {
+    display: flex;
+    gap: 10px;
+    justify-content: space-evenly;
+}
+
+.employees-page .employee-card {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    align-items: center;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: rgba(9, 30, 66, 0.25) 0px 4px 8px -2px, rgba(9, 30, 66, 0.08) 0px 0px 0px 1px;
+}
+
+.employees-page .employee-card:hover {
+    background-color: rgba(226, 162, 205, 0.1);
+}
+
+.employees-page .employee-card .img-container {
+height: 140px;
+}
+.employees-page .employee-card .img-container .img{
+    height: 100%;
+}
+
+.employees-page .employee-card .details {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    font-size: 18px;
+    font-family: monospace;
+}
+.employees-page .employee-card .details .treatment {
+    text-transform: capitalize;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.employees-page .employee-card .detail .title {
+    color: var(--accent);
+    font-weight: 500;
+    font-size: 20px;
+}
