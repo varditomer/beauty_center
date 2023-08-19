@@ -15,7 +15,7 @@ export default function Footer() {
                     <span className="caption">054-816-7256</span>
                 </div>
             </div>
-            <span className="copyrights">&copy; Beauty-Center, 2023 </span>
+            {/* <span className="copyrights">&copy; Beauty-Center, 2023 </span> */}
         </footer>
     )
 }

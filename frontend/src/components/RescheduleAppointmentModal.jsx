@@ -18,20 +18,22 @@ const style = {
     p: 4,
 };
 
-export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, setIsRescheduleAppointment, appointmentToReschedule}) {
+export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, setIsRescheduleAppointment, appointmentToReschedule }) {
+    // Handle modal
     const [open, setOpen] = useState(true);
     const handleClose = () => {
         setIsRescheduleAppointment(false)
         setOpen(false)
     };
-
+    //---------------------
 
     // State variables for various data
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
-    const [daysOptions, setDaysOptions] = useState(null)
     const [selectedDay, setSelectedDay] = useState('');
     const [selectedTreatment, setSelectedTreatment] = useState(null)
+    const [minDate, setMinDate] = useState('')
+    const [dateToShow, setDateToShow] = useState('')
     const [employees, setEmployees] = useState(null)
     const [selectedEmployee, setSelectedEmployee] = useState(null)
     const [slots, setSlots] = useState(null)
@@ -41,41 +43,90 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
 
     // Getting treatments from the server
     useEffect(() => {
-        setSelectedTreatment(appointmentToReschedule.treatmentType)
-        const daysOptions = generateDaysOptions()
-        setDaysOptions(daysOptions)
+        setSelectedTreatment(appointmentToReschedule.treatmentId)
+        // Calculate and set the minimum date based on employees' available hours
+        async function calcMinDate(treatmentId) {
+            console.log(`treatmentId:`, treatmentId)
+            const minDate = await getMinDate(treatmentId)
+            if (!minDate) {
+                setUserMessage(`Treatment isn't available!`)
+                setTimeout(() => {
+                    setUserMessage(``)
+                }, 2000);
+            }
+            setMinDate(minDate)
+        }
+        calcMinDate(appointmentToReschedule.treatmentId)
     }, []);
 
-    // Function to generate 7 days options from the current day
-    const generateDaysOptions = () => {
-        const today = new Date();
+    //--------Calc min date to set on calendar----------
 
-        // Calculate the options for the next 7 business days (Monday to Friday)
-        const options = [];
-        let count = 0;
-        const daysOfWeek = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday'];
-        while (options.length < 7) {
-            const date = new Date(today);
-            date.setDate(today.getDate() + count);
-            const dayOfWeek = date.getDay();
+    // Function to calculate and get the minimum date based on employees' available hours
+    const getMinDate = async (selectedTreatment) => {
+        // Get the current date and hour
+        const currentDate = new Date();
+        const currentHour = currentDate.getHours();
+        console.log(`selectedTreatment:`, selectedTreatment)
 
-            if (dayOfWeek >= 0 && dayOfWeek <= 4) {
-                const dayName = daysOfWeek[dayOfWeek];
-                options.push(
-                    { dayName, date }
-                );
+        // Fetch employees for the selected treatment
+        const employees = await fetchEmployeesByTreatmentId(selectedTreatment);
+        console.log(`employees:`, employees)
+        if (!employees.length) return
+        // Calculate the minimum dates for each employee's available hours
+        const minDates = await Promise.all(employees?.map(async (employee) => {
+            // Check if the current hour is beyond the employee's available hours
+            const isBeyond = await isCurrentHourEarlierThanEmployeePatientAcceptEndHour(employee.id, currentHour, selectedTreatment);
+
+            if (isBeyond) {
+                // If beyond, set the minimum date to tomorrow
+                const minDate = new Date(currentDate);
+                minDate.setDate(minDate.getDate() + 1);
+                return minDate;
+            } else {
+                // Otherwise, use the current date
+                return currentDate;
             }
-            count++;
+        }));
+        console.log(`minDates:`, minDates)
+
+        // Find the earliest minimum date among all employees
+        const earliestMinDate = new Date(Math.min(...minDates));
+
+        // Format the earliest minimum date as a string in YYYY-MM-DD format
+        return earliestMinDate.toISOString().split('T')[0];
+    };
+
+    // Function to check if the current hour is earlier than an employee's patient accept end hour
+    const isCurrentHourEarlierThanEmployeePatientAcceptEndHour = async (employee, currentHour, selectedTreatment) => {
+        // Fetch available hours for the employee and treatment
+        const availableHours = await fetchEmployeeAvailableHoursByTreatment(employee, selectedTreatment);
+
+        // If there are no available hours, return false
+        if (availableHours.length === 0) {
+            return false;
         }
-        return options
-    }
+
+        // Extract the patient accept end time
+        const { patientAcceptEnd } = availableHours[0];
+
+        // Parse hours and minutes from the patient accept end time
+        const [endHours, endMinutes] = patientAcceptEnd.split(':');
+
+        // Compare the end hours with the current hour
+        return endHours < currentHour;
+    };
+
+
+    //-------------------------------------------------------
+
 
     // Function to handle day selection
     const onSelectDay = async (event) => {
+        setDateToShow(event.target.value)
         const selectedDate = new Date(event.target.value);
         const formattedDate = selectedDate.toISOString();
-        setSelectedDay(formattedDate);
-        const employees = await fetchEmployeesByTreatmentId(appointmentToReschedule.treatmentId)
+        setSelectedDay(formattedDate)
+        const employees = await fetchEmployeesByTreatmentId(selectedTreatment)
         setEmployees(employees)
     }
 
@@ -119,7 +170,7 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
         const employeeAppointments = await fetchEmployeeAppointments(selectedEmployee, selectedDay)
 
         // 4. Getting customer's appointments for the selected date
-        const customerAppointments = await fetchCustomerAppointments(loggedInUser.isEmployee? appointmentToReschedule.customerId : loggedInUser.id, selectedDay)
+        const customerAppointments = await fetchCustomerAppointments(loggedInUser.isEmployee ? appointmentToReschedule.customerId : loggedInUser.id, selectedDay)
 
         // 5. Filtering the available slots by already assigned employee's and customer's appointments
         const filteredByEmployeesAppointmentsSlots = filterSlotsByAppointments(treatmentsSlots, employeeAppointments, treatmentDuration);
@@ -149,28 +200,50 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
     // 2. Function to generate appointment slots
     function generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration) {
         const appointmentSlots = [];
-        const currentDate = new Date(selectedDay);
+        const selectedDate = new Date(selectedDay);
 
         // Parse the hours and minutes from patientAcceptStart
         const [startHours, startMinutes] = patientAcceptStart.split(':');
 
-        // Set the current slot start time to the provided hours and minutes
-        currentDate.setHours(startHours);
-        currentDate.setMinutes(startMinutes);
-
         // Parse the hours and minutes from patientAcceptEnd
         const [endHours, endMinutes] = patientAcceptEnd.split(':');
+
+        // Validating current day add appointment
+        const currentDate = new Date()
+        const [currentDay, currentHour, currentMinutes] = [currentDate.getDay(), currentDate.getHours(), currentDate.getMinutes()]
+        if (currentDay === selectedDate.getDay()) {
+
+            if (currentHour >= endHours) return [] // if the current hour pass the patient accept end hour => return empty slots array.
+
+            // Set the current slot start time to the provided hours and minutes
+            if (currentDay === selectedDate.getDay() && currentHour >= startHours && currentHour <= endHours) {
+                if (currentMinutes > startMinutes && currentMinutes < treatmentDuration) {
+                    selectedDate.setMinutes(treatmentDuration)
+                    selectedDate.setHours(currentHour);
+                } else {
+                    selectedDate.setMinutes(startMinutes)
+                    selectedDate.setHours(currentHour + 1);
+                }
+            } else {
+                selectedDate.setHours(startHours);
+                selectedDate.setMinutes(startMinutes);
+            }
+
+        } else {
+            selectedDate.setHours(startHours);
+            selectedDate.setMinutes(startMinutes);
+        }
 
         const endTime = new Date(selectedDay);
         endTime.setHours(endHours);
         endTime.setMinutes(endMinutes - treatmentDuration);
-        // currentDate.setHours(currentDate.getHours() + 3)
-        while (currentDate <= endTime) {
-            const date = structuredClone(currentDate)
-            date.setHours(currentDate.getHours() + 3)
+        // selectedDate.setHours(selectedDate.getHours() + 3)
+        while (selectedDate <= endTime) {
+            const date = structuredClone(selectedDate)
+            date.setHours(selectedDate.getHours() + 3)
             appointmentSlots.push({ start: new Date(date).toISOString() });
 
-            currentDate.setMinutes(currentDate.getMinutes() + treatmentDuration);
+            selectedDate.setMinutes(selectedDate.getMinutes() + treatmentDuration);
         }
         return appointmentSlots;
     }
@@ -296,7 +369,7 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
                     <section className="add-appointment-page">
                         <div className="add-appointment-container">
                             <h1 className='page-title'>Reschedule Appointment</h1>
-                            {/* Select treatment */}
+                            {/* Selected treatment */}
                             <>
                                 <label htmlFor="weekday">Treatment Type:</label>
                                 <span>{appointmentToReschedule.treatmentType}</span>
@@ -304,20 +377,17 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
                             {/* -------------------- */}
 
                             {/* Select appointment day */}
-                            {daysOptions &&
+                            {/* Select appointment day */}
+                            {minDate &&
                                 <>
                                     <label htmlFor="weekday">Select a Day:</label>
-                                    <select id="weekday" onChange={onSelectDay}>
-                                        <option value="">Select a day</option>
-                                        {daysOptions.map((option, index) => {
-                                            return (
-                                                <option key={index} value={option.date}>
-                                                    {option.dayName} ({option.date.toLocaleDateString()})
-                                                </option>
-                                            )
-                                        })
-                                        }
-                                    </select>
+                                    <input
+                                        type="date"
+                                        id="weekday"
+                                        value={dateToShow}
+                                        onChange={onSelectDay}
+                                        min={minDate}
+                                    />
                                 </>
                             }
                             {/* -------------------- */}

@@ -9,6 +9,7 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     const [userMessage, setUserMessage] = useState('');
     const [treatments, setTreatments] = useState(null)
     const [selectedTreatment, setSelectedTreatment] = useState(null)
+    const [minDate, setMinDate] = useState('')
     const [dateToShow, setDateToShow] = useState('')
     const [selectedDay, setSelectedDay] = useState('');
     const [employees, setEmployees] = useState(null)
@@ -52,12 +53,80 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     };
 
     // Function to handle treatment selection
-    function onSelectTreatment(selectedTreatment) {
+    async function onSelectTreatment(selectedTreatment) {
+        // Reset employees and slots as treatment changes
         setEmployees(null)
         setSlots(null)
-        // 
+
+        // Set the selected treatment
         setSelectedTreatment(selectedTreatment)
+
+        // Calculate and set the minimum date based on employees' available hours
+        const minDate = await getMinDate(selectedTreatment)
+        if (!minDate) {
+            setUserMessage(`Treatment isn't available!`)
+            setTimeout(() => {
+                setUserMessage(``)
+            }, 2000);
+        }
+        setMinDate(minDate)
     }
+
+    //--------Calc min date to set on calendar----------
+
+    // Function to calculate and get the minimum date based on employees' available hours
+    const getMinDate = async (selectedTreatment) => {
+        // Get the current date and hour
+        const currentDate = new Date();
+        const currentHour = currentDate.getHours();
+
+        // Fetch employees for the selected treatment
+        const employees = await fetchEmployeesByTreatmentId(selectedTreatment);
+        if (!employees.length) return
+        // Calculate the minimum dates for each employee's available hours
+        const minDates = await Promise.all(employees?.map(async (employee) => {
+            // Check if the current hour is beyond the employee's available hours
+            const isBeyond = await isCurrentHourEarlierThanEmployeePatientAcceptEndHour(employee.id, currentHour, selectedTreatment);
+
+            if (isBeyond) {
+                // If beyond, set the minimum date to tomorrow
+                const minDate = new Date(currentDate);
+                minDate.setDate(minDate.getDate() + 1);
+                return minDate;
+            } else {
+                // Otherwise, use the current date
+                return currentDate;
+            }
+        }));
+
+        // Find the earliest minimum date among all employees
+        const earliestMinDate = new Date(Math.min(...minDates));
+
+        // Format the earliest minimum date as a string in YYYY-MM-DD format
+        return earliestMinDate.toISOString().split('T')[0];
+    };
+
+    // Function to check if the current hour is earlier than an employee's patient accept end hour
+    const isCurrentHourEarlierThanEmployeePatientAcceptEndHour = async (employee, currentHour, selectedTreatment) => {
+        // Fetch available hours for the employee and treatment
+        const availableHours = await fetchEmployeeAvailableHoursByTreatment(employee, selectedTreatment);
+
+        // If there are no available hours, return false
+        if (availableHours.length === 0) {
+            return false;
+        }
+
+        // Extract the patient accept end time
+        const { patientAcceptEnd } = availableHours[0];
+
+        // Parse hours and minutes from the patient accept end time
+        const [endHours, endMinutes] = patientAcceptEnd.split(':');
+
+        // Compare the end hours with the current hour
+        return endHours < currentHour;
+    };
+
+    //-------------------------------------------------------
 
     // Function to handle day selection
     const onSelectDay = async (event) => {
@@ -139,28 +208,50 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     // 2. Function to generate appointment slots
     function generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration) {
         const appointmentSlots = [];
-        const currentDate = new Date(selectedDay);
+        const selectedDate = new Date(selectedDay);
 
         // Parse the hours and minutes from patientAcceptStart
         const [startHours, startMinutes] = patientAcceptStart.split(':');
 
-        // Set the current slot start time to the provided hours and minutes
-        currentDate.setHours(startHours);
-        currentDate.setMinutes(startMinutes);
-
         // Parse the hours and minutes from patientAcceptEnd
         const [endHours, endMinutes] = patientAcceptEnd.split(':');
+
+        // Validating current day add appointment
+        const currentDate = new Date()
+        const [currentDay, currentHour, currentMinutes] = [currentDate.getDay(), currentDate.getHours(), currentDate.getMinutes()]
+        if (currentDay === selectedDate.getDay()) {
+
+            if (currentHour >= endHours) return [] // if the current hour pass the patient accept end hour => return empty slots array.
+
+            // Set the current slot start time to the provided hours and minutes
+            if (currentDay === selectedDate.getDay() && currentHour >= startHours && currentHour <= endHours) {
+                if (currentMinutes > startMinutes && currentMinutes < treatmentDuration) {
+                    selectedDate.setMinutes(treatmentDuration)
+                    selectedDate.setHours(currentHour);
+                } else {
+                    selectedDate.setMinutes(startMinutes)
+                    selectedDate.setHours(currentHour + 1);
+                }
+            } else {
+                selectedDate.setHours(startHours);
+                selectedDate.setMinutes(startMinutes);
+            }
+
+        } else {
+            selectedDate.setHours(startHours);
+            selectedDate.setMinutes(startMinutes);
+        }
 
         const endTime = new Date(selectedDay);
         endTime.setHours(endHours);
         endTime.setMinutes(endMinutes - treatmentDuration);
-        // currentDate.setHours(currentDate.getHours() + 3)
-        while (currentDate <= endTime) {
-            const date = structuredClone(currentDate)
-            date.setHours(currentDate.getHours() + 3)
+        // selectedDate.setHours(selectedDate.getHours() + 3)
+        while (selectedDate <= endTime) {
+            const date = structuredClone(selectedDate)
+            date.setHours(selectedDate.getHours() + 3)
             appointmentSlots.push({ start: new Date(date).toISOString() });
 
-            currentDate.setMinutes(currentDate.getMinutes() + treatmentDuration);
+            selectedDate.setMinutes(selectedDate.getMinutes() + treatmentDuration);
         }
         return appointmentSlots;
     }
@@ -294,16 +385,16 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
                 {/* -------------------- */}
 
                 {/* Select appointment day */}
-                {selectedTreatment &&
+                {minDate &&
                     <>
                         <label htmlFor="weekday">Select a Day:</label>
-                            <input
-                                type="date"
-                                id="weekday"
-                                value={dateToShow}
-                                onChange={onSelectDay}
-                                min={new Date().toISOString().split('T')[0]}
-                            />
+                        <input
+                            type="date"
+                            id="weekday"
+                            value={dateToShow}
+                            onChange={onSelectDay}
+                            min={minDate}
+                        />
                     </>
                 }
                 {/* -------------------- */}
@@ -330,9 +421,9 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
                 {/* Select appointment */}
                 {slots &&
                     <>
-                        <label htmlFor="slot">Select Appointment from Available:</label>
+                        <label htmlFor="slot">Select Appointment time:</label>
                         <select id="slot" onChange={onSelectAppointment}>
-                            <option value="">Select appointment</option>
+                            <option value="">Select Time</option>
                             {slots.map((appointment, index) => {
                                 return (
                                     <option key={index} value={appointment.start}>
