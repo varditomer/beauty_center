@@ -116,6 +116,7 @@ function getEmployeeAvailableHoursByTreatmentIdAndDay(req, res) {
   try {
     console.log(`req.body:`, req.body)
     const { employeeId, treatmentId, day } = req.body
+    console.log(`employeeId, treatmentId, day:`, employeeId, treatmentId, day)
     const sql = `
     SELECT
     employee_available_hours.employeeId,

@@ -58,7 +58,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
     useEffect(() => {
         // if (!appointments.length) return
         updateFilteredAppointments()
-        console.log('sssssss');
     }, [filterBy, futureAppointments]);
 
 
@@ -72,9 +71,7 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
     const onFilterChanged = (filterName, selectedVal) => {
 
         let newFilterBy = { ...filterBy };
-        // console.log(newFilterBy);
         newFilterBy[filterName] = selectedVal
-        // console.log(newFilterBy);
         setFilterBy(newFilterBy)
     };
 
@@ -91,7 +88,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
             });
             let treatmentsTypes = await response.json();
             treatmentsTypes = treatmentsTypes.map(treatmentsType => { return { value: treatmentsType.id, label: treatmentsType.treatmentType } })
-            console.log(treatmentsTypes);
             return treatmentsTypes;
         } catch (error) {
             console.error(error);
@@ -104,7 +100,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
         let future = [...futureAppointments]
         let canceled = [...canceledAppointments]
         let pass = [...passAppointments]
-        console.log('jkjkjkjkj');
         for (const filterName in filterBy) {
             switch (filterName) {
                 case "treatment-type":
@@ -143,7 +138,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
 
     const removeAppoitment = (newAppointments, canceledAppointments) => {
-        console.log(newAppointments, canceledAppointments);
         const newCanceledAppointments = [...canceledAppointments, canceledAppointments]
         setCanceledAppointments(newCanceledAppointments)
         setFutureAppointments(newAppointments)
@@ -201,8 +195,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                 futureAppointments.push(appointment);
             }
         });
-        console.log(passAppointments);
-        console.log(futureAppointments);
         return { pastAppointments, futureAppointments }
     }
 

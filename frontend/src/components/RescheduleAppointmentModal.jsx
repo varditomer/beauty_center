@@ -38,84 +38,31 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
     const [selectedEmployee, setSelectedEmployee] = useState(null)
     const [slots, setSlots] = useState(null)
     const [selectedAppointment, setSelectedAppointment] = useState(null)
+    const [treatments, setTreatments] = useState(null)
+
     const navigate = useNavigate()
 
 
     // Getting treatments from the server
     useEffect(() => {
+        const getTreatments = async () => {
+            try {
+                const treatments = await fetchTreatments();
+                setTreatments(treatments);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        getTreatments();
         setSelectedTreatment(appointmentToReschedule.treatmentId)
         // Calculate and set the minimum date based on employees' available hours
-        async function calcMinDate(treatmentId) {
-            console.log(`treatmentId:`, treatmentId)
-            const minDate = await getMinDate(treatmentId)
-            if (!minDate) {
-                setUserMessage(`Treatment isn't available!`)
-                setTimeout(() => {
-                    setUserMessage(``)
-                }, 2000);
-            }
-            setMinDate(minDate)
-        }
-        calcMinDate(appointmentToReschedule.treatmentId)
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        const minimumDate = tomorrow.toISOString().split('T')[0]
+        setMinDate(minimumDate)
     }, []);
-
-    //--------Calc min date to set on calendar----------
-
-    // Function to calculate and get the minimum date based on employees' available hours
-    const getMinDate = async (selectedTreatment) => {
-        // Get the current date and hour
-        const currentDate = new Date();
-        const currentHour = currentDate.getHours();
-        console.log(`selectedTreatment:`, selectedTreatment)
-
-        // Fetch employees for the selected treatment
-        const employees = await fetchEmployeesByTreatmentId(selectedTreatment);
-        console.log(`employees:`, employees)
-        if (!employees.length) return
-        // Calculate the minimum dates for each employee's available hours
-        const minDates = await Promise.all(employees?.map(async (employee) => {
-            // Check if the current hour is beyond the employee's available hours
-            const isBeyond = await isCurrentHourEarlierThanEmployeePatientAcceptEndHour(employee.id, currentHour, selectedTreatment);
-
-            if (isBeyond) {
-                // If beyond, set the minimum date to tomorrow
-                const minDate = new Date(currentDate);
-                minDate.setDate(minDate.getDate() + 1);
-                return minDate;
-            } else {
-                // Otherwise, use the current date
-                return currentDate;
-            }
-        }));
-        console.log(`minDates:`, minDates)
-
-        // Find the earliest minimum date among all employees
-        const earliestMinDate = new Date(Math.min(...minDates));
-
-        // Format the earliest minimum date as a string in YYYY-MM-DD format
-        return earliestMinDate.toISOString().split('T')[0];
-    };
-
-    // Function to check if the current hour is earlier than an employee's patient accept end hour
-    const isCurrentHourEarlierThanEmployeePatientAcceptEndHour = async (employee, currentHour, selectedTreatment) => {
-        // Fetch available hours for the employee and treatment
-        const availableHours = await fetchEmployeeAvailableHoursByTreatment(employee, selectedTreatment);
-
-        // If there are no available hours, return false
-        if (availableHours.length === 0) {
-            return false;
-        }
-
-        // Extract the patient accept end time
-        const { patientAcceptEnd } = availableHours[0];
-
-        // Parse hours and minutes from the patient accept end time
-        const [endHours, endMinutes] = patientAcceptEnd.split(':');
-
-        // Compare the end hours with the current hour
-        return endHours < currentHour;
-    };
-
 
     //-------------------------------------------------------
 
@@ -155,39 +102,72 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
         setSelectedEmployee(selectedEmployee)
 
         // 1. Get selected employee available hours
-        const availableHours = await fetchEmployeeAvailableHoursByTreatment(selectedEmployee, appointmentToReschedule.treatmentId)
+        const availableHours = await fetchEmployeeAvailableHoursByTreatmentIdAndDay(selectedEmployee, selectedTreatment, selectedDay)
+        if (!availableHours.length) {
+            setUserMessage('Employee is unavailable for this day!')
+            setTimeout(() => {
+                setUserMessage('')
+            }, 2000);
+        } else {
 
-        // Extract start and end time from available hours
-        const { patientAcceptStart, patientAcceptEnd } = availableHours[0]
+            const constraints = await fetchEmployeeConstraintsByDate(selectedEmployee, selectedDay)
 
-        // Extract treatment duration
-        const treatmentDuration = appointmentToReschedule.treatmentDuration
+            // Extract start and end time from available hours
+            const { patientAcceptStart, patientAcceptEnd } = availableHours[0]
 
-        // 2. Generating treatments slots according to start-end time
-        const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration)
+            // Extract treatment duration
+            const treatmentDuration = treatments[appointmentToReschedule.treatmentId - 1].duration
 
-        // 3. Getting employee's appointments for the selected date
-        const employeeAppointments = await fetchEmployeeAppointments(selectedEmployee, selectedDay)
+            // 2. Generating treatments slots according to start-end time and constraints
+            const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration, constraints)
 
-        // 4. Getting customer's appointments for the selected date
-        const customerAppointments = await fetchCustomerAppointments(loggedInUser.isEmployee ? appointmentToReschedule.customerId : loggedInUser.id, selectedDay)
+            // 3. Getting employee's appointments for the selected date
+            const employeeAppointments = await fetchEmployeeAppointments(selectedEmployee, selectedDay)
 
-        // 5. Filtering the available slots by already assigned employee's and customer's appointments
-        const filteredByEmployeesAppointmentsSlots = filterSlotsByAppointments(treatmentsSlots, employeeAppointments, treatmentDuration);
-        const filteredSlots = filterSlotsByAppointments(filteredByEmployeesAppointmentsSlots, customerAppointments, treatmentDuration);
-        setSlots(filteredSlots)
+            // 4. Getting customer's appointments for the selected date
+            const customerAppointments = await fetchCustomerAppointments(loggedInUser.id, selectedDay)
+
+            // 5. Filtering the available slots by already assigned employee's and customer's appointments
+            const filteredByEmployeesAppointmentsSlots = filterSlotsByAppointments(treatmentsSlots, employeeAppointments, treatmentDuration);
+            const filteredSlots = filterSlotsByAppointments(filteredByEmployeesAppointmentsSlots, customerAppointments, treatmentDuration);
+            setSlots(filteredSlots)
+
+        }
+
     }
 
-    // 1. Function to fetch employee's available hours by treatment
-    const fetchEmployeeAvailableHoursByTreatment = async (selectedEmployee, selectedTreatment) => {
+    
+    const fetchEmployeeConstraintsByDate = async (selectedEmployee, selectedDay) => {
+        const date = selectedDay.substring(0, 10)
         try {
-            const response = await fetch(`${BASE_URL}/employee/employeeAvailableHoursByTreatmentId`, {
+            const response = await fetch(`${BASE_URL}/employee/employeeConstraintsByDate`, {
                 method: 'POST',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify({ employeeId: selectedEmployee, treatmentId: selectedTreatment })
+                body: JSON.stringify({ employeeId: selectedEmployee, date })
+            });
+            const employeeConstraints = await response.json();
+            return employeeConstraints[0]
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+    // 1. Function to fetch employee's available hours by treatment
+    const fetchEmployeeAvailableHoursByTreatmentIdAndDay = async (selectedEmployee, selectedTreatment, formattedDate) => {
+        const date = new Date(formattedDate)
+        const day = date.getDay()
+        try {
+            const response = await fetch(`${BASE_URL}/employee/employeeAvailableHoursByTreatmentIdAndDay`, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({ employeeId: selectedEmployee, treatmentId: selectedTreatment, day })
             });
             const employeesAvailableHours = await response.json();
             return employeesAvailableHours
@@ -197,10 +177,21 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
         }
     };
 
+
     // 2. Function to generate appointment slots
-    function generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration) {
+    function generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration, constraints = null) {
         const appointmentSlots = [];
         const selectedDate = new Date(selectedDay);
+
+        let constraintStart
+        let constraintEnd
+        let constraintDuration
+
+        if (constraints) {
+            constraintStart = +(constraints.constraintStart.substring(0, 2))
+            constraintEnd = +(constraints.constraintEnd.substring(0, 2))
+            constraintDuration = (constraintEnd - constraintStart) * 60
+        }
 
         // Parse the hours and minutes from patientAcceptStart
         const [startHours, startMinutes] = patientAcceptStart.split(':');
@@ -237,13 +228,17 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
         const endTime = new Date(selectedDay);
         endTime.setHours(endHours);
         endTime.setMinutes(endMinutes - treatmentDuration);
-        // selectedDate.setHours(selectedDate.getHours() + 3)
         while (selectedDate <= endTime) {
             const date = structuredClone(selectedDate)
             date.setHours(selectedDate.getHours() + 3)
-            appointmentSlots.push({ start: new Date(date).toISOString() });
+            if ((date.getHours() - 3) < constraintEnd && (date.getHours() - 3) >= constraintStart) {
+                selectedDate.setMinutes(selectedDate.getMinutes() + constraintDuration);
+                continue
+            } else {
+                appointmentSlots.push({ start: new Date(date).toISOString() });
+                selectedDate.setMinutes(selectedDate.getMinutes() + treatmentDuration);
+            }
 
-            selectedDate.setMinutes(selectedDate.getMinutes() + treatmentDuration);
         }
         return appointmentSlots;
     }
@@ -332,7 +327,7 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
         setIsSuccess(true)
         setUserMessage('Appointment was added!')
         setTimeout(() => {
-            navigate('/appointments')
+            navigate('/')
         }, 2000);
 
     }
@@ -350,6 +345,24 @@ export default function RescheduleAppointmentModal({ loggedInUser, BASE_URL, set
             });
             const employees = await response.json();
             return employees
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+    // Function to fetch treatments from the server
+    const fetchTreatments = async () => {
+        try {
+            const response = await fetch(`${BASE_URL}/treatment`, {
+                method: 'GET',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                },
+            });
+            const treatments = await response.json();
+            return treatments;
         } catch (error) {
             console.error(error);
             return [];

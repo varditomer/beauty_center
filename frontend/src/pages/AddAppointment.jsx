@@ -61,70 +61,14 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         // Set the selected treatment
         setSelectedTreatment(selectedTreatment)
 
-        // Calculate and set the minimum date based on employees' available hours
-        const minDate = await getMinDate(selectedTreatment)
-        if (!minDate) {
-            setUserMessage(`Treatment isn't available!`)
-            setTimeout(() => {
-                setUserMessage(``)
-            }, 2000);
-        }
-        setMinDate(minDate)
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(today.getDate() + 1);
+
+        const minimumDate = tomorrow.toISOString().split('T')[0]
+        setMinDate(minimumDate)
     }
 
-    //--------Calc min date to set on calendar----------
-
-    // Function to calculate and get the minimum date based on employees' available hours
-    const getMinDate = async (selectedTreatment) => {
-        // Get the current date and hour
-        const currentDate = new Date();
-        const currentHour = currentDate.getHours();
-
-        // Fetch employees for the selected treatment
-        const employees = await fetchEmployeesByTreatmentId(selectedTreatment);
-        if (!employees.length) return
-        // Calculate the minimum dates for each employee's available hours
-        const minDates = await Promise.all(employees?.map(async (employee) => {
-            // Check if the current hour is beyond the employee's available hours
-            const isBeyond = await isCurrentHourEarlierThanEmployeePatientAcceptEndHour(employee.id, currentHour, selectedTreatment, currentDate);
-
-            if (isBeyond) {
-                // If beyond, set the minimum date to tomorrow
-                const minDate = new Date(currentDate);
-                minDate.setDate(minDate.getDate() + 1);
-                return minDate;
-            } else {
-                // Otherwise, use the current date
-                return currentDate;
-            }
-        }));
-
-        // Find the earliest minimum date among all employees
-        const earliestMinDate = new Date(Math.min(...minDates));
-
-        // Format the earliest minimum date as a string in YYYY-MM-DD format
-        return earliestMinDate.toISOString().split('T')[0];
-    };
-
-    // Function to check if the current hour is earlier than an employee's patient accept end hour
-    const isCurrentHourEarlierThanEmployeePatientAcceptEndHour = async (employee, currentHour, selectedTreatment, currentDate) => {
-        // Fetch available hours for the employee and treatment
-        const availableHours = await fetchEmployeeAvailableHoursByTreatmentIdAndDay(employee, selectedTreatment, currentDate);
-
-        // If there are no available hours, return false
-        if (availableHours.length === 0) {
-            return false;
-        }
-
-        // Extract the patient accept end time
-        const { patientAcceptEnd } = availableHours[0];
-
-        // Parse hours and minutes from the patient accept end time
-        const [endHours, endMinutes] = patientAcceptEnd.split(':');
-
-        // Compare the end hours with the current hour
-        return endHours < currentHour;
-    };
 
     //-------------------------------------------------------
 
@@ -164,31 +108,39 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
 
         // 1. Get selected employee available hours
         const availableHours = await fetchEmployeeAvailableHoursByTreatmentIdAndDay(selectedEmployee, selectedTreatment, selectedDay)
+        if (!availableHours.length) {
+            setUserMessage('Employee is unavailable for this day!')
+            setTimeout(() => {
+                setUserMessage('')
+            }, 2000);
+        } else {
 
-        const constraints = await fetchEmployeeConstraintsByDate(selectedEmployee, selectedDay)
+            const constraints = await fetchEmployeeConstraintsByDate(selectedEmployee, selectedDay)
 
-        // Extract start and end time from available hours
-        const { patientAcceptStart, patientAcceptEnd } = availableHours[0]
+            // Extract start and end time from available hours
+            const { patientAcceptStart, patientAcceptEnd } = availableHours[0]
 
-        // Extract treatment duration
-        const treatmentDuration = treatments[selectedTreatment - 1].duration
+            // Extract treatment duration
+            const treatmentDuration = treatments[selectedTreatment - 1].duration
 
-        // 2. Generating treatments slots according to start-end time and constraints
-        const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration, constraints)
+            // 2. Generating treatments slots according to start-end time and constraints
+            const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration, constraints)
 
-        // 3. Getting employee's appointments for the selected date
-        const employeeAppointments = await fetchEmployeeAppointments(selectedEmployee, selectedDay)
+            // 3. Getting employee's appointments for the selected date
+            const employeeAppointments = await fetchEmployeeAppointments(selectedEmployee, selectedDay)
 
-        // 4. Getting customer's appointments for the selected date
-        const customerAppointments = await fetchCustomerAppointments(loggedInUser.id, selectedDay)
+            // 4. Getting customer's appointments for the selected date
+            const customerAppointments = await fetchCustomerAppointments(loggedInUser.id, selectedDay)
 
-        // 5. Filtering the available slots by already assigned employee's and customer's appointments
-        const filteredByEmployeesAppointmentsSlots = filterSlotsByAppointments(treatmentsSlots, employeeAppointments, treatmentDuration);
-        const filteredSlots = filterSlotsByAppointments(filteredByEmployeesAppointmentsSlots, customerAppointments, treatmentDuration);
-        setSlots(filteredSlots)
+            // 5. Filtering the available slots by already assigned employee's and customer's appointments
+            const filteredByEmployeesAppointmentsSlots = filterSlotsByAppointments(treatmentsSlots, employeeAppointments, treatmentDuration);
+            const filteredSlots = filterSlotsByAppointments(filteredByEmployeesAppointmentsSlots, customerAppointments, treatmentDuration);
+            setSlots(filteredSlots)
+
+        }
+
     }
 
-    // 1. Function to fetch employee's available hours by treatment
     const fetchEmployeeConstraintsByDate = async (selectedEmployee, selectedDay) => {
         const date = selectedDay.substring(0, 10)
         try {
@@ -207,9 +159,11 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
             return [];
         }
     };
-
-    const fetchEmployeeAvailableHoursByTreatmentIdAndDay = async (selectedEmployee, selectedTreatment, date) => {
-        console.log(`date:`, date)
+    
+    // 1. Function to fetch employee's available hours by treatment and date
+    const fetchEmployeeAvailableHoursByTreatmentIdAndDay = async (selectedEmployee, selectedTreatment, formattedDate) => {
+        const date = new Date(formattedDate)
+        const day = date.getDay()
         try {
             const response = await fetch(`${BASE_URL}/employee/employeeAvailableHoursByTreatmentIdAndDay`, {
                 method: 'POST',
@@ -217,7 +171,7 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
                     accept: 'application/json',
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify({ employeeId: selectedEmployee, treatmentId: selectedTreatment, day: date.getDay() })
+                body: JSON.stringify({ employeeId: selectedEmployee, treatmentId: selectedTreatment, day })
             });
             const employeesAvailableHours = await response.json();
             return employeesAvailableHours
@@ -432,6 +386,7 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
                             min={minDate}
                         />
                     </>
+
                 }
                 {/* -------------------- */}
 
