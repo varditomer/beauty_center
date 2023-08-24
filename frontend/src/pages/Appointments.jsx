@@ -13,11 +13,13 @@ import { PriceSlider } from '../components/PriceSlider';
 export default function Appointments({ BASE_URL, loggedInUser }) {
     // State to hold appointments
     const [appointments, setAppointments] = useState([]);
-    const [filteredAppointments, setFilteredAppointments] = useState([]);
+    const [futureAppointments, setFutureAppointments] = useState([]);
+    const [futureFilteredAppointments, setFutureFilteredAppointments] = useState([]);
     const [passAppointments, setPassAppointments] = useState([]);
-    const [canceledAppointments, setCanceledAppointments] = useState(null);
+    const [filteredPassAppointments, setFilteredPassAppointments] = useState([]);
+    const [canceledAppointments, setCanceledAppointments] = useState([]);
+    const [filteredCanceledAppointments, setFilteredCanceledAppointments] = useState(null);
     const [treatmentsTypeOptions, setTreatmentsTypeOptions] = useState(null);
-    const [filteredreatmentsTypeOptions, setFilteredreatmentsTypeOptions] = useState(null);
     const [tableType, setTableType] = useState(0);
     const [filterBy, setFilterBy] = useState({});
 
@@ -31,18 +33,19 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                 // Fetch user appointments
                 const isEmployee = loggedInUser.isEmployee
                 const appointments = isEmployee ? await fetchEmployeeAppointments() : await fetchCustomerAppointments();
-                const canceledAppointments = isEmployee ? await fetchEmployeeCanceledAppointments() : null
+                const canceledAppointments = isEmployee ? await fetchEmployeeCanceledAppointments() : []
+                setCanceledAppointments(canceledAppointments)
                 // Sort appointments by appointmentDateTime
                 appointments.sort((a, b) => {
                     const dateA = new Date(a.appointmentDateTime);
                     const dateB = new Date(b.appointmentDateTime);
                     return dateA - dateB;
                 });
+                setAppointments(appointments)
                 const appointmentByType = getAppointmentByType(appointments)
                 setPassAppointments(appointmentByType.pastAppointments)
-                setCanceledAppointments(canceledAppointments)
-                // Update state with sorted appointments
-                setAppointments(appointmentByType.futureAppointments);
+                setFutureAppointments(appointmentByType.futureAppointments);
+                setAppointmentsByTypes(appointmentByType.pastAppointments, appointmentByType.futureAppointments, canceledAppointments)
             } catch (error) {
                 console.error(error);
             }
@@ -50,24 +53,32 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
         getAppointments();
     }, []);
-    
+
 
     useEffect(() => {
-		// if (!appointments.length) return
-		updateFilteredAppointments()
-	}, [filterBy]);
+        // if (!appointments.length) return
+        updateFilteredAppointments()
+        console.log('sssssss');
+    }, [filterBy, futureAppointments]);
 
 
-	const onFilterChanged = (filterName, selectedVal) => {
-       
-		let newFilterBy = { ...filterBy };
+    const setAppointmentsByTypes = (pass, future, canceled) => {
+        setFutureFilteredAppointments(future)
+        setFilteredCanceledAppointments(canceled)
+        setFilteredPassAppointments(pass)
+
+    }
+
+    const onFilterChanged = (filterName, selectedVal) => {
+
+        let newFilterBy = { ...filterBy };
         // console.log(newFilterBy);
-		newFilterBy[filterName] = selectedVal
+        newFilterBy[filterName] = selectedVal
         // console.log(newFilterBy);
-		setFilterBy(newFilterBy)
-	};
+        setFilterBy(newFilterBy)
+    };
 
-    
+
 
     const getTreatmentTypes = async () => {
         try {
@@ -90,21 +101,34 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
 
     const updateFilteredAppointments = () => {
-        let currentAppointments = [...appointments]
+        let future = [...futureAppointments]
+        let canceled = [...canceledAppointments]
+        let pass = [...passAppointments]
+        console.log('jkjkjkjkj');
         for (const filterName in filterBy) {
             switch (filterName) {
                 case "treatment-type":
                     let treatmentTypes = filterBy[filterName].map(val => { return val.label });
-                    console.log(!!treatmentTypes);
                     if (treatmentTypes.length) {
-                        currentAppointments = currentAppointments.filter(appointment => {
+                        future = future.filter(appointment => {
+                            return treatmentTypes.includes(appointment.treatmentType)
+                        });
+                        canceled = canceled.filter(appointment => {
+                            return treatmentTypes.includes(appointment.treatmentType)
+                        });
+                        pass = pass.filter(appointment => {
                             return treatmentTypes.includes(appointment.treatmentType)
                         });
                     }
                     break;
                 case "price":
-                    currentAppointments = currentAppointments.filter(appointment => {
-                        console.log(appointment.treatmentPrice);
+                    future = future.filter(appointment => {
+                        return (+appointment.treatmentPrice) >= filterBy[filterName][0] && (+appointment.treatmentPrice) <= filterBy[filterName][1]
+                    })
+                    canceled = canceled.filter(appointment => {
+                        return (+appointment.treatmentPrice) >= filterBy[filterName][0] && (+appointment.treatmentPrice) <= filterBy[filterName][1]
+                    })
+                    pass = pass.filter(appointment => {
                         return (+appointment.treatmentPrice) >= filterBy[filterName][0] && (+appointment.treatmentPrice) <= filterBy[filterName][1]
                     })
                     break;
@@ -112,7 +136,18 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                     break;
             }
         }
-        setAppointments(currentAppointments);
+        setFutureFilteredAppointments(future)
+        setFilteredCanceledAppointments(canceled)
+        setFilteredPassAppointments(pass)
+    }
+
+
+    const removeAppoitment = (newAppointments, canceledAppointments) => {
+        console.log(newAppointments, canceledAppointments);
+        const newCanceledAppointments = [...canceledAppointments, canceledAppointments]
+        setCanceledAppointments(newCanceledAppointments)
+        setFutureAppointments(newAppointments)
+
     }
 
 
@@ -190,18 +225,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
     return (
         <section className="appointment-page">
-            <PriceSlider onFilterChanged={onFilterChanged} />
-            <>
-                {treatmentsTypeOptions &&
-                    <Select
-                        key={filterBy}
-                        isMulti={true}
-                        isRtl={true}
-                        options={treatmentsTypeOptions}
-                        onChange={(value)=>onFilterChanged('treatment-type',value)}
-                        placeholder='Select Treaments' />
-                }
-            </>
             <Box sx={{ width: 500 }}>
                 <BottomNavigation
                     showLabels
@@ -217,6 +240,22 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                     }
                 </BottomNavigation>
             </Box>
+            <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }} className="filter-container">
+                <>
+                    {treatmentsTypeOptions &&
+                        <Select
+                            key={filterBy}
+                            isMulti={true}
+                            isRtl={true}
+                            options={treatmentsTypeOptions}
+                            onChange={(value) => onFilterChanged('treatment-type', value)}
+                            placeholder='Select Treaments' />
+                    }
+                </>
+                <PriceSlider onFilterChanged={onFilterChanged} />
+
+            </div>
+
             {/* Display page title */}
 
             {/* Link to add appointment page */}
@@ -226,28 +265,28 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
             <div className="appointment-section">
                 {/* Display AppointmentTable component if appointments are available */}
-                {!!appointments.length && tableType === 0 &&
+                {!!futureFilteredAppointments.length && tableType === 0 &&
                     <>
                         <h1 className="page-title">{loggedInUser.isEmployee ? `Employee's ` : `Customer's `}Appointments</h1>
-                        <AppointmentTable setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={appointments} loggedInUser={loggedInUser} />
+                        <AppointmentTable setAppointments={setFutureAppointments} BASE_URL={BASE_URL} appointments={futureFilteredAppointments} removeAppoitment={removeAppoitment} loggedInUser={loggedInUser} />
                     </>
                 }
             </div>
             <div className="appointment-section">
                 {/* Display AppointmentTable component if appointments are available */}
-                {passAppointments && tableType === 1 &&
+                {!!filteredPassAppointments.length && tableType === 1 &&
                     <>
                         <h1 className="page-title" style={{ marginBottom: "20px" }}>Past Appointments</h1>
-                        <AppointmentTable isCanceledAppointment={true} setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={passAppointments} loggedInUser={loggedInUser} />
+                        <AppointmentTable isCanceledAppointment={true} setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={filteredPassAppointments} loggedInUser={loggedInUser} />
                     </>
                 }
             </div>
             <div className="appointment-section">
                 {/* Display AppointmentTable component if appointments are available */}
-                {!!loggedInUser.isEmployee && canceledAppointments && tableType === 2 &&
+                {!!loggedInUser.isEmployee && filteredCanceledAppointments && tableType === 2 &&
                     <>
                         <h1 className="page-title" style={{ marginBottom: "20px" }}>Canceled Appointments</h1>
-                        <AppointmentTable isCanceledAppointment={true} setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={canceledAppointments} loggedInUser={loggedInUser} />
+                        <AppointmentTable isCanceledAppointment={true} setAppointments={setFutureAppointments} BASE_URL={BASE_URL} appointments={filteredCanceledAppointments} loggedInUser={loggedInUser} />
                     </>
                 }
             </div>

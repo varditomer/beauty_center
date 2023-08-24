@@ -3,7 +3,7 @@ import RescheduleAppointmentModal from "./RescheduleAppointmentModal";
 import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
 import DeleteOutlineTwoToneIcon from '@mui/icons-material/DeleteOutlineTwoTone';
 
-export default function AppointmentTable({ appointments, BASE_URL, setAppointments, loggedInUser, isCanceledAppointment = false }) {
+export default function AppointmentTable({ appointments, BASE_URL, setAppointments, loggedInUser, isCanceledAppointment = false, removeAppoitment = () => null }) {
 
 
   const titles = ['Date', 'Time', 'Type', 'Duration', 'Price', `${loggedInUser.isEmployee ? 'Customer' : 'Therapist'}`, '']
@@ -22,7 +22,9 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
       });
       const res = await response.json();
       const newAppointments = appointments.filter(appointment => appointment.id !== +res)
+      const newCanceledAppointment = appointments.filter(appointment => appointment.id === +res)
       setAppointments(newAppointments)
+      removeAppoitment(newAppointments,newCanceledAppointment)
       return res;
     } catch (error) {
       console.error(error);
@@ -33,6 +35,7 @@ export default function AppointmentTable({ appointments, BASE_URL, setAppointmen
   const onRescheduleAppointment = (appointment) => {
     setAppointmentToReschedule(appointment)
     setIsRescheduleAppointment(true)
+    
   }
 
   return (
