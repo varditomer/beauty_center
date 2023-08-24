@@ -113,16 +113,6 @@ export default function Constraints({ BASE_URL, loggedInUser }) {
                     loggedInUser={loggedInUser}
                     BASE_URL={BASE_URL}
                     setIsAddingConstraint={setIsAddingConstraint}
-                    treatmentTypeToUpdate={null}
-                    treatmentsToAdd={treatmentsToAdd}
-                />
-            }
-            {isUpdatingConstraint &&
-                <ConstraintModal
-                    loggedInUser={loggedInUser}
-                    BASE_URL={BASE_URL}
-                    setIsUpdatingConstraint={setIsUpdatingConstraint}
-                    treatmentTypeToUpdate={treatmentTypeToUpdate}
                 />
             }
             <button className="add-appointment-btn" style={{ marginBottom: '16px' }} onClick={() => setIsAddingConstraint(true)}>Add Constraints</button>

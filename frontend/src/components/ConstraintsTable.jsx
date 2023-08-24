@@ -7,12 +7,6 @@ export default function ConstraintsTable({ treatments, onRemoveTreatmentType, lo
 
     const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
-
-    const onEditTreatmentType = (treatmentTypeToUpdate) => {
-        setTreatmentTypeToUpdate(treatmentTypeToUpdate)
-        setIsUpdatingTreatmentType(true)
-    }
-
     return (
         <>
             <div className="custom-table">
@@ -50,9 +44,6 @@ export default function ConstraintsTable({ treatments, onRemoveTreatmentType, lo
                                     <div className="cell" style={{ justifyContent: "center", alignItems: "center", display: "flex" }}>
                                         <div onClick={() => onRemoveTreatmentType(treatment.id, treatment.day)} title="Remove Treatment Type" className="remove-btn">
                                             <DeleteOutlineTwoToneIcon />
-                                        </div>
-                                        <div onClick={() => onEditTreatmentType(treatment)} title="Edit Treatment Type" className="remove-btn">
-                                            <EditCalendarTwoToneIcon />
                                         </div>
                                     </div>
                                 </>
