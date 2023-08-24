@@ -225,7 +225,7 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
     return (
         <section className="appointment-page">
-            <Box sx={{ width: 500 }}>
+            <Box >
                 <BottomNavigation
                     showLabels
                     value={tableType}
@@ -240,7 +240,7 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
                     }
                 </BottomNavigation>
             </Box>
-            <div style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }} className="filter-container">
+            <div className="filter-container">
                 <>
                     {treatmentsTypeOptions &&
                         <Select

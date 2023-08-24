@@ -24,3 +24,11 @@
 .add-appointment-btn:hover {
     background-color: rgb(216, 68, 167);
 }
+
+.filter-container{
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+    margin-block: 20px;
+    gap: 40px;
+}
