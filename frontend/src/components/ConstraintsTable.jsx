@@ -1,7 +1,7 @@
 import EditCalendarTwoToneIcon from '@mui/icons-material/EditCalendarTwoTone';
 import DeleteOutlineTwoToneIcon from '@mui/icons-material/DeleteOutlineTwoTone';
 
-export default function TreatmentTable({ treatments, onRemoveTreatmentType, loggedInUser, setTreatmentTypeToUpdate, setIsUpdatingTreatmentType }) {
+export default function ConstraintsTable({ treatments, onRemoveTreatmentType, loggedInUser, setTreatmentTypeToUpdate, setIsUpdatingTreatmentType }) {
 
     const titles = loggedInUser.isEmployee ? ['Duration', 'Price', 'Type', 'Day', 'Start', 'End', ''] : ['Duration', 'Price', 'Type']
 

@@ -86,7 +86,7 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         // Calculate the minimum dates for each employee's available hours
         const minDates = await Promise.all(employees?.map(async (employee) => {
             // Check if the current hour is beyond the employee's available hours
-            const isBeyond = await isCurrentHourEarlierThanEmployeePatientAcceptEndHour(employee.id, currentHour, selectedTreatment);
+            const isBeyond = await isCurrentHourEarlierThanEmployeePatientAcceptEndHour(employee.id, currentHour, selectedTreatment, currentDate);
 
             if (isBeyond) {
                 // If beyond, set the minimum date to tomorrow
@@ -107,9 +107,9 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     };
 
     // Function to check if the current hour is earlier than an employee's patient accept end hour
-    const isCurrentHourEarlierThanEmployeePatientAcceptEndHour = async (employee, currentHour, selectedTreatment) => {
+    const isCurrentHourEarlierThanEmployeePatientAcceptEndHour = async (employee, currentHour, selectedTreatment, currentDate) => {
         // Fetch available hours for the employee and treatment
-        const availableHours = await fetchEmployeeAvailableHoursByTreatment(employee, selectedTreatment);
+        const availableHours = await fetchEmployeeAvailableHoursByTreatmentIdAndDay(employee, selectedTreatment, currentDate);
 
         // If there are no available hours, return false
         if (availableHours.length === 0) {
@@ -163,7 +163,9 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         setSelectedEmployee(selectedEmployee)
 
         // 1. Get selected employee available hours
-        const availableHours = await fetchEmployeeAvailableHoursByTreatment(selectedEmployee, selectedTreatment)
+        const availableHours = await fetchEmployeeAvailableHoursByTreatmentIdAndDay(selectedEmployee, selectedTreatment, selectedDay)
+
+        const constraints = await fetchEmployeeConstraintsByDate(selectedEmployee, selectedDay)
 
         // Extract start and end time from available hours
         const { patientAcceptStart, patientAcceptEnd } = availableHours[0]
@@ -171,8 +173,8 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         // Extract treatment duration
         const treatmentDuration = treatments[selectedTreatment - 1].duration
 
-        // 2. Generating treatments slots according to start-end time
-        const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration)
+        // 2. Generating treatments slots according to start-end time and constraints
+        const treatmentsSlots = generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration, constraints)
 
         // 3. Getting employee's appointments for the selected date
         const employeeAppointments = await fetchEmployeeAppointments(selectedEmployee, selectedDay)
@@ -187,15 +189,35 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     }
 
     // 1. Function to fetch employee's available hours by treatment
-    const fetchEmployeeAvailableHoursByTreatment = async (selectedEmployee, selectedTreatment) => {
+    const fetchEmployeeConstraintsByDate = async (selectedEmployee, selectedDay) => {
+        const date = selectedDay.substring(0, 10)
         try {
-            const response = await fetch(`${BASE_URL}/employee/employeeAvailableHoursByTreatmentId`, {
+            const response = await fetch(`${BASE_URL}/employee/employeeConstraintsByDate`, {
                 method: 'POST',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
                 },
-                body: JSON.stringify({ employeeId: selectedEmployee, treatmentId: selectedTreatment })
+                body: JSON.stringify({ employeeId: selectedEmployee, date })
+            });
+            const employeeConstraints = await response.json();
+            return employeeConstraints[0]
+        } catch (error) {
+            console.error(error);
+            return [];
+        }
+    };
+
+    const fetchEmployeeAvailableHoursByTreatmentIdAndDay = async (selectedEmployee, selectedTreatment, date) => {
+        console.log(`date:`, date)
+        try {
+            const response = await fetch(`${BASE_URL}/employee/employeeAvailableHoursByTreatmentIdAndDay`, {
+                method: 'POST',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({ employeeId: selectedEmployee, treatmentId: selectedTreatment, day: date.getDay() })
             });
             const employeesAvailableHours = await response.json();
             return employeesAvailableHours
@@ -206,9 +228,19 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
     };
 
     // 2. Function to generate appointment slots
-    function generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration) {
+    function generateAppointmentSlots(patientAcceptStart, patientAcceptEnd, treatmentDuration, constraints = null) {
         const appointmentSlots = [];
         const selectedDate = new Date(selectedDay);
+
+        let constraintStart
+        let constraintEnd
+        let constraintDuration
+
+        if (constraints) {
+            constraintStart = +(constraints.constraintStart.substring(0, 2))
+            constraintEnd = +(constraints.constraintEnd.substring(0, 2))
+            constraintDuration = (constraintEnd - constraintStart) * 60
+        }
 
         // Parse the hours and minutes from patientAcceptStart
         const [startHours, startMinutes] = patientAcceptStart.split(':');
@@ -245,13 +277,17 @@ export default function AddAppointment({ BASE_URL, loggedInUser }) {
         const endTime = new Date(selectedDay);
         endTime.setHours(endHours);
         endTime.setMinutes(endMinutes - treatmentDuration);
-        // selectedDate.setHours(selectedDate.getHours() + 3)
         while (selectedDate <= endTime) {
             const date = structuredClone(selectedDate)
             date.setHours(selectedDate.getHours() + 3)
-            appointmentSlots.push({ start: new Date(date).toISOString() });
+            if ((date.getHours() - 3) < constraintEnd && (date.getHours() - 3) >= constraintStart) {
+                selectedDate.setMinutes(selectedDate.getMinutes() + constraintDuration);
+                continue
+            } else {
+                appointmentSlots.push({ start: new Date(date).toISOString() });
+                selectedDate.setMinutes(selectedDate.getMinutes() + treatmentDuration);
+            }
 
-            selectedDate.setMinutes(selectedDate.getMinutes() + treatmentDuration);
         }
         return appointmentSlots;
     }

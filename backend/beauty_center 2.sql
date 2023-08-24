@@ -126,10 +126,10 @@ DROP TABLE IF EXISTS `employee_available_hours`;
 CREATE TABLE IF NOT EXISTS `employee_available_hours` (
   `employeeId` varchar(9) NOT NULL,
   `treatmentId` varchar(9) NOT NULL,
+  `day` int NOT NULL,
   `patientAcceptStart` varchar(5) NOT NULL,
   `patientAcceptEnd` varchar(5) NOT NULL,
-  `day` varchar(5) NOT NULL,
-  PRIMARY KEY (`employeeId`, `treatmentId`),
+  PRIMARY KEY (`employeeId`, `treatmentId`, `day`),
   FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
   FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
@@ -140,20 +140,51 @@ CREATE TABLE IF NOT EXISTS `employee_available_hours` (
 --
 -- Dumping data for table `employee_treatments`
 --
-INSERT INTO `employee_available_hours` (`employeeId`, `treatmentId`, `patientAcceptStart`, `patientAcceptEnd`) VALUES
-('3', '3', '09:00', '18:00', 'Sunday'),
-('3', '4', '14:00', '17:00', 'Sunday'),
-('3', '5', '11:00', '18:00', 'Sunday'),
-('3', '6', '12:00', '18:00', 'Sunday'),
-('3', '7', '10:00', '18:00', 'Sunday'),
-('4', '1', '10:00', '19:00', 'Sunday'),
-('4', '2', '14:00', '19:00', 'Sunday'),
-('5', '3', '10:00', '17:00', 'Sunday'),
-('5', '5', '12:00', '17:00', 'Sunday'),
-('5', '6', '10:00', '14:00', 'Sunday'),
-('5', '7', '10:00', '16:00', 'Sunday');
+INSERT INTO `employee_available_hours` (`employeeId`, `treatmentId`, `day`, `patientAcceptStart`, `patientAcceptEnd`) VALUES
+('3', '3', 0, '09:00', '18:00'),
+('3', '3', 1, '09:00', '18:00'),
+('3', '3', 2, '10:00', '18:00'),
+('3', '3', 3, '09:00', '18:00'),
+('3', '3', 4, '09:00', '18:00'),
+('3', '4', 0, '08:00', '16:00'),
+('3', '4', 1, '08:00', '16:00'),
+('3', '4', 2, '08:00', '16:00'),
+('3', '4', 3, '08:00', '16:00'),
+('3', '4', 4, '08:00', '16:00'),
+('3', '4', 5, '08:00', '16:00'),
+('3', '5', 0, '11:00', '18:00'),
+('3', '6', 0, '12:00', '18:00'),
+('3', '7', 0, '10:00', '18:00'),
+('4', '1', 0, '10:00', '19:00'),
+('4', '2', 0, '14:00', '19:00'),
+('5', '3', 0, '10:00', '17:00'),
+('5', '5', 0, '12:00', '17:00'),
+('5', '6', 0, '10:00', '14:00'),
+('5', '7', 0, '10:00', '16:00');
 
 -- --------------------------------------------------------
+
+--
+-- Table structure for table `employee_constraints`
+--
+
+DROP TABLE IF EXISTS `employee_constraints`;
+CREATE TABLE IF NOT EXISTS `employee_constraints` (
+  `employeeId` varchar(9) NOT NULL,
+  `date` varchar(10) NOT NULL,
+  `constraintStart` varchar(5) NOT NULL,
+  `constraintEnd` varchar(5) NOT NULL,
+  `description` varchar(200) NOT NULL,
+  PRIMARY KEY (`employeeId`, `date`),
+  FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Dumping data for table `employee_constraints`
+--
+
+INSERT INTO `employee_constraints` (`employeeId`, `date`, `constraintStart`, `constraintEnd`, `description`) VALUES
+('3', '2023-08-25' ,'12:00', '13:00', 'company meal');
 
 
 --

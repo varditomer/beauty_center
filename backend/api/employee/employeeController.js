@@ -4,7 +4,10 @@ module.exports = {
   getEmployees,
   getEmployeesByTreatmentId,
   getEmployeeAvailableHoursByTreatmentId,
-  getEmployeeAppointmentsByDay
+  getEmployeeAppointmentsByDay,
+  getEmployeeAvailableHoursByTreatmentIdAndDay,
+  getEmployeeTreatmentDaysToAdd,
+  getEmployeeConstraintsByDate
 }
 
 function getEmployees(req, res) {
@@ -60,7 +63,7 @@ function getEmployeesByTreatmentId(req, res) {
         res.end(error.message);
       }
       else {
-        const employees = results.map(employee=> {
+        const employees = results.map(employee => {
           delete employee.password
           return employee
         })
@@ -97,6 +100,104 @@ function getEmployeeAvailableHoursByTreatmentId(req, res) {
       }
       else {
         res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(results));
+      }
+    }
+    doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
+
+function getEmployeeAvailableHoursByTreatmentIdAndDay(req, res) {
+  try {
+    console.log(`req.body:`, req.body)
+    const { employeeId, treatmentId, day } = req.body
+    const sql = `
+    SELECT
+    employee_available_hours.employeeId,
+    employee_available_hours.treatmentId,
+    employee_available_hours.patientAcceptStart,
+    employee_available_hours.patientAcceptEnd
+    FROM employee_available_hours
+    WHERE employeeId = ? AND treatmentId = ? AND day = ?;    
+    `;
+    const params = [employeeId, treatmentId, day]
+    const cb = (error, results) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+        console.log(`error.message:`, error.message)
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(results));
+      }
+    }
+    doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
+
+function getEmployeeConstraintsByDate(req, res) {
+  try {
+    const { employeeId, date } = req.body
+    const sql = `
+    SELECT *
+    FROM employee_constraints
+    WHERE employeeId = ? AND date = ?;    
+    `;
+    const params = [employeeId, date]
+    const cb = (error, results) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+        console.log(`error.message:`, error.message)
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(results));
+      }
+    }
+    doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
+
+}
+
+function getEmployeeTreatmentDaysToAdd(req, res) {
+  try {
+    console.log(`req.body:`, req.body)
+    const { employeeId, treatmentId } = req.body;
+    const sql = `
+      SELECT
+        employee_available_hours.day
+      FROM
+        employee_available_hours
+      WHERE
+        employee_available_hours.employeeId = ?
+        AND employee_available_hours.treatmentId = ?
+      `;
+    const params = [employeeId, treatmentId, employeeId, treatmentId];
+    const cb = (error, results) => {
+      if (error) {
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+        console.log(`error.message:`, error.message)
+      }
+      else {
+        res.writeHead(200, { "Content-Type": "application/json" });
+        console.log(`JSON.stringify(results):`, JSON.stringify(results))
         res.end(JSON.stringify(results));
       }
     }

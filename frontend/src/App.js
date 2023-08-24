@@ -11,6 +11,7 @@ import { storageService } from './services/storage.service';
 import AddAppointment from './pages/AddAppointment';
 import Profile from './pages/Profile';
 import ResetPassword from './pages/ResetPassword';
+import Constraints from './pages/Constraints';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null)
@@ -20,10 +21,10 @@ function App() {
     const user = storageService.load('loggedInUser')
     if (user) setLoggedInUser(user)
   }, [])
-  
+
   return (
     <section className="app-container">
-      {loggedInUser && <Header setLoggedInUser={setLoggedInUser} loggedInUser={loggedInUser}/>}
+      {loggedInUser && <Header setLoggedInUser={setLoggedInUser} loggedInUser={loggedInUser} />}
       <main className='main-container'>
         <Routes>
           <Route path="/login"
@@ -38,6 +39,9 @@ function App() {
           <Route path="/treatments"
             element={loggedInUser ? <Treatments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
+          <Route path="/constraints"
+            element={loggedInUser && loggedInUser.isEmployee ? <Constraints BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
+          </Route>
           <Route path="/appointments"
             element={loggedInUser ? <Appointments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
@@ -48,7 +52,7 @@ function App() {
             element={loggedInUser ? <Profile BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
           <Route path='/'
-            element={loggedInUser ? <Home BASE_URL={BASE_URL}  loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
+            element={loggedInUser ? <Home BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
         </Routes>
       </main>

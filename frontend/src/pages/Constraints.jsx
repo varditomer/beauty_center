@@ -2,15 +2,17 @@ import { useEffect, useState } from "react"
 import TreatmentTable from "../components/TreatmentTable";
 import UserMessage from '../components/UserMessage';
 import TreatmentTypeModal from "../components/TreatmentTypeModal";
+import ConstraintsTable from "../components/ConstraintsTable";
+import ConstraintModal from "../components/ConstraintModal";
 
 
-export default function Treatments({ BASE_URL, loggedInUser }) {
+export default function Constraints({ BASE_URL, loggedInUser }) {
     const [treatments, setTreatments] = useState(null)
     const [treatmentsToAdd, setTreatmentsToAdd] = useState(null)
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
-    const [isAddingTreatmentType, setIsAddingTreatmentType] = useState(null)
-    const [isUpdatingTreatmentType, setIsUpdatingTreatmentType] = useState(false)
+    const [isAddingConstraint, setIsAddingConstraint] = useState(null)
+    const [isUpdatingConstraint, setIsUpdatingConstraint] = useState(false)
     const [treatmentTypeToUpdate, setTreatmentTypeToUpdate] = useState(null)
 
     useEffect(() => {
@@ -105,29 +107,27 @@ export default function Treatments({ BASE_URL, loggedInUser }) {
 
     return (
         <section className="treatments-page">
-            <h1 className="page-title" style={loggedInUser.isEmployee ? {} : { marginBottom: '20px' }}>{loggedInUser.isEmployee ? `Employee's ` : 'All '} Treatments</h1>
-            {isAddingTreatmentType &&
-                <TreatmentTypeModal
+            <h1 className="page-title" style={{ marginBottom: '20px' }}>Employees Constraints</h1>
+            {isAddingConstraint &&
+                <ConstraintModal
                     loggedInUser={loggedInUser}
                     BASE_URL={BASE_URL}
-                    setIsChangingTreatmentType={setIsAddingTreatmentType}
+                    setIsAddingConstraint={setIsAddingConstraint}
                     treatmentTypeToUpdate={null}
                     treatmentsToAdd={treatmentsToAdd}
                 />
             }
-            {isUpdatingTreatmentType &&
-                <TreatmentTypeModal
+            {isUpdatingConstraint &&
+                <ConstraintModal
                     loggedInUser={loggedInUser}
                     BASE_URL={BASE_URL}
-                    setIsUpdatingTreatmentType={setIsUpdatingTreatmentType}
+                    setIsUpdatingConstraint={setIsUpdatingConstraint}
                     treatmentTypeToUpdate={treatmentTypeToUpdate}
                 />
             }
-            {!!loggedInUser.isEmployee &&
-                <button className="add-appointment-btn" style={{ marginBottom: '16px' }} onClick={() => setIsAddingTreatmentType(true)}>Add Treatment Type</button>
-            }
+            <button className="add-appointment-btn" style={{ marginBottom: '16px' }} onClick={() => setIsAddingConstraint(true)}>Add Constraints</button>
             {treatments &&
-                <TreatmentTable setIsUpdatingTreatmentType={setIsUpdatingTreatmentType} setTreatmentTypeToUpdate={setTreatmentTypeToUpdate} loggedInUser={loggedInUser} treatments={treatments} onRemoveTreatmentType={onRemoveTreatmentType} />
+                <ConstraintsTable setIsUpdatingTreatmentType={setIsUpdatingConstraint} setTreatmentTypeToUpdate={setTreatmentTypeToUpdate} loggedInUser={loggedInUser} treatments={treatments} onRemoveTreatmentType={onRemoveTreatmentType} />
             }
             <UserMessage
                 userMessage={userMessage}

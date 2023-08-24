@@ -20,15 +20,23 @@ import ContentCutIcon from '@mui/icons-material/ContentCut';
 import { styled } from '@mui/system';
 
 const StyledAppBar = styled(AppBar)({
-  backgroundColor: '#d02fbd', 
+  backgroundColor: '#d02fbd',
 });
 
 
 
-const pages = ['employees', 'treatments', 'appointments'];
-const settings = ['profile', 'logout'];
 
 export default function Header({ loggedInUser, setLoggedInUser }) {
+  const pages = [
+    'employees',
+    'treatments',
+    'appointments',
+  ];
+  if (loggedInUser.isEmployee) pages.push('constraints')
+  const settings = [
+    'profile',
+    'logout'
+  ];
   const [anchorElNav, setAnchorElNav] = React.useState(null);
   const [anchorElUser, setAnchorElUser] = React.useState(null);
   const navigate = useNavigate()
@@ -56,7 +64,7 @@ export default function Header({ loggedInUser, setLoggedInUser }) {
   function logout() {
     storageService.remove('loggedInUser')
     setLoggedInUser(null)
-}
+  }
 
   return (
     <StyledAppBar position="static">
@@ -151,7 +159,7 @@ export default function Header({ loggedInUser, setLoggedInUser }) {
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar >{loggedInUser.name.substring(0,1).toUpperCase()}</Avatar>
+                <Avatar >{loggedInUser.name.substring(0, 1).toUpperCase()}</Avatar>
               </IconButton>
             </Tooltip>
             <Menu
@@ -175,7 +183,7 @@ export default function Header({ loggedInUser, setLoggedInUser }) {
                   {setting === 'profile' ?
                     <Typography textAlign="center" component={(props) => <Link to={`/${setting}`} {...props} />}>{setting}</Typography>
                     :
-                    <Typography textAlign="center" onClick={()=>logout()}>{setting}</Typography>
+                    <Typography textAlign="center" onClick={() => logout()}>{setting}</Typography>
                   }
                 </MenuItem>
               ))}

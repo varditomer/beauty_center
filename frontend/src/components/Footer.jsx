@@ -5,10 +5,6 @@ export default function Footer() {
         <footer className="footer">
             <div className="footer-icons">
                 <div className="footer-element">
-                    <i className="fas fa-map-marker-alt footer-btn"></i>
-                    <span className="caption">Location</span>
-                </div>
-                <div className="footer-element">
                     <i className="fab fa-whatsapp footer-btn">
                         <a href={`https://wa.me/972548167256?text=${prePreparedMsg}`} target="blank"></a>
                     </i>

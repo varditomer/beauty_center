@@ -35,7 +35,8 @@ function getEmployeeTreatments(req, res) {
     const sql = `
       SELECT treatments.*, 
              employee_available_hours.patientAcceptStart, 
-             employee_available_hours.patientAcceptEnd
+             employee_available_hours.patientAcceptEnd,
+             employee_available_hours.day
       FROM treatments
       LEFT JOIN employee_treatments ON treatments.id = employee_treatments.treatmentId
       LEFT JOIN employee_available_hours ON employee_treatments.employeeId = employee_available_hours.employeeId 
@@ -60,40 +61,35 @@ function getEmployeeTreatments(req, res) {
 }
 
 function addEmployeeTreatmentType(req, res) {
+  console.log(`req.body:`, req.body)
   try {
     const {
       treatmentType,
       startTime,
       endTime,
-      userId
+      userId,
+      selectedDays
     } = req.body.treatmentTypeToAdd
 
     const employee_treatmentsInsertSQL = `
-      INSERT INTO employee_treatments (employeeId, treatmentId) 
+      INSERT IGNORE INTO employee_treatments (employeeId, treatmentId) 
       VALUES (?,?)
-    `;
+      `;
     const employee_treatmentsParams = [userId, treatmentType];
-    
+    doQueryAndReturnResults(employee_treatmentsInsertSQL, employee_treatmentsParams)
+
     const employee_available_hoursInsertSQL = `
-    INSERT INTO employee_available_hours (employeeId, treatmentId, patientAcceptStart, patientAcceptEnd) 
-    VALUES (?,?,?,?)
-    `;
-    const employee_available_hoursParams = [userId, treatmentType, startTime, endTime];
+      INSERT INTO employee_available_hours (employeeId, treatmentId, patientAcceptStart, patientAcceptEnd, day) 
+      VALUES (?,?,?,?,?)
+      `;
 
+    selectedDays.forEach(day => {
+      const employee_available_hoursParams = [userId, treatmentType, startTime, endTime, day];
+      doQueryAndReturnResults(employee_available_hoursInsertSQL, employee_available_hoursParams)
+    })
 
-
-    const cb = (error, results) => {
-      if (error) {
-        res.writeHead(500, { "Content-Type": "application/json" });
-        res.end(error.message);
-      }
-      else {
-        res.writeHead(200, { "Content-Type": "application/json" });
-        res.end(JSON.stringify({}));
-      }
-    }
-    doQueryAndReturnResults(employee_treatmentsInsertSQL, employee_treatmentsParams, cb)
-    doQuery(employee_available_hoursInsertSQL, employee_available_hoursParams, cb)
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify({}));
   }
   catch (exp) {
     res.writeHead(500, { "Content-Type": "application/json" });
@@ -111,7 +107,7 @@ function updateEmployeeTreatmentType(req, res) {
       userId
     } = req.body.treatmentTypeToUpdate
 
-    
+
     const employee_available_hoursInsertSQL = `
     UPDATE employee_available_hours
     SET patientAcceptStart = ?, patientAcceptEnd = ? 
@@ -142,7 +138,9 @@ function updateEmployeeTreatmentType(req, res) {
 
 function removeTreatmentType(req, res) {
   try {
-    const { employeeId, treatmentId } = req.body
+    console.log(`req.body:`, req.body)
+    const { employeeId, treatmentId, day, isSingleTreatFromType } = req.body
+
 
     const deleteTreatmentsSql = `
       DELETE FROM employee_treatments
@@ -151,10 +149,10 @@ function removeTreatmentType(req, res) {
 
     const deleteAvailableHoursSql = `
       DELETE FROM employee_available_hours
-      WHERE employeeId = ? AND treatmentId = ?;
+      WHERE employeeId = ? AND treatmentId = ? AND day =?;
     `;
 
-    const params = [employeeId, treatmentId];
+    const params = [employeeId, treatmentId, day];
 
     const cb = (error, results) => {
       if (error) {
@@ -166,7 +164,7 @@ function removeTreatmentType(req, res) {
         res.end(JSON.stringify(req.body));
       }
     }
-    doQueryAndReturnResults(deleteTreatmentsSql, params, cb)
+    if (isSingleTreatFromType) doQueryAndReturnResults(deleteTreatmentsSql, params)
     doQuery(deleteAvailableHoursSql, params, cb)
   }
   catch (exp) {

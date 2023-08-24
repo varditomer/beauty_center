@@ -1,7 +1,6 @@
 import Box from '@mui/material/Box';
 import Modal from '@mui/material/Modal';
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import UserMessage from '../components/UserMessage';
 import Select from 'react-select';
 
@@ -17,11 +16,10 @@ const style = {
     p: 4,
 };
 
-export default function TreatmentTypeModal({ loggedInUser, BASE_URL, setIsChangingTreatmentType, treatmentTypeToUpdate, treatmentsToAdd, setIsUpdatingTreatmentType }) {
+export default function ConstraintModal({ loggedInUser, BASE_URL, setIsAddingConstraint, treatmentTypeToUpdate, treatmentsToAdd, setIsUpdatingConstraint }) {
     // State variables for various data
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
-    const navigate = useNavigate()
     const [open, setOpen] = useState(true);
     const [timeSlots, setTimeSlots] = useState(null)
     // add treatments type variables:
@@ -43,9 +41,9 @@ export default function TreatmentTypeModal({ loggedInUser, BASE_URL, setIsChangi
 
     const handleClose = () => {
         if (treatmentTypeToUpdate) {
-            setIsUpdatingTreatmentType(false)
+            setIsUpdatingConstraint(false)
         } else {
-            setIsChangingTreatmentType(false)
+            setIsAddingConstraint(false)
         }
         setOpen(false)
     };
