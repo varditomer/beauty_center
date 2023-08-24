@@ -15,6 +15,7 @@ export default function Home({ loggedInUser, BASE_URL }) {
         const fetchUserAppointments = async () => {
             try {
                 const appointments = await getUserNextAppointment();
+                console.log(appointments);
                 if (loggedInUser.isEmployee) {
                     const employeeRevenue = await getEmployeeRevenue()
                     setRevenue(employeeRevenue.monthlyTotal)
@@ -83,20 +84,22 @@ export default function Home({ loggedInUser, BASE_URL }) {
                 beauty services. Thank you for choosing our beauty center,
                 and we are ready to meet your beauty care needs and desires!
             </p>
-            <div className="appointment-info-container">
-                {appointments && <>
-                    <div className="next-appointment-container">
-                        <h3 className='page-title'>{loggedInUser.isEmployee ? "today's treatments" : "today's appointments"}</h3>
-                        <AppointmentTable setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={appointments} loggedInUser={loggedInUser} />
-                    </div>
-                </>
-                }
-                {revenue !== null &&
-                    <div className="revenue-container">
-                        <h3 style={{color:"white"}}>Month's Expected Revenues: <span className="revenue">{revenue}₪</span></h3>
-                    </div>
-                }
-            </div>
+            {((appointments && appointments.length) || revenue !== null) &&
+                <div className="appointment-info-container">
+                    {appointments && <>
+                        <div className="next-appointment-container">
+                            <h3 className='page-title'>{loggedInUser.isEmployee ? "today's treatments" : "today's appointments"}</h3>
+                            <AppointmentTable setAppointments={setAppointments} BASE_URL={BASE_URL} appointments={appointments} loggedInUser={loggedInUser} />
+                        </div>
+                    </>
+                    }
+                    {revenue !== null &&
+                        <div className="revenue-container">
+                            <h3 style={{ color: "white" }}>Month's Expected Revenues: <span className="revenue">{revenue}₪</span></h3>
+                        </div>
+                    }
+                </div>
+            }
             <div className="image-container">
                 {!loggedInUser.isEmployee &&
                     <Link className="img-link" to='/employees'>

@@ -56,7 +56,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
 
 
     useEffect(() => {
-        // if (!appointments.length) return
         updateFilteredAppointments()
     }, [filterBy, futureAppointments]);
 
@@ -69,7 +68,6 @@ export default function Appointments({ BASE_URL, loggedInUser }) {
     }
 
     const onFilterChanged = (filterName, selectedVal) => {
-
         let newFilterBy = { ...filterBy };
         newFilterBy[filterName] = selectedVal
         setFilterBy(newFilterBy)
