@@ -12,6 +12,7 @@ import AddAppointment from './pages/AddAppointment';
 import Profile from './pages/Profile';
 import ResetPassword from './pages/ResetPassword';
 import Constraints from './pages/Constraints';
+import PenndingAppointments from './pages/PenndingAppointments';
 
 function App() {
   const [loggedInUser, setLoggedInUser] = useState(null)
@@ -44,6 +45,9 @@ function App() {
           </Route>
           <Route path="/appointments"
             element={loggedInUser ? <Appointments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
+          </Route>
+          <Route path="/pendding-appointment/:id"
+            element={loggedInUser ? <PenndingAppointments BASE_URL={BASE_URL} loggedInUser={loggedInUser} /> : <Navigate to="/login" />}>
           </Route>
           <Route path="/addAppointment"
             element={loggedInUser ? <AddAppointment loggedInUser={loggedInUser} BASE_URL={BASE_URL} /> : <Navigate to="/login" />}>

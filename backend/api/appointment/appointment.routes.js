@@ -1,9 +1,10 @@
 const express = require('express')
 const router = express.Router()
 
-const {getCanceledAppointments, getCustomerAppointments, getEmployeeAppointments, getCustEmployeeRevenue, addAppointment, updateAppointment, removeAppointment, getNextAppointments, getNextTreatments, getCustomerAppointmentsByDay } = require('./appointmentController')
+const {getPenndingAppointmentById,getCanceledAppointments, getCustomerAppointments, getEmployeeAppointments, getCustEmployeeRevenue, addAppointment, updateAppointment, removeAppointment, getNextAppointments, getNextTreatments, getCustomerAppointmentsByDay } = require('./appointmentController')
 
 router.get('/:id', getCustomerAppointments)
+router.get('/pendding/:id', getPenndingAppointmentById)
 router.post('/customerAppointmentsByDay', getCustomerAppointmentsByDay)
 router.get('/employee/:id', getEmployeeAppointments)
 router.get('/nextAppointments/:id', getNextAppointments)
