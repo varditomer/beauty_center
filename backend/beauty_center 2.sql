@@ -238,6 +238,29 @@ CREATE TABLE IF NOT EXISTS `canceled_appointments` (
   FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
 
+
+
+--
+-- Table structure for table `pendding-appointments`
+--
+
+DROP TABLE IF EXISTS `pendding_appointments`;
+CREATE TABLE IF NOT EXISTS `pendding_appointments` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  `appointmentId` INT NOT NULL,
+  `appointmentDateTime` datetime NOT NULL,
+  `employeeId` varchar(9) NOT NULL,
+  `customerId` varchar(9) NOT NULL,
+  `treatmentId` varchar(9) DEFAULT NULL,
+  FOREIGN KEY (`appointmentId`) REFERENCES `appointments` (`id`),
+  FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`customerId`) REFERENCES `users` (`id`),
+  FOREIGN KEY (`treatmentId`) REFERENCES `treatments` (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=utf8;
+
+INSERT INTO `pendding_appointments` (`appointmentId`, `appointmentDateTime`, `employeeId`, `customerId`, `treatmentId`) VALUES
+(1, '2023-08-17 10:00:00', '3', '1', 1);
+
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

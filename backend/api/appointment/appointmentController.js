@@ -14,7 +14,8 @@ module.exports = {
   getCustomerAppointments,
   getEmployeeAppointments,
   getCustomerAppointmentsByDay,
-  getCanceledAppointments
+  getCanceledAppointments,
+  getPenndingAppointmentById
 }
 
 // Get appointments by user Id
@@ -231,12 +232,12 @@ function addAppointment(req, res) {
             subject: 'New Appointment',
             html: `
             <p>This is a confirmation email sent from Beauty Center.</p>
-            <p>Your new appointment set to: <span style="color: blue; user-select: all; cursor: pointer;">${appointmentDateTime.substring(0,10)} ${appointmentDateTime.substring(11,16)}</span></p>
+            <p>Your new appointment set to: <span style="color: blue; user-select: all; cursor: pointer;">${appointmentDateTime.substring(0, 10)} ${appointmentDateTime.substring(11, 16)}</span></p>
             <p>Log in to view more details</p>
             `
           };
-      
-      
+
+
           transporter.sendMail(mailOptions, (error, info) => {
             if (error) {
               console.error('Error sending email:', error);
@@ -523,4 +524,53 @@ function getCanceledAppointments(req, res) {
     res.end(exp.message);
   }
 
+}
+
+
+// Get pendding appointment by id(req, res) {
+function getPenndingAppointmentById(req, res) {
+  try {
+    const penddingAppointmentId = req.params.id
+    // SQL query to get appointments for a specific customer (customerId)
+    const sql = `
+      SELECT 
+      pendding_appointments.id,
+      pendding_appointments.treatmentId,
+      pendding_appointments.customerId,
+      CONVERT_TZ(pendding_appointments.appointmentDateTime, '+00:00', '+03:00') AS appointmentDateTime,
+      treatments.treatmentType,
+      treatments.duration AS treatmentDuration,
+      treatments.price AS treatmentPrice,
+      users.name AS employeeName
+      FROM 
+      pendding_appointments
+      INNER JOIN 
+      treatments ON pendding_appointments.treatmentId = treatments.id
+      INNER JOIN 
+      users ON pendding_appointments.employeeId = users.id
+      WHERE 
+      pendding_appointments.id = ?;
+  `
+    const params = [penddingAppointmentId];
+    const cb = (error, results) => {
+      if (error) {
+        console.log(`error:`, error)
+        // If there's an error during the database query, return a server error status
+        res.writeHead(500, { "Content-Type": "application/json" });
+        res.end(error.message);
+      }
+      else {
+        //       // If the query is successful, return the appointments data as JSON
+        res.writeHead(200, { "Content-Type": "application/json" });
+        res.end(JSON.stringify(results[0]));
+      }
+    }
+    // Execute the SQL query using the 'doQuery' function
+    doQuery(sql, params, cb)
+  }
+  catch (exp) {
+    //   // If an exception occurs during the process, return a server error status
+    res.writeHead(500, { "Content-Type": "application/json" });
+    res.end(exp.message);
+  }
 }

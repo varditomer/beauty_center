@@ -70,6 +70,7 @@ export default function Home({ loggedInUser, BASE_URL }) {
         }
     };
 
+
     return (
         <section className="home-page">
             <h1>Welcome {loggedInUser.isEmployee ? "Employee " : "Patient "} <span className='capitalized emphasized'>{loggedInUser.name}</span> to our beauty center!</h1>
