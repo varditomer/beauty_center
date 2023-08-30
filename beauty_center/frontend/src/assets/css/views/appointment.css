@@ -1,4 +1,4 @@
-.appointment-page{
+.appointment-page {
     display: flex;
     flex-direction: column;
     gap: 20px;
@@ -8,7 +8,7 @@
     margin-bottom: unset;
 }
 
-.add-appointment-btn{
+.add-appointment-btn {
     cursor: pointer;
     border: unset;
     border-radius: 50vw;
@@ -23,4 +23,15 @@
 
 .add-appointment-btn:hover {
     background-color: rgb(216, 68, 167);
+}
+
+.add-appointment-btn:disabled {
+    /* Your CSS properties here */
+    background-color: gray;
+    /* Change background color to gray */
+    color: #ccc;
+    /* Change text color to a lighter shade */
+    cursor: not-allowed;
+    /* Change cursor to indicate it's not clickable */
+    /* Add any other styles you want */
 }

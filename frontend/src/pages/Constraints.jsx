@@ -1,107 +1,96 @@
 import { useEffect, useState } from "react"
-import TreatmentTable from "../components/TreatmentTable";
 import UserMessage from '../components/UserMessage';
-import TreatmentTypeModal from "../components/TreatmentTypeModal";
 import ConstraintsTable from "../components/ConstraintsTable";
 import ConstraintModal from "../components/ConstraintModal";
 
 
 export default function Constraints({ BASE_URL, loggedInUser }) {
-    const [treatments, setTreatments] = useState(null)
-    const [treatmentsToAdd, setTreatmentsToAdd] = useState(null)
+    const [constraints, setConstraints] = useState(null)
+    const [isAddingConstraint, setIsAddingConstraint] = useState(null)
     const [isSuccess, setIsSuccess] = useState(false);
     const [userMessage, setUserMessage] = useState('');
-    const [isAddingConstraint, setIsAddingConstraint] = useState(null)
-    const [isUpdatingConstraint, setIsUpdatingConstraint] = useState(false)
-    const [treatmentTypeToUpdate, setTreatmentTypeToUpdate] = useState(null)
 
     useEffect(() => {
-        const fetchTreatments = async () => {
+        const getEmployeeConstraints = async () => {
             try {
-                const treatments = await getTreatments();
-                if (loggedInUser.isEmployee) {
-                    const employeeTreatments = await getEmployeeTreatments()
-                    // Filter treatments that are not present in employeeTreatments
-                    const newTreatments = treatments.filter(treatment => {
-                        return employeeTreatments.filter(empTreatment => empTreatment.id === treatment.id).length < 6;
-                    });
-                    setTreatments(employeeTreatments)
-                    setTreatmentsToAdd(newTreatments)
-                } else {
-                    setTreatments(treatments);
-                }
+                const constraints = await fetchEmployeeConstraints();
+                setConstraints(constraints);
+
             } catch (error) {
                 console.error(error);
             }
         };
 
-        fetchTreatments();
+        getEmployeeConstraints();
     }, []);
 
-    const getTreatments = async () => {
+    const fetchEmployeeConstraints = async () => {
         try {
-            const response = await fetch(`${BASE_URL}/treatment`, {
+            const response = await fetch(`${BASE_URL}/employee/employeeConstraints/${loggedInUser.id}`, {
                 method: 'GET',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
                 },
             });
-            const treatments = await response.json();
-            return treatments;
+            const employeeConstraints = await response.json();
+            return employeeConstraints;
         } catch (error) {
             console.error(error);
             return [];
         }
     };
 
-    const getEmployeeTreatments = async () => {
+    async function onAddConstraint(constraintDetails) {
         try {
-            const response = await fetch(`${BASE_URL}/treatment/employeeTreatments/${loggedInUser.id}`, {
-                method: 'GET',
-                headers: {
-                    accept: 'application/json',
-                    'content-type': 'application/json',
-                },
-            });
-            const employeeTreatments = await response.json();
-            return employeeTreatments;
-        } catch (error) {
-            console.error(error);
-            return [];
-        }
-    }
-
-    async function onRemoveTreatmentType(treatmentId, day) {
-        try {
-            const allTreatmentsForType = treatments.filter(treatment => treatment.id === treatmentId)
-            const isSingleTreatFromType = allTreatmentsForType.length > 1 ? false : true
-            await fetch(`${BASE_URL}/treatment/removeTreatmentType`, {
+            await fetch(`${BASE_URL}/employee/addEmployeeConstraint`, {
                 method: 'DELETE',
                 headers: {
                     accept: 'application/json',
                     'content-type': 'application/json',
                 },
                 body: JSON.stringify({
-                    employeeId: loggedInUser.id,
-                    treatmentId,
-                    day,
-                    isSingleTreatFromType
-                }) // Convert treatmentDetails to JSON and set as the request body
+                    ...constraintDetails,
+                    employeeId: loggedInUser.id
+                })
 
             });
+
             setIsSuccess(true)
-            setUserMessage(`Treatment Type was removed!`);
-            const newEmployeeTreatments = treatments.filter(treatment => (treatment.id !== treatmentId || treatment.day !== day))
-            setTreatments(newEmployeeTreatments)
-            const treatmentToRemove = treatments.find(treatment => treatment.id === treatmentId)
-            if (isSingleTreatFromType || allTreatmentsForType.length === 6) setTreatmentsToAdd([...treatmentsToAdd, treatmentToRemove])
+            setUserMessage(`Constraint was added!`);
             setTimeout(() => {
                 setUserMessage('')
             }, 2000);
 
         } catch (error) {
-            return setUserMessage(`Treatment Type Remove Failed!`);
+            return setUserMessage(`Constraint Added Failed!`);
+        }
+    }
+
+    async function onRemoveConstraint(constraintId) {
+        try {
+            await fetch(`${BASE_URL}/employee/removeEmployeeConstraint`, {
+                method: 'DELETE',
+                headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                },
+                body: JSON.stringify({
+                    constraintId
+                })
+
+            });
+
+            setIsSuccess(true)
+            setUserMessage(`Constraint was removed!`);
+            const newConstraints = constraints.filter(constraint => constraint.id !== constraintId)
+            setConstraints(newConstraints)
+            setTimeout(() => {
+                setUserMessage('')
+            }, 2000);
+
+        } catch (error) {
+            return setUserMessage(`Constraint Remove Failed!`);
         }
     }
 
@@ -110,14 +99,15 @@ export default function Constraints({ BASE_URL, loggedInUser }) {
             <h1 className="page-title" style={{ marginBottom: '20px' }}>Employees Constraints</h1>
             {isAddingConstraint &&
                 <ConstraintModal
-                    loggedInUser={loggedInUser}
-                    BASE_URL={BASE_URL}
+                    onAddConstraint={onAddConstraint}
                     setIsAddingConstraint={setIsAddingConstraint}
                 />
             }
             <button className="add-appointment-btn" style={{ marginBottom: '16px' }} onClick={() => setIsAddingConstraint(true)}>Add Constraints</button>
-            {treatments &&
-                <ConstraintsTable setIsUpdatingTreatmentType={setIsUpdatingConstraint} setTreatmentTypeToUpdate={setTreatmentTypeToUpdate} loggedInUser={loggedInUser} treatments={treatments} onRemoveTreatmentType={onRemoveTreatmentType} />
+            {constraints?.length > 0 ?
+                <ConstraintsTable constraints={constraints} onRemoveConstraint={onRemoveConstraint} />
+                :
+                <h2 style={{ color: "#d02fbd", fontWeight: "600", fontSize: "22px" }}>No Constraints yet!</h2>
             }
             <UserMessage
                 userMessage={userMessage}

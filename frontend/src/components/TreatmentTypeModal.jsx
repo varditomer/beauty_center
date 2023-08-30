@@ -274,8 +274,8 @@ export default function TreatmentTypeModal({ loggedInUser, BASE_URL, setIsChangi
                                             onChange={(selected) => onSelectDays(selected)}
                                             placeholder='Select days to set works hours:' />
                                         {/* Select start & end time */}
-                                        <label htmlFor="slot">Select Start Time:</label>
-                                        <select id="slot" onChange={onSelectStartTime}>
+                                        <label htmlFor="timeStart">Select Start Time:</label>
+                                        <select id="timeStart" onChange={onSelectStartTime}>
                                             <option value="">Select Start Time</option>
                                             {timeSlots.map((time, index) => {
                                                 return (
@@ -286,8 +286,8 @@ export default function TreatmentTypeModal({ loggedInUser, BASE_URL, setIsChangi
                                             })
                                             }
                                         </select>
-                                        <label htmlFor="slot">Select End TIme:</label>
-                                        <select id="slot" onChange={onSelectEndTime}>
+                                        <label htmlFor="timeEnd">Select End TIme:</label>
+                                        <select id="timeEnd" onChange={onSelectEndTime}>
                                             <option value="">Select End TIme</option>
                                             {timeSlots.map((time, index) => {
                                                 return (

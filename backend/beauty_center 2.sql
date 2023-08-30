@@ -178,12 +178,12 @@ INSERT INTO `employee_available_hours` (`employeeId`, `treatmentId`, `day`, `pat
 
 DROP TABLE IF EXISTS `employee_constraints`;
 CREATE TABLE IF NOT EXISTS `employee_constraints` (
+  `id` INT NOT NULL AUTO_INCREMENT PRIMARY KEY,
   `employeeId` varchar(9) NOT NULL,
   `date` varchar(10) NOT NULL,
   `constraintStart` varchar(5) NOT NULL,
   `constraintEnd` varchar(5) NOT NULL,
   `description` varchar(200) NOT NULL,
-  PRIMARY KEY (`employeeId`, `date`),
   FOREIGN KEY (`employeeId`) REFERENCES `users` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
